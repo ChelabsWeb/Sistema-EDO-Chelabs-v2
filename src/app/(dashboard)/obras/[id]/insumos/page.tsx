@@ -3,6 +3,8 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { formatPesos } from '@/lib/utils/currency'
 import { DeleteInsumoButton } from '@/components/edo/insumo/delete-insumo-button'
+import { AddPredefinidosButton } from '@/components/edo/insumo/add-predefinidos-button'
+import { Toaster } from '@/components/ui/sonner'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -67,12 +69,15 @@ export default async function InsumosPage({ params }: Props) {
                 <p className="text-sm text-gray-500">{obra.nombre}</p>
               </div>
             </div>
-            <Link
-              href={`/obras/${id}/insumos/nuevo`}
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-            >
-              + Nuevo Insumo
-            </Link>
+            <div className="flex items-center gap-3">
+              <AddPredefinidosButton obraId={id} />
+              <Link
+                href={`/obras/${id}/insumos/nuevo`}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+              >
+                + Nuevo Insumo
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -205,6 +210,7 @@ export default async function InsumosPage({ params }: Props) {
           </div>
         )}
       </main>
+      <Toaster />
     </div>
   )
 }

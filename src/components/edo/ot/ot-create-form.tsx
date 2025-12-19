@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createOT, getRubroBudgetStatus } from '@/app/actions/ordenes-trabajo'
 import { formatPesos } from '@/lib/utils/currency'
+import { InsumoSelector, type InsumoSeleccionado } from './insumo-selector'
 
 interface Rubro {
   id: string
@@ -20,21 +21,31 @@ interface FormulaItem {
   precio_referencia: number
 }
 
+interface InsumoObra {
+  id: string
+  nombre: string
+  unidad: string
+  tipo: 'material' | 'mano_de_obra'
+  precio_referencia: number | null
+  precio_unitario: number | null
+}
+
 interface OTCreateFormProps {
   obraId: string
   rubros: Rubro[]
+  insumosObra: InsumoObra[]
 }
 
-export function OTCreateForm({ obraId, rubros }: OTCreateFormProps) {
+export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [selectedRubroId, setSelectedRubroId] = useState('')
   const [descripcion, setDescripcion] = useState('')
-  const [cantidad, setCantidad] = useState(1)
 
   const [formulaItems, setFormulaItems] = useState<FormulaItem[]>([])
+  const [insumosSeleccionados, setInsumosSeleccionados] = useState<InsumoSeleccionado[]>([])
   const [costoEstimado, setCostoEstimado] = useState(0)
   const [budgetStatus, setBudgetStatus] = useState<{
     presupuesto: number
@@ -53,6 +64,7 @@ export function OTCreateForm({ obraId, rubros }: OTCreateFormProps) {
         setFormulaItems([])
         setCostoEstimado(0)
         setBudgetStatus(null)
+        setInsumosSeleccionados([])
         return
       }
 
@@ -80,19 +92,13 @@ export function OTCreateForm({ obraId, rubros }: OTCreateFormProps) {
     loadFormula()
   }, [selectedRubroId])
 
-  // Calculate estimated cost when formula items or cantidad changes
-  useEffect(() => {
-    if (formulaItems.length === 0) {
-      setCostoEstimado(0)
-      return
-    }
-
-    const total = formulaItems.reduce((sum, item) => {
-      return sum + item.cantidad_por_unidad * cantidad * item.precio_referencia
-    }, 0)
-
+  // Handle insumos selection change
+  const handleInsumosChange = useCallback((insumos: InsumoSeleccionado[]) => {
+    setInsumosSeleccionados(insumos)
+    // Calculate cost from selected insumos
+    const total = insumos.reduce((sum, i) => sum + i.cantidad * i.precio_unitario, 0)
     setCostoEstimado(total)
-  }, [formulaItems, cantidad])
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,11 +106,18 @@ export function OTCreateForm({ obraId, rubros }: OTCreateFormProps) {
     setIsSubmitting(true)
 
     try {
+      // Prepare insumos for the server action
+      const insumosParaEnviar = insumosSeleccionados.map((i) => ({
+        insumo_id: i.insumo_id,
+        cantidad_estimada: i.cantidad,
+      }))
+
       const result = await createOT({
         obra_id: obraId,
         rubro_id: selectedRubroId,
         descripcion,
-        cantidad,
+        cantidad: 1, // Default, now we use insumos instead
+        insumos_seleccionados: insumosParaEnviar.length > 0 ? insumosParaEnviar : undefined,
       })
 
       if (result.success) {
@@ -207,61 +220,16 @@ export function OTCreateForm({ obraId, rubros }: OTCreateFormProps) {
         <p className="mt-1 text-xs text-gray-500">{descripcion.length}/500 caracteres</p>
       </div>
 
-      {/* Cantidad */}
-      <div>
-        <label htmlFor="cantidad" className="block text-sm font-medium text-gray-700 mb-1">
-          Cantidad {selectedRubro && `(${selectedRubro.unidad})`} *
-        </label>
-        <input
-          type="number"
-          id="cantidad"
-          value={cantidad}
-          onChange={(e) => setCantidad(Math.max(0.01, parseFloat(e.target.value) || 0))}
-          required
-          min="0.01"
-          step="0.01"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
-
-      {/* Estimated Insumos */}
+      {/* Insumos Selector */}
       {selectedRubroId && (
-        <div className="border border-gray-200 rounded-md">
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <h4 className="text-sm font-medium text-gray-700">Insumos Estimados (desde Fórmula)</h4>
-          </div>
-          <div className="p-4">
-            {isLoadingFormula ? (
-              <div className="text-center py-4">
-                <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-blue-600 rounded-full" />
-                <p className="text-sm text-gray-500 mt-2">Cargando fórmula...</p>
-              </div>
-            ) : formulaItems.length > 0 ? (
-              <div className="space-y-2">
-                {formulaItems.map((item) => (
-                  <div key={item.insumo_id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                    <div>
-                      <span className="text-sm text-gray-900">{item.nombre}</span>
-                      <span className="text-xs text-gray-500 ml-2">({item.unidad})</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
-                        {(item.cantidad_por_unidad * cantidad).toFixed(2)} {item.unidad}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatPesos(item.cantidad_por_unidad * cantidad * item.precio_referencia)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 text-center py-4">
-                Este rubro no tiene fórmula definida. El costo será $0.
-              </p>
-            )}
-          </div>
-        </div>
+        <InsumoSelector
+          obraId={obraId}
+          rubroId={selectedRubroId}
+          formulaItems={formulaItems}
+          insumosObra={insumosObra}
+          onChange={handleInsumosChange}
+          isLoading={isLoadingFormula}
+        />
       )}
 
       {/* Estimated Cost */}

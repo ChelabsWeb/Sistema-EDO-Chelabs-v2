@@ -55,7 +55,9 @@ export default async function OTDetailPage({ params }: Props) {
         descripcion,
         completada,
         orden,
-        created_at
+        created_at,
+        cantidad,
+        unidad
       )
     `)
     .eq('id', otId)
@@ -325,8 +327,9 @@ export default async function OTDetailPage({ params }: Props) {
               <OTTareas
                 otId={otId}
                 obraId={obraId}
-                tareas={ot.tareas as { id: string; descripcion: string; completada: boolean | null; orden: number | null; created_at: string | null }[] || []}
+                tareas={ot.tareas as { id: string; descripcion: string; completada: boolean | null; orden: number | null; created_at: string | null; cantidad: number | null; unidad: string | null }[] || []}
                 canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
+                rubroUnidad={rubro?.unidad}
               />
             )}
 

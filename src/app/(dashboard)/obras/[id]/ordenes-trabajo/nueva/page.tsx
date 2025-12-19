@@ -30,6 +30,14 @@ export default async function NuevaOTPage({ params }: Props) {
     .eq('obra_id', obraId)
     .order('nombre')
 
+  // Get insumos for this obra (to allow manual selection)
+  const { data: insumosObra } = await supabase
+    .from('insumos')
+    .select('id, nombre, unidad, tipo, precio_referencia, precio_unitario')
+    .eq('obra_id', obraId)
+    .is('deleted_at', null)
+    .order('nombre')
+
   // Check if there are rubros available
   if (!rubros || rubros.length === 0) {
     return (
@@ -102,7 +110,11 @@ export default async function NuevaOTPage({ params }: Props) {
             </p>
           </div>
           <div className="p-6">
-            <OTCreateForm obraId={obraId} rubros={rubros} />
+            <OTCreateForm
+              obraId={obraId}
+              rubros={rubros}
+              insumosObra={(insumosObra || []) as { id: string; nombre: string; unidad: string; tipo: 'material' | 'mano_de_obra'; precio_referencia: number | null; precio_unitario: number | null }[]}
+            />
           </div>
         </div>
       </main>

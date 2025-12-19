@@ -1,5 +1,11 @@
 import { z } from 'zod'
 
+// Schema para insumo seleccionado manualmente
+export const insumoSeleccionadoSchema = z.object({
+  insumo_id: z.string().uuid('ID de insumo inválido'),
+  cantidad_estimada: z.number().min(0.01, 'La cantidad debe ser mayor a 0'),
+})
+
 export const createOTSchema = z.object({
   obra_id: z.string().uuid('ID de obra inválido'),
   rubro_id: z.string().uuid('ID de rubro inválido'),
@@ -10,7 +16,10 @@ export const createOTSchema = z.object({
   cantidad: z
     .number()
     .min(0.01, 'La cantidad debe ser mayor a 0')
+    .optional()
     .default(1),
+  // Nuevo: insumos seleccionados manualmente por el usuario
+  insumos_seleccionados: z.array(insumoSeleccionadoSchema).optional(),
 })
 
 export const updateOTSchema = z.object({
@@ -45,6 +54,7 @@ export const closeOTSchema = z.object({
   acknowledge_deviation: z.boolean().optional().default(false),
 })
 
+export type InsumoSeleccionado = z.infer<typeof insumoSeleccionadoSchema>
 export type CreateOTInput = z.infer<typeof createOTSchema>
 export type UpdateOTInput = z.infer<typeof updateOTSchema>
 export type ChangeOTStatusInput = z.infer<typeof changeOTStatusSchema>

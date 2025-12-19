@@ -85,8 +85,47 @@ async function calculateEstimatedInsumos(
 }
 
 /**
+ * Calculate cost from manually selected insumos
+ */
+async function calculateCostFromSelectedInsumos(
+  insumosSeleccionados: { insumo_id: string; cantidad_estimada: number }[]
+): Promise<{ insumos: { insumo_id: string; cantidad_estimada: number; precio_estimado: number }[]; costo_estimado: number }> {
+  const supabase = await createClient()
+
+  if (!insumosSeleccionados || insumosSeleccionados.length === 0) {
+    return { insumos: [], costo_estimado: 0 }
+  }
+
+  // Get prices for selected insumos
+  const { data: insumosData } = await supabase
+    .from('insumos')
+    .select('id, precio_referencia, precio_unitario')
+    .in('id', insumosSeleccionados.map(i => i.insumo_id))
+
+  const preciosMap = new Map(
+    (insumosData || []).map(i => [i.id, i.precio_referencia || i.precio_unitario || 0])
+  )
+
+  let costo_estimado = 0
+  const insumos = insumosSeleccionados.map(i => {
+    const precio = preciosMap.get(i.insumo_id) || 0
+    const precioEstimado = i.cantidad_estimada * precio
+    costo_estimado += precioEstimado
+
+    return {
+      insumo_id: i.insumo_id,
+      cantidad_estimada: i.cantidad_estimada,
+      precio_estimado: precioEstimado,
+    }
+  })
+
+  return { insumos, costo_estimado }
+}
+
+/**
  * Create a new OT in draft state
  * DO and JO can create OTs
+ * Supports both automatic formula-based calculation and manual insumo selection
  */
 export async function createOT(input: CreateOTInput): Promise<ActionResult<OrdenTrabajo>> {
   const supabase = await createClient()
@@ -114,12 +153,25 @@ export async function createOT(input: CreateOTInput): Promise<ActionResult<Orden
     return { success: false, error: 'Solo puede crear OTs para su obra asignada' }
   }
 
-  // Calculate estimated insumos and cost
-  const { insumos, costo_estimado } = await calculateEstimatedInsumos(
-    validation.data.rubro_id,
-    validation.data.cantidad,
-    validation.data.obra_id
-  )
+  // Determine how to calculate insumos and cost
+  let insumos: { insumo_id: string; cantidad_estimada: number; precio_estimado: number }[]
+  let costo_estimado: number
+
+  if (validation.data.insumos_seleccionados && validation.data.insumos_seleccionados.length > 0) {
+    // Use manually selected insumos
+    const result = await calculateCostFromSelectedInsumos(validation.data.insumos_seleccionados)
+    insumos = result.insumos
+    costo_estimado = result.costo_estimado
+  } else {
+    // Fallback to formula-based calculation
+    const result = await calculateEstimatedInsumos(
+      validation.data.rubro_id,
+      validation.data.cantidad || 1,
+      validation.data.obra_id
+    )
+    insumos = result.insumos
+    costo_estimado = result.costo_estimado
+  }
 
   // Create the OT
   const { data: ot, error } = await supabase
@@ -128,7 +180,7 @@ export async function createOT(input: CreateOTInput): Promise<ActionResult<Orden
       obra_id: validation.data.obra_id,
       rubro_id: validation.data.rubro_id,
       descripcion: validation.data.descripcion,
-      cantidad: validation.data.cantidad,
+      cantidad: validation.data.cantidad || 1,
       costo_estimado,
       estado: 'borrador' as OTStatus,
       created_by: profile.id,

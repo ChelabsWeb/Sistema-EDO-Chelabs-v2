@@ -676,6 +676,8 @@ export interface Database {
           orden: number | null
           orden_trabajo_id: string
           updated_at: string | null
+          cantidad: number | null
+          unidad: string | null
         }
         Insert: {
           completada?: boolean | null
@@ -685,6 +687,8 @@ export interface Database {
           orden?: number | null
           orden_trabajo_id: string
           updated_at?: string | null
+          cantidad?: number | null
+          unidad?: string | null
         }
         Update: {
           completada?: boolean | null
@@ -694,6 +698,8 @@ export interface Database {
           orden?: number | null
           orden_trabajo_id?: string
           updated_at?: string | null
+          cantidad?: number | null
+          unidad?: string | null
         }
         Relationships: [
           {
@@ -872,6 +878,133 @@ export interface Database {
           }
         ]
       }
+      plantilla_rubros: {
+        Row: {
+          id: string
+          nombre: string
+          descripcion: string | null
+          unidad: string
+          es_sistema: boolean
+          created_by: string | null
+          deleted_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          nombre: string
+          descripcion?: string | null
+          unidad?: string
+          es_sistema?: boolean
+          created_by?: string | null
+          deleted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          nombre?: string
+          descripcion?: string | null
+          unidad?: string
+          es_sistema?: boolean
+          created_by?: string | null
+          deleted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plantilla_rubros_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      plantilla_insumos: {
+        Row: {
+          id: string
+          plantilla_rubro_id: string
+          nombre: string
+          unidad: string
+          tipo: string
+          precio_referencia: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          plantilla_rubro_id: string
+          nombre: string
+          unidad: string
+          tipo?: string
+          precio_referencia?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          plantilla_rubro_id?: string
+          nombre?: string
+          unidad?: string
+          tipo?: string
+          precio_referencia?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plantilla_insumos_plantilla_rubro_id_fkey"
+            columns: ["plantilla_rubro_id"]
+            isOneToOne: false
+            referencedRelation: "plantilla_rubros"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      plantilla_formulas: {
+        Row: {
+          id: string
+          plantilla_rubro_id: string
+          plantilla_insumo_id: string
+          cantidad_por_unidad: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          plantilla_rubro_id: string
+          plantilla_insumo_id: string
+          cantidad_por_unidad?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          plantilla_rubro_id?: string
+          plantilla_insumo_id?: string
+          cantidad_por_unidad?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plantilla_formulas_plantilla_rubro_id_fkey"
+            columns: ["plantilla_rubro_id"]
+            isOneToOne: false
+            referencedRelation: "plantilla_rubros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plantilla_formulas_plantilla_insumo_id_fkey"
+            columns: ["plantilla_insumo_id"]
+            isOneToOne: false
+            referencedRelation: "plantilla_insumos"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -921,6 +1054,11 @@ export type Requisicion = Tables<'requisiciones'>
 export type RequisicionItem = Tables<'requisicion_items'>
 export type OCRequisicion = Tables<'oc_requisiciones'>
 export type Recepcion = Tables<'recepciones'>
+
+// Plantillas de Rubros (templates for rubros with insumos and formulas)
+export type PlantillaRubro = Tables<'plantilla_rubros'>
+export type PlantillaInsumo = Tables<'plantilla_insumos'>
+export type PlantillaFormula = Tables<'plantilla_formulas'>
 
 // OT History for state tracking
 export interface OTHistorial {
@@ -984,4 +1122,15 @@ export interface OrdenCompraWithRelations extends OrdenCompra {
   creador?: Pick<Usuario, 'id' | 'nombre'> | null
   lineas?: LineaOCWithInsumo[]
   requisiciones?: RequisicionWithRelations[]
+}
+
+// Plantilla insumo with formula
+export interface PlantillaInsumoWithFormula extends PlantillaInsumo {
+  formula?: PlantillaFormula | null
+}
+
+// Plantilla rubro with all details
+export interface PlantillaRubroWithDetails extends PlantillaRubro {
+  insumos?: PlantillaInsumoWithFormula[]
+  creador?: Pick<Usuario, 'id' | 'nombre'> | null
 }

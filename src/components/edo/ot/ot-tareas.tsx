@@ -10,6 +10,8 @@ interface Tarea {
   completada: boolean | null
   orden: number | null
   created_at: string | null
+  cantidad: number | null
+  unidad: string | null
 }
 
 interface OTTareasProps {
@@ -17,12 +19,15 @@ interface OTTareasProps {
   obraId: string
   tareas: Tarea[]
   canEdit: boolean
+  rubroUnidad?: string | null
 }
 
-export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTareasProps) {
+export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit, rubroUnidad }: OTTareasProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [newTarea, setNewTarea] = useState('')
+  const [newCantidad, setNewCantidad] = useState<string>('')
+  const [newUnidad, setNewUnidad] = useState<string>(rubroUnidad || '')
   const [isAdding, setIsAdding] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -38,6 +43,12 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTar
   const completadas = optimisticTareas.filter((t) => t.completada).length
   const total = optimisticTareas.length
   const progreso = total > 0 ? Math.round((completadas / total) * 100) : 0
+
+  // Calcular cantidad total de todas las tareas con cantidad
+  const cantidadTotal = optimisticTareas
+    .filter((t) => t.cantidad !== null)
+    .reduce((sum, t) => sum + (t.cantidad || 0), 0)
+  const unidadComun = optimisticTareas.find((t) => t.unidad)?.unidad || rubroUnidad
 
   const handleToggleTarea = async (tareaId: string, completada: boolean) => {
     if (!canEdit) return
@@ -73,6 +84,8 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTar
     setError(null)
 
     const supabase = createClient()
+    const cantidadNum = newCantidad ? parseFloat(newCantidad) : null
+
     const { error } = await supabase
       .from('tareas')
       .insert({
@@ -80,12 +93,16 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTar
         descripcion: newTarea.trim(),
         completada: false,
         orden: total,
+        cantidad: cantidadNum,
+        unidad: cantidadNum ? (newUnidad || rubroUnidad || null) : null,
       })
 
     if (error) {
       setError('Error al agregar la tarea')
     } else {
       setNewTarea('')
+      setNewCantidad('')
+      setNewUnidad(rubroUnidad || '')
       router.refresh()
     }
 
@@ -113,8 +130,15 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTar
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">Tareas</h2>
-          <div className="text-sm text-gray-500">
-            {completadas}/{total} completadas ({progreso}%)
+          <div className="flex items-center gap-4">
+            {cantidadTotal > 0 && (
+              <div className="text-sm font-medium text-blue-600">
+                Total: {cantidadTotal} {unidadComun}
+              </div>
+            )}
+            <div className="text-sm text-gray-500">
+              {completadas}/{total} completadas ({progreso}%)
+            </div>
           </div>
         </div>
         <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
@@ -165,13 +189,20 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTar
                       </svg>
                     )}
                   </button>
-                  <span
-                    className={`flex-1 text-sm ${
-                      tarea.completada ? 'text-gray-500 line-through' : 'text-gray-900'
-                    }`}
-                  >
-                    {tarea.descripcion}
-                  </span>
+                  <div className="flex-1">
+                    <span
+                      className={`text-sm ${
+                        tarea.completada ? 'text-gray-500 line-through' : 'text-gray-900'
+                      }`}
+                    >
+                      {tarea.descripcion}
+                    </span>
+                    {tarea.cantidad !== null && (
+                      <span className="ml-2 text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                        {tarea.cantidad} {tarea.unidad}
+                      </span>
+                    )}
+                  </div>
                   {canEdit && !tarea.completada && (
                     <button
                       type="button"
@@ -191,25 +222,47 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit }: OTTar
 
         {/* Add task form */}
         {canEdit && (
-          <form onSubmit={handleAddTarea} className="flex gap-2">
-            <input
-              type="text"
-              value={newTarea}
-              onChange={(e) => setNewTarea(e.target.value)}
-              placeholder="Nueva tarea..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <button
-              type="submit"
-              disabled={isAdding || !newTarea.trim()}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isAdding ? (
-                <span className="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
-              ) : (
-                'Agregar'
-              )}
-            </button>
+          <form onSubmit={handleAddTarea} className="space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newTarea}
+                onChange={(e) => setNewTarea(e.target.value)}
+                placeholder="Descripcion de la tarea..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2 items-center">
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={newCantidad}
+                onChange={(e) => setNewCantidad(e.target.value)}
+                placeholder="Cantidad"
+                className="w-24 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <input
+                type="text"
+                value={newUnidad}
+                onChange={(e) => setNewUnidad(e.target.value)}
+                placeholder={rubroUnidad || 'Unidad'}
+                className="w-20 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <span className="text-xs text-gray-500">(opcional)</span>
+              <div className="flex-1" />
+              <button
+                type="submit"
+                disabled={isAdding || !newTarea.trim()}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isAdding ? (
+                  <span className="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
+                ) : (
+                  'Agregar'
+                )}
+              </button>
+            </div>
           </form>
         )}
       </div>

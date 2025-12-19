@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { checkRateLimit, RateLimits, getClientIdentifier } from '@/lib/rate-limit'
 import type { Usuario, UserRole } from '@/types/database'
 
 export type AuthResult = {
@@ -28,10 +29,9 @@ function translateError(errorMessage: string): string {
 
 /**
  * Sign in with email and password
+ * Rate limited: 5 attempts per minute per email + IP
  */
 export async function signIn(formData: FormData): Promise<AuthResult> {
-  const supabase = await createClient()
-
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
@@ -41,6 +41,20 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
       error: 'Email y contraseña son requeridos',
     }
   }
+
+  // Rate limit by email + IP combination
+  const clientIp = await getClientIdentifier()
+  const rateLimitKey = `login:${email.toLowerCase()}:${clientIp}`
+  const rateLimitResult = await checkRateLimit(rateLimitKey, RateLimits.LOGIN)
+
+  if (!rateLimitResult.success) {
+    return {
+      success: false,
+      error: rateLimitResult.error || 'Demasiados intentos. Esperá unos minutos.',
+    }
+  }
+
+  const supabase = await createClient()
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
