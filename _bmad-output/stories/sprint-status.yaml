@@ -1,0 +1,104 @@
+# generated: 2025-12-19
+# project: Sistema-EDO-Chelabs-v2
+# project_key: sistema-edo-chelabs-v2
+# tracking_system: file-system
+# story_location: _bmad-output/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review
+#   - done: Story completed
+
+development_status:
+  # Epic 1: Project Foundation & Authentication
+  epic-1: done
+  1-1-project-initialization: done
+  1-2-database-schema-authentication-tables: done
+  1-3-user-login-flow: done
+  1-4-role-based-layout-system: done
+  1-5-user-management-by-do: done
+  1-6-automatic-role-based-data-filtering: done
+  epic-1-retrospective: done
+
+  # Epic 2: Obras & Configuration Management
+  epic-2: done
+  2-1-create-and-manage-obras: done
+  2-2-define-rubros-for-an-obra: done
+  2-3-manage-insumos-catalog: done
+  2-4-define-formulas-for-rubros: done
+  2-5-assign-users-to-obras: done
+  2-6-currency-conversion-ur-pesos: done
+  epic-2-retrospective: done
+
+  # Epic 3: OT Lifecycle Core
+  epic-3: done
+  3-1-create-ot-in-draft-state: done
+  3-2-do-approves-ot: done
+  3-3-jo-starts-ot-execution: done
+  3-4-jo-closes-ot: done
+  3-5-view-ot-state-history: done
+  epic-3-retrospective: done
+
+  # Epic 4: Task Execution & Evidence
+  epic-4: done
+  4-1-create-task-checklist: done
+  4-2-complete-tasks-with-optimistic-ui: done
+  4-3-calculate-ot-progress-from-tasks: done
+  4-4-upload-photos-with-timestamp: done
+  4-5-register-material-consumption: done
+  4-6-compare-consumption-vs-estimate: done
+  epic-4-retrospective: done
+
+  # Epic 5: Procurement & Receiving
+  epic-5: done
+  5-1-create-material-requisition: done
+  5-2-view-all-requisitions-compras: done
+  5-3-create-orden-de-compra: done
+  5-4-specify-oc-details: done
+  5-5-register-material-reception: done
+  5-6-alert-quantity-differences: done
+  5-7-link-oc-costs-to-ots: backlog
+  epic-5-retrospective: done
+
+  # Epic 6: Financial Control & Deviation Alerts
+  epic-6: done
+  6-1-calculate-real-ot-cost: done
+  6-2-calculate-and-display-deviation: done
+  6-3-aggregate-deviation-by-rubro: done
+  6-4-visual-deviation-alerts: done
+  6-5-close-ot-with-deviation-acknowledgment: done
+  epic-6-retrospective: done
+
+  # Epic 7: Dashboard & Visibility
+  epic-7: backlog
+  7-1-do-multi-obra-dashboard: backlog
+  7-2-physical-progress-indicators: backlog
+  7-3-budget-consumption-indicators: backlog
+  7-4-highlight-obras-with-alerts: backlog
+  7-5-drill-down-from-dashboard-to-ot: backlog
+  7-6-jo-obra-summary-view: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Data Export & Reporting
+  epic-8: backlog
+  8-1-export-ot-list-to-csv: backlog
+  8-2-export-ocs-and-recepciones-to-csv: backlog
+  8-3-export-deviation-summary-by-rubro: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9: Operational Flexibility
+  epic-9: backlog
+  9-1-accept-reception-without-prior-oc: backlog
+  9-2-approve-ot-exceeding-budget: backlog
+  9-3-link-oc-to-ot-retroactively: backlog
+  9-4-record-out-of-sequence-operations: backlog
+  epic-9-retrospective: optional

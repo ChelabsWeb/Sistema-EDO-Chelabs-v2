@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "SlashCommand(/bmad:bmm:workflows:workflow-init)",
+      "Bash(dir /b \"c:\\Users\\Estudiante UCU\\Desktop\\Sistema-EDO-Chelabs-v2\")",
+      "Bash(mkdir:*)",
+      "SlashCommand(/bmad:bmm:agents:analyst)",
+      "SlashCommand(/bmad:bmm:workflows:create-prd)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --yes)",
+      "SlashCommand(/bmad:bmm:workflows:create-ux-design)",
+      "Bash(claude mcp add:*)",
+      "Bash(claude mcp list:*)",
+      "Bash(claude mcp call:*)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__generate_typescript_types",
+      "Bash(npx tsc --noEmit)",
+      "mcp__supabase__get_advisors",
+      "Bash(dir /b \"C:\\\\Users\\\\Estudiante UCU\\\\Desktop\\\\Sistema-EDO-Chelabs-v2\\\\src\\\\app\")",
+      "Bash(npm run build:*)",
+      "Bash(ls:*)",
+      "mcp__supabase__execute_sql",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(cat:*)",
+      "mcp__supabase__deploy_edge_function",
+      "WebFetch(domain:okywobvelfvyhnzvjycm.supabase.co)",
+      "Bash(curl:*)",
+      "Bash(dir:*)",
+      "Bash(move:*)",
+      "SlashCommand(/bmad:bmm:workflows:retrospective)",
+      "Bash(find:*)",
+      "SlashCommand(/bmad:bmm:workflows:create-story)",
+      "Bash(wc:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(timeout /t 5)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "mcp__supabase__get_logs",
+      "Skill(bmad:bmm:workflows:retrospective)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}
