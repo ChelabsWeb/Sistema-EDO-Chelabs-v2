@@ -12,12 +12,75 @@
 | Epic | Stories | Estado | Observaciones |
 |------|---------|--------|---------------|
 | Epic 1: Project Foundation & Authentication | 6/6 | DONE | Base sólida |
-| Epic 2: Obras & Configuration Management | 6/6 | DONE | Necesita plantillas |
+| Epic 2: Obras & Configuration Management | 6/6 | DONE | Simplificado: fórmulas eliminadas |
 | Epic 3: OT Lifecycle Core | 5/5 | DONE | Funciona bien |
 | Epic 4: Task Execution & Evidence | 6/6 | DONE | Falta offline real |
 | Epic 5: Procurement & Receiving | 6/7 | DONE | 1 story en backlog |
 | Epic 6: Financial Control & Deviation Alerts | 5/5 | DONE | Completo |
 | **TOTAL** | **34/35** | **97%** | |
+
+---
+
+## ADDENDUM: Simplificación Arquitectónica (2025-12-22)
+
+### Decisión: Eliminación del Sistema de Fórmulas
+
+**Contexto:**
+Durante una revisión del sistema, se identificó que las fórmulas de rubros eran complejidad innecesaria. El control presupuestario funciona 100% con los insumos seleccionados manualmente en cada OT.
+
+**Análisis:**
+
+```
+ANTES (con fórmulas):
+Rubro → Fórmula predefinida → Insumos sugeridos → OT
+       (mantenimiento extra)   (rigidez)
+
+DESPUÉS (sin fórmulas):
+Rubro → Usuario selecciona insumos → OT
+        (flexibilidad total)
+```
+
+**Por qué funcionaba igual sin fórmulas:**
+- `getRubroBudgetStatus()` suma costos de OTs del rubro
+- El cálculo NO dependía de las fórmulas en absoluto
+- Los insumos se seleccionan manualmente en `InsumoSelector`
+- El costo estimado se calcula desde los insumos seleccionados
+
+**Archivos Eliminados:**
+- `src/app/(dashboard)/obras/[id]/rubros/[rubroId]/formula/page.tsx`
+- `src/app/api/rubros/[rubroId]/formula/route.ts`
+- `src/app/actions/formulas.ts`
+- `src/lib/validations/formulas.ts`
+
+**Código Simplificado:**
+- `src/app/actions/ordenes-trabajo.ts` - Eliminada `calculateEstimatedInsumos()`
+- `src/app/(dashboard)/obras/[id]/page.tsx` - Eliminado enlace "Ver/Editar Fórmula"
+- `src/components/edo/ot/ot-create-form.tsx` - Simplificado flujo
+- `src/components/edo/ot/insumo-selector.tsx` - Eliminada lógica de sugerencias
+
+**Impacto en Propuesta de Plantillas:**
+La propuesta original de "Plantillas de Rubros" incluía `plantilla_formulas`. Con la eliminación de fórmulas, la propuesta se simplifica a:
+
+```
+plantilla_rubros
+├── id
+├── nombre (ej: "Electricidad Básica")
+├── unidad
+├── descripcion
+├── es_sistema (boolean)
+├── created_by (nullable)
+
+plantilla_insumos
+├── id
+├── plantilla_rubro_id
+├── nombre (ej: "Cable 2.5mm")
+├── unidad
+├── tipo (material/mano_de_obra)
+├── precio_referencia
+```
+
+**Lección Aprendida:**
+> "Antes de agregar complejidad (fórmulas), verificar si la funcionalidad base ya resuelve el problema."
 
 ---
 
@@ -48,64 +111,36 @@
 - CRUD completo de Obras
 - Rubros con presupuesto en Unidades Reajustables (UR)
 - Catálogo de insumos (material/mano_de_obra)
-- Fórmulas por rubro (insumo + cantidad por unidad)
+- ~~Fórmulas por rubro (insumo + cantidad por unidad)~~ **ELIMINADO 2025-12-22**
 - Asignación de usuarios a obras
 - Conversión UR/Pesos con cotización configurable
 
-### Problema Principal Identificado
+### Simplificación Realizada
 
-**FALTA: Plantillas de Rubros Predefinidas**
+Las fórmulas fueron eliminadas porque:
+1. El usuario selecciona insumos manualmente en cada OT
+2. El control presupuestario suma costos de OTs, no de fórmulas
+3. Mayor flexibilidad sin la rigidez de fórmulas predefinidas
 
-Actualmente:
-```
-Obra Nueva → Crear Rubro manualmente → Definir Fórmulas una por una → Agregar insumos uno por uno
-```
-
-Esto significa que si creás "Electricidad" en Obra A con 10 insumos, y después creás Obra B, tenés que configurar todo de nuevo.
-
-### Mejora Propuesta: Catálogo de Plantillas
+### Mejora Propuesta Actualizada: Catálogo de Plantillas (Simplificado)
 
 **Estado Deseado:**
 ```
-Obra Nueva → Seleccionar Plantilla "Electricidad" → Rubro + Fórmulas + Insumos automáticamente
+Obra Nueva → Seleccionar Plantilla → Rubro + Insumos pre-cargados (editables)
 ```
 
-**Modelo de Datos Propuesto:**
+**Modelo Simplificado:**
 
 ```
 plantilla_rubros
-├── id
-├── nombre (ej: "Electricidad Básica", "Plomería Estándar")
-├── unidad
-├── descripcion
-├── es_sistema (boolean) - true = plantilla del sistema, false = del DO
-├── created_by (nullable) - null si es del sistema, user_id si es del DO
+├── id, nombre, unidad, descripcion
+├── es_sistema (boolean)
+├── created_by (nullable)
 
 plantilla_insumos
-├── id
-├── plantilla_rubro_id
-├── nombre (ej: "Cable 2.5mm", "Tomacorriente doble")
-├── unidad
-├── tipo (material/mano_de_obra)
-├── precio_referencia
-
-plantilla_formulas
-├── id
-├── plantilla_rubro_id
-├── plantilla_insumo_id
-├── cantidad_por_unidad (ej: 15 metros de cable por punto)
+├── id, plantilla_rubro_id
+├── nombre, unidad, tipo, precio_referencia
 ```
-
-**Permisos Definidos:**
-- Plantillas del sistema: Solo admin puede crear/editar
-- Plantillas personales: Cada DO puede crear las suyas (reutilizables entre sus obras)
-
-**Flujo de Uso:**
-1. DO va a crear un rubro en una obra
-2. Sistema muestra: "Crear desde cero" o "Usar plantilla"
-3. Si elige plantilla, ve lista de plantillas (sistema + suyas)
-4. Al seleccionar, se copian: rubro, insumos (si no existen), fórmulas
-5. DO puede modificar cantidades/precios después
 
 ---
 
@@ -113,7 +148,7 @@ plantilla_formulas
 
 ### Lo Que Salió Bien
 - Ciclo completo: BORRADOR → APROBADA → EN_EJECUCIÓN → CERRADA
-- Auto-cálculo de insumos desde fórmulas del rubro
+- ~~Auto-cálculo de insumos desde fórmulas del rubro~~ → Selección manual de insumos
 - Sistema de acknowledgment para presupuestos excedidos
 - Filosofía "alertar, no bloquear" implementada
 - Historial completo con timestamps y usuario
@@ -221,6 +256,7 @@ plantilla_formulas
 | Soft Delete | `deleted_at` con papelera y restauración | Entidades principales |
 | Permisos Granulares | Verificación server-side en cada action | `src/lib/auth/permissions.ts` |
 | Historial | Trazabilidad de cambios de estado | `ot_historial` table |
+| **Simplicidad** | Eliminar complejidad innecesaria (fórmulas) | Arquitectura general |
 
 ---
 
@@ -237,12 +273,12 @@ plantilla_formulas
 
 ## Mejoras Propuestas
 
-### 1. Plantillas de Rubros (PRIORIDAD ALTA)
+### 1. Plantillas de Rubros (PRIORIDAD ALTA) - SIMPLIFICADO
 
 **Problema:** Configuración manual repetitiva entre obras
-**Solución:** Catálogo de plantillas con rubros + fórmulas + insumos predefinidos
+**Solución:** Catálogo de plantillas con rubros + insumos predefinidos (SIN fórmulas)
 **Alcance:**
-- 3 nuevas tablas de base de datos
+- 2 nuevas tablas de base de datos (no 3, ya no hay `plantilla_formulas`)
 - Server Actions para CRUD de plantillas
 - UI en `/admin/plantillas`
 - Modificar UI de creación de rubros
@@ -276,7 +312,7 @@ plantilla_formulas
 
 ## Próximos Pasos Recomendados
 
-1. **INMEDIATO:** Implementar Plantillas de Rubros antes de Epic 7
+1. **INMEDIATO:** Implementar Plantillas de Rubros (simplificadas, sin fórmulas)
 2. **Epic 7:** Dashboard & Visibility (ya planificado)
 3. **Paralelo:** Agregar tests para nuevas funcionalidades
 4. **Futuro:** Evaluar soporte offline según feedback de JOs
@@ -296,15 +332,18 @@ plantilla_formulas
 | Tablas DB | ~15 |
 | Migraciones | ~10 |
 | Test Coverage | 0% (pendiente) |
+| **Código Eliminado** | ~4 archivos (fórmulas) |
 
 ---
 
 ## Firma
 
-**Retrospectiva completada:** 2025-12-19
+**Retrospectiva original:** 2025-12-19
+**Addendum simplificación:** 2025-12-22
 **Próximo epic planificado:** Epic 7 - Dashboard & Visibility
-**Mejora prioritaria:** Plantillas de Rubros con Fórmulas e Insumos
+**Mejora prioritaria:** Plantillas de Rubros (simplificadas, sin fórmulas)
 
 ---
 
 *Documento generado durante sesión de retrospectiva con equipo BMAD*
+*Actualizado con decisión arquitectónica de eliminar fórmulas*

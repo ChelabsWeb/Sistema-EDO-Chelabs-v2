@@ -5,8 +5,9 @@ import { formatPesos, formatUR, convertURtoPesos } from '@/lib/utils/currency'
 import { getCotizacionUR } from '@/app/actions/configuracion'
 import { getDeviationsByRubro } from '@/app/actions/costos'
 import { DeleteObraButton } from '@/components/edo/obra/delete-obra-button'
-import { DeleteRubroButton } from '@/components/edo/rubro/delete-rubro-button'
 import { RubroDeviations } from '@/components/edo/costos/rubro-deviations'
+import { RubrosList } from '@/components/edo/rubros'
+import type { UserRole } from '@/types/database'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -167,80 +168,12 @@ export default async function ObraDetailPage({ params }: Props) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Rubros */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Rubros</h2>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {rubros?.filter(r => r.es_predefinido).length || 0} predefinidos, {rubros?.filter(r => !r.es_predefinido).length || 0} personalizados
-                </p>
-              </div>
-              <Link
-                href={`/obras/${id}/rubros/nuevo`}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
-                + Agregar Personalizado
-              </Link>
-            </div>
-            <div className="p-6">
-              {rubros && rubros.length > 0 ? (
-                <div className="space-y-3">
-                  {rubros.map((rubro) => (
-                    <div
-                      key={rubro.id}
-                      className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0"
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-900 font-medium">{rubro.nombre}</span>
-                          <span className="text-sm text-gray-500">({rubro.unidad})</span>
-                          {!rubro.es_predefinido && (
-                            <span className="px-1.5 py-0.5 text-xs bg-purple-100 text-purple-700 rounded">
-                              personalizado
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1 flex gap-3">
-                          <Link
-                            href={`/obras/${id}/rubros/${rubro.id}/formula`}
-                            className="text-xs text-blue-600 hover:text-blue-800"
-                          >
-                            Ver/Editar Formula
-                          </Link>
-                          <Link
-                            href={`/obras/${id}/rubros/${rubro.id}/editar`}
-                            className="text-xs text-gray-600 hover:text-gray-800"
-                          >
-                            Editar Presupuesto
-                          </Link>
-                          <DeleteRubroButton rubroId={rubro.id} rubroNombre={rubro.nombre} />
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium text-gray-900">
-                          {formatUR(rubro.presupuesto_ur)}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {formatPesos(convertURtoPesos(rubro.presupuesto_ur || 0, cotizacion))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 mb-4">No hay rubros definidos</p>
-                  <Link
-                    href={`/obras/${id}/rubros/nuevo`}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Agregar primer rubro
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Rubros - Interactive expandable list */}
+          <RubrosList
+            obraId={id}
+            userRole={(profile?.rol || 'jefe_obra') as UserRole}
+            valorUr={cotizacion}
+          />
 
           {/* Ultimas OTs */}
           <div className="bg-white rounded-lg shadow">

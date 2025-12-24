@@ -38,54 +38,7 @@ async function getCurrentUserProfile() {
 }
 
 /**
- * Calculate estimated insumos and cost from formula
- */
-async function calculateEstimatedInsumos(
-  rubroId: string,
-  cantidad: number,
-  obraId: string
-): Promise<{ insumos: { insumo_id: string; cantidad_estimada: number; precio_estimado: number }[]; costo_estimado: number }> {
-  const supabase = await createClient()
-
-  // Get formula items for this rubro
-  const { data: formulas } = await supabase
-    .from('formulas')
-    .select(`
-      insumo_id,
-      cantidad_por_unidad,
-      insumos (
-        id,
-        precio_referencia,
-        precio_unitario
-      )
-    `)
-    .eq('rubro_id', rubroId)
-
-  if (!formulas || formulas.length === 0) {
-    return { insumos: [], costo_estimado: 0 }
-  }
-
-  let costo_estimado = 0
-  const insumos = formulas.map((f) => {
-    const insumo = f.insumos as { id: string; precio_referencia: number | null; precio_unitario: number | null } | null
-    const cantidadEstimada = (f.cantidad_por_unidad || 0) * cantidad
-    const precio = insumo?.precio_referencia || insumo?.precio_unitario || 0
-    const precioEstimado = cantidadEstimada * precio
-
-    costo_estimado += precioEstimado
-
-    return {
-      insumo_id: f.insumo_id,
-      cantidad_estimada: cantidadEstimada,
-      precio_estimado: precioEstimado,
-    }
-  })
-
-  return { insumos, costo_estimado }
-}
-
-/**
- * Calculate cost from manually selected insumos
+ * Calculate cost from selected insumos
  */
 async function calculateCostFromSelectedInsumos(
   insumosSeleccionados: { insumo_id: string; cantidad_estimada: number }[]
@@ -125,7 +78,7 @@ async function calculateCostFromSelectedInsumos(
 /**
  * Create a new OT in draft state
  * DO and JO can create OTs
- * Supports both automatic formula-based calculation and manual insumo selection
+ * Insumos are selected manually by the user
  */
 export async function createOT(input: CreateOTInput): Promise<ActionResult<OrdenTrabajo>> {
   const supabase = await createClient()
@@ -153,25 +106,10 @@ export async function createOT(input: CreateOTInput): Promise<ActionResult<Orden
     return { success: false, error: 'Solo puede crear OTs para su obra asignada' }
   }
 
-  // Determine how to calculate insumos and cost
-  let insumos: { insumo_id: string; cantidad_estimada: number; precio_estimado: number }[]
-  let costo_estimado: number
-
-  if (validation.data.insumos_seleccionados && validation.data.insumos_seleccionados.length > 0) {
-    // Use manually selected insumos
-    const result = await calculateCostFromSelectedInsumos(validation.data.insumos_seleccionados)
-    insumos = result.insumos
-    costo_estimado = result.costo_estimado
-  } else {
-    // Fallback to formula-based calculation
-    const result = await calculateEstimatedInsumos(
-      validation.data.rubro_id,
-      validation.data.cantidad || 1,
-      validation.data.obra_id
-    )
-    insumos = result.insumos
-    costo_estimado = result.costo_estimado
-  }
+  // Calculate cost from selected insumos
+  const { insumos, costo_estimado } = await calculateCostFromSelectedInsumos(
+    validation.data.insumos_seleccionados || []
+  )
 
   // Create the OT
   const { data: ot, error } = await supabase
@@ -261,16 +199,12 @@ export async function updateOT(input: UpdateOTInput): Promise<ActionResult<Orden
     return { success: false, error: 'Solo se pueden editar OTs en estado borrador' }
   }
 
-  const { id, ...updateData } = validation.data
+  const { id, insumos_seleccionados, ...updateData } = validation.data
 
-  // If cantidad or rubro changed, recalculate estimates
+  // Recalculate cost if insumos changed
   let newCostoEstimado = currentOT.costo_estimado
-  if (updateData.cantidad || updateData.rubro_id) {
-    const { insumos, costo_estimado } = await calculateEstimatedInsumos(
-      updateData.rubro_id || currentOT.rubro_id,
-      updateData.cantidad || currentOT.cantidad,
-      currentOT.obra_id
-    )
+  if (insumos_seleccionados) {
+    const { insumos, costo_estimado } = await calculateCostFromSelectedInsumos(insumos_seleccionados)
     newCostoEstimado = costo_estimado
 
     // Delete old estimated insumos and insert new ones

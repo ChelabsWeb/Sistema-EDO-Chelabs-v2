@@ -3,7 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { checkRateLimit, RateLimits, getClientIdentifier } from '@/lib/rate-limit'
+import { checkRateLimit, getClientIdentifier } from '@/lib/rate-limit'
+import { RateLimits } from '@/lib/rate-limit-config'
 import type { Usuario, UserRole } from '@/types/database'
 
 export type AuthResult = {

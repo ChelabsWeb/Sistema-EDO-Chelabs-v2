@@ -13,14 +13,6 @@ interface Rubro {
   presupuesto: number
 }
 
-interface FormulaItem {
-  insumo_id: string
-  nombre: string
-  unidad: string
-  cantidad_por_unidad: number
-  precio_referencia: number
-}
-
 interface InsumoObra {
   id: string
   nombre: string
@@ -44,7 +36,6 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
   const [selectedRubroId, setSelectedRubroId] = useState('')
   const [descripcion, setDescripcion] = useState('')
 
-  const [formulaItems, setFormulaItems] = useState<FormulaItem[]>([])
   const [insumosSeleccionados, setInsumosSeleccionados] = useState<InsumoSeleccionado[]>([])
   const [costoEstimado, setCostoEstimado] = useState(0)
   const [budgetStatus, setBudgetStatus] = useState<{
@@ -53,43 +44,32 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
     disponible: number
     porcentaje_usado: number
   } | null>(null)
-  const [isLoadingFormula, setIsLoadingFormula] = useState(false)
+  const [isLoadingBudget, setIsLoadingBudget] = useState(false)
 
-  const selectedRubro = rubros.find((r) => r.id === selectedRubroId)
-
-  // Load formula when rubro changes
+  // Load budget status when rubro changes
   useEffect(() => {
-    async function loadFormula() {
+    async function loadBudgetStatus() {
       if (!selectedRubroId) {
-        setFormulaItems([])
         setCostoEstimado(0)
         setBudgetStatus(null)
         setInsumosSeleccionados([])
         return
       }
 
-      setIsLoadingFormula(true)
+      setIsLoadingBudget(true)
       try {
-        // Fetch formula items from the server
-        const response = await fetch(`/api/rubros/${selectedRubroId}/formula`)
-        if (response.ok) {
-          const data = await response.json()
-          setFormulaItems(data.items || [])
-        }
-
-        // Get budget status
         const budgetResult = await getRubroBudgetStatus(selectedRubroId)
         if (budgetResult.success) {
           setBudgetStatus(budgetResult.data)
         }
       } catch {
-        console.error('Error loading formula')
+        console.error('Error loading budget status')
       } finally {
-        setIsLoadingFormula(false)
+        setIsLoadingBudget(false)
       }
     }
 
-    loadFormula()
+    loadBudgetStatus()
   }, [selectedRubroId])
 
   // Handle insumos selection change
@@ -116,7 +96,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
         obra_id: obraId,
         rubro_id: selectedRubroId,
         descripcion,
-        cantidad: 1, // Default, now we use insumos instead
+        cantidad: 1,
         insumos_seleccionados: insumosParaEnviar.length > 0 ? insumosParaEnviar : undefined,
       })
 
@@ -205,7 +185,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
       {/* Descripcion */}
       <div>
         <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-1">
-          Descripción *
+          Descripcion *
         </label>
         <textarea
           id="descripcion"
@@ -224,11 +204,9 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
       {selectedRubroId && (
         <InsumoSelector
           obraId={obraId}
-          rubroId={selectedRubroId}
-          formulaItems={formulaItems}
           insumosObra={insumosObra}
           onChange={handleInsumosChange}
-          isLoading={isLoadingFormula}
+          isLoading={isLoadingBudget}
         />
       )}
 
@@ -261,7 +239,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
               <p className="text-sm text-yellow-700 mt-1">
                 Esta OT excede el presupuesto disponible del rubro por{' '}
                 <strong>{formatPesos(costoEstimado - (budgetStatus?.disponible || 0))}</strong>.
-                Puede continuar, pero requerirá aprobación del Director de Obra.
+                Puede continuar, pero requerira aprobacion del Director de Obra.
               </p>
             </div>
           </div>

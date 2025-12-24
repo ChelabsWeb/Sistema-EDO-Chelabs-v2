@@ -34,6 +34,7 @@ export const updateOTSchema = z.object({
     .min(0.01, 'La cantidad debe ser mayor a 0')
     .optional(),
   rubro_id: z.string().uuid('ID de rubro inválido').optional(),
+  insumos_seleccionados: z.array(insumoSeleccionadoSchema).optional(),
 })
 
 export const changeOTStatusSchema = z.object({

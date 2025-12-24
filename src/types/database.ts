@@ -25,9 +25,6 @@ export type OTStatus = 'borrador' | 'aprobada' | 'en_ejecucion' | 'cerrada';
 /** OC status */
 export type OCStatus = 'pendiente' | 'enviada' | 'recibida_parcial' | 'recibida_completa' | 'cancelada';
 
-/** Requisicion status */
-export type RequisicionEstado = 'pendiente' | 'en_proceso' | 'completada' | 'cancelada';
-
 /** Insumo type: material or labor */
 export type InsumoTipo = 'material' | 'mano_de_obra';
 
@@ -451,6 +448,7 @@ export interface Database {
           id: string
           numero: number
           obra_id: string
+          ot_id: string | null
           proveedor: string | null
           rut_proveedor: string | null
           total: number | null
@@ -467,6 +465,7 @@ export interface Database {
           id?: string
           numero?: number
           obra_id: string
+          ot_id?: string | null
           proveedor?: string | null
           rut_proveedor?: string | null
           total?: number | null
@@ -483,6 +482,7 @@ export interface Database {
           id?: string
           numero?: number
           obra_id?: string
+          ot_id?: string | null
           proveedor?: string | null
           rut_proveedor?: string | null
           total?: number | null
@@ -755,129 +755,6 @@ export interface Database {
           }
         ]
       }
-      requisiciones: {
-        Row: {
-          id: string
-          ot_id: string
-          estado: RequisicionEstado
-          notas: string | null
-          created_by: string
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          ot_id: string
-          estado?: RequisicionEstado
-          notas?: string | null
-          created_by: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          ot_id?: string
-          estado?: RequisicionEstado
-          notas?: string | null
-          created_by?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "requisiciones_ot_id_fkey"
-            columns: ["ot_id"]
-            isOneToOne: false
-            referencedRelation: "ordenes_trabajo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "requisiciones_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      requisicion_items: {
-        Row: {
-          id: string
-          requisicion_id: string
-          insumo_id: string
-          cantidad: number
-          notas: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          requisicion_id: string
-          insumo_id: string
-          cantidad: number
-          notas?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          requisicion_id?: string
-          insumo_id?: string
-          cantidad?: number
-          notas?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "requisicion_items_requisicion_id_fkey"
-            columns: ["requisicion_id"]
-            isOneToOne: false
-            referencedRelation: "requisiciones"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "requisicion_items_insumo_id_fkey"
-            columns: ["insumo_id"]
-            isOneToOne: false
-            referencedRelation: "insumos"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      oc_requisiciones: {
-        Row: {
-          id: string
-          orden_compra_id: string
-          requisicion_id: string
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          orden_compra_id: string
-          requisicion_id: string
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          orden_compra_id?: string
-          requisicion_id?: string
-          created_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oc_requisiciones_orden_compra_id_fkey"
-            columns: ["orden_compra_id"]
-            isOneToOne: false
-            referencedRelation: "ordenes_compra"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "oc_requisiciones_requisicion_id_fkey"
-            columns: ["requisicion_id"]
-            isOneToOne: false
-            referencedRelation: "requisiciones"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       plantilla_rubros: {
         Row: {
           id: string
@@ -1005,6 +882,42 @@ export interface Database {
           }
         ]
       }
+      rubro_insumos: {
+        Row: {
+          id: string
+          rubro_id: string
+          insumo_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          rubro_id: string
+          insumo_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          rubro_id?: string
+          insumo_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rubro_insumos_rubro_id_fkey"
+            columns: ["rubro_id"]
+            isOneToOne: false
+            referencedRelation: "rubros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rubro_insumos_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumos"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1050,9 +963,6 @@ export type OrdenCompra = Tables<'ordenes_compra'>
 export type LineaOC = Tables<'lineas_oc'>
 export type OTFoto = Tables<'ot_fotos'>
 export type ConsumoMaterial = Tables<'consumo_materiales'>
-export type Requisicion = Tables<'requisiciones'>
-export type RequisicionItem = Tables<'requisicion_items'>
-export type OCRequisicion = Tables<'oc_requisiciones'>
 export type Recepcion = Tables<'recepciones'>
 
 // Plantillas de Rubros (templates for rubros with insumos and formulas)
@@ -1098,18 +1008,6 @@ export interface OrdenTrabajoWithRelations extends OrdenTrabajo {
   historial?: OTHistorial[]
 }
 
-// Requisicion item with insumo details
-export interface RequisicionItemWithInsumo extends RequisicionItem {
-  insumo?: Pick<Insumo, 'id' | 'nombre' | 'unidad' | 'tipo'> | null
-}
-
-// Requisicion with relations
-export interface RequisicionWithRelations extends Requisicion {
-  ot?: Pick<OrdenTrabajo, 'id' | 'numero' | 'descripcion' | 'obra_id'> | null
-  items?: RequisicionItemWithInsumo[]
-  creador?: Pick<Usuario, 'id' | 'nombre'> | null
-}
-
 // Linea OC with insumo details
 export interface LineaOCWithInsumo extends LineaOC {
   insumo?: Pick<Insumo, 'id' | 'nombre' | 'unidad' | 'tipo'> | null
@@ -1119,18 +1017,32 @@ export interface LineaOCWithInsumo extends LineaOC {
 // Orden de Compra with relations
 export interface OrdenCompraWithRelations extends OrdenCompra {
   obra?: Pick<Obra, 'id' | 'nombre'> | null
+  ot?: Pick<OrdenTrabajo, 'id' | 'numero' | 'descripcion'> | null
   creador?: Pick<Usuario, 'id' | 'nombre'> | null
   lineas?: LineaOCWithInsumo[]
-  requisiciones?: RequisicionWithRelations[]
-}
-
-// Plantilla insumo with formula
-export interface PlantillaInsumoWithFormula extends PlantillaInsumo {
-  formula?: PlantillaFormula | null
 }
 
 // Plantilla rubro with all details
+// Note: Formulas removed from architecture - insumos are selected manually per OT
 export interface PlantillaRubroWithDetails extends PlantillaRubro {
-  insumos?: PlantillaInsumoWithFormula[]
+  insumos?: PlantillaInsumo[]
   creador?: Pick<Usuario, 'id' | 'nombre'> | null
+}
+
+// Rubro-Insumo vinculacion (organizacional, no afecta costos)
+export interface RubroInsumo {
+  id: string
+  rubro_id: string
+  insumo_id: string
+  created_at: string
+}
+
+// Rubro with linked insumos for expandable UI
+export interface RubroWithInsumos extends Rubro {
+  insumos: Insumo[]
+  presupuesto_status?: {
+    gastado: number
+    disponible: number
+    porcentaje_usado: number
+  }
 }

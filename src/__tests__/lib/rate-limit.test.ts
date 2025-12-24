@@ -8,7 +8,8 @@ vi.mock('next/headers', () => ({
 }))
 
 // Import after mocking
-import { checkRateLimit, RateLimits, type RateLimitConfig } from '@/lib/rate-limit'
+import { checkRateLimit, type RateLimitConfig } from '@/lib/rate-limit'
+import { RateLimits } from '@/lib/rate-limit-config'
 
 describe('Rate Limiter', () => {
   beforeEach(() => {

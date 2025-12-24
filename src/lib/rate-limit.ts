@@ -7,6 +7,13 @@
  * This implementation works well for single-instance deployments
  */
 
+import type { RateLimitConfig, RateLimitResult } from './rate-limit-config'
+
+// Re-export types for convenience (types are fine in 'use server' files)
+export type { RateLimitConfig, RateLimitResult }
+// Note: RateLimits must be imported directly from './rate-limit-config'
+// because 'use server' files can only export async functions
+
 interface RateLimitEntry {
   count: number
   resetTime: number
@@ -32,20 +39,6 @@ function scheduleCleanup() {
       }
     }
   }, CLEANUP_INTERVAL)
-}
-
-export interface RateLimitConfig {
-  /** Maximum number of requests allowed in the window */
-  limit: number
-  /** Time window in seconds */
-  windowSeconds: number
-}
-
-export interface RateLimitResult {
-  success: boolean
-  remaining: number
-  resetIn: number // seconds until reset
-  error?: string
 }
 
 /**
@@ -112,29 +105,6 @@ export async function checkRateLimit(
 }
 
 /**
- * Pre-configured rate limiters for common use cases
- */
-export const RateLimits = {
-  /** Login attempts: 5 per minute per email */
-  LOGIN: { limit: 5, windowSeconds: 60 },
-
-  /** Password reset: 3 per 15 minutes per email */
-  PASSWORD_RESET: { limit: 3, windowSeconds: 900 },
-
-  /** API mutations: 30 per minute per user */
-  MUTATION: { limit: 30, windowSeconds: 60 },
-
-  /** API reads: 100 per minute per user */
-  READ: { limit: 100, windowSeconds: 60 },
-
-  /** File uploads: 10 per minute per user */
-  UPLOAD: { limit: 10, windowSeconds: 60 },
-
-  /** Expensive operations: 5 per minute per user */
-  EXPENSIVE: { limit: 5, windowSeconds: 60 },
-} as const
-
-/**
  * Helper to get client IP from headers (for use in Server Actions)
  * Note: In production, ensure your proxy sets X-Forwarded-For correctly
  */
@@ -170,18 +140,18 @@ export async function getClientIdentifier(): Promise<string> {
  *
  * @example
  * ```ts
- * const rateLimitedLogin = withRateLimit(
+ * const rateLimitedLogin = await withRateLimit(
  *   async (email: string) => { ... },
  *   (email) => `login:${email}`,
  *   RateLimits.LOGIN
  * )
  * ```
  */
-export function withRateLimit<TArgs extends unknown[], TResult>(
+export async function withRateLimit<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => Promise<TResult>,
   getIdentifier: (...args: TArgs) => string,
   config: RateLimitConfig
-) {
+): Promise<(...args: TArgs) => Promise<TResult | { success: false; error: string }>> {
   return async (...args: TArgs): Promise<TResult | { success: false; error: string }> => {
     const identifier = getIdentifier(...args)
     const rateLimitResult = await checkRateLimit(identifier, config)

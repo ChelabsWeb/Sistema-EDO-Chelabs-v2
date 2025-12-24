@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { formatPesos } from '@/lib/utils/currency'
 
 export interface InsumoSeleccionado {
@@ -9,16 +9,6 @@ export interface InsumoSeleccionado {
   unidad: string
   cantidad: number
   precio_unitario: number
-  seleccionado: boolean
-  es_sugerido: boolean // true si viene de la fórmula del rubro
-}
-
-interface FormulaItem {
-  insumo_id: string
-  nombre: string
-  unidad: string
-  cantidad_por_unidad: number
-  precio_referencia: number
 }
 
 interface InsumoObra {
@@ -32,49 +22,22 @@ interface InsumoObra {
 
 interface InsumoSelectorProps {
   obraId: string
-  rubroId: string
-  formulaItems: FormulaItem[]
   insumosObra: InsumoObra[]
   onChange: (insumos: InsumoSeleccionado[]) => void
+  initialInsumos?: InsumoSeleccionado[]
   isLoading?: boolean
 }
 
 export function InsumoSelector({
   obraId,
-  rubroId,
-  formulaItems,
   insumosObra,
   onChange,
+  initialInsumos = [],
   isLoading = false,
 }: InsumoSelectorProps) {
-  const [insumos, setInsumos] = useState<InsumoSeleccionado[]>([])
+  const [insumos, setInsumos] = useState<InsumoSeleccionado[]>(initialInsumos)
   const [showAddInsumo, setShowAddInsumo] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-
-  // Initialize insumos from formula items when they change
-  useEffect(() => {
-    if (formulaItems.length === 0) {
-      setInsumos([])
-      return
-    }
-
-    const nuevosInsumos: InsumoSeleccionado[] = formulaItems.map((item) => ({
-      insumo_id: item.insumo_id,
-      nombre: item.nombre,
-      unidad: item.unidad,
-      cantidad: item.cantidad_por_unidad, // Default to formula amount
-      precio_unitario: item.precio_referencia,
-      seleccionado: true, // Pre-selected by default
-      es_sugerido: true,
-    }))
-
-    setInsumos(nuevosInsumos)
-  }, [formulaItems])
-
-  // Notify parent when insumos change
-  useEffect(() => {
-    onChange(insumos.filter((i) => i.seleccionado))
-  }, [insumos, onChange])
 
   // Available insumos to add (not already in the list)
   const insumosDisponibles = useMemo(() => {
@@ -88,12 +51,11 @@ export function InsumoSelector({
 
   // Calculate totals
   const totales = useMemo(() => {
-    const seleccionados = insumos.filter((i) => i.seleccionado)
-    const materiales = seleccionados.filter((i) => {
+    const materiales = insumos.filter((i) => {
       const insumoObra = insumosObra.find((io) => io.id === i.insumo_id)
       return insumoObra?.tipo === 'material'
     })
-    const manoDeObra = seleccionados.filter((i) => {
+    const manoDeObra = insumos.filter((i) => {
       const insumoObra = insumosObra.find((io) => io.id === i.insumo_id)
       return insumoObra?.tipo === 'mano_de_obra'
     })
@@ -111,24 +73,20 @@ export function InsumoSelector({
       total: costoMateriales + costoManoDeObra,
       materiales: costoMateriales,
       manoDeObra: costoManoDeObra,
-      cantidadSeleccionados: seleccionados.length,
+      cantidadSeleccionados: insumos.length,
     }
   }, [insumos, insumosObra])
 
-  const toggleInsumo = (insumoId: string) => {
-    setInsumos((prev) =>
-      prev.map((i) =>
-        i.insumo_id === insumoId ? { ...i, seleccionado: !i.seleccionado } : i
-      )
-    )
+  const updateInsumos = (nuevosInsumos: InsumoSeleccionado[]) => {
+    setInsumos(nuevosInsumos)
+    onChange(nuevosInsumos)
   }
 
   const updateCantidad = (insumoId: string, cantidad: number) => {
-    setInsumos((prev) =>
-      prev.map((i) =>
-        i.insumo_id === insumoId ? { ...i, cantidad: Math.max(0, cantidad) } : i
-      )
+    const nuevosInsumos = insumos.map((i) =>
+      i.insumo_id === insumoId ? { ...i, cantidad: Math.max(0, cantidad) } : i
     )
+    updateInsumos(nuevosInsumos)
   }
 
   const addInsumo = (insumoObra: InsumoObra) => {
@@ -138,30 +96,14 @@ export function InsumoSelector({
       unidad: insumoObra.unidad,
       cantidad: 1,
       precio_unitario: insumoObra.precio_referencia || insumoObra.precio_unitario || 0,
-      seleccionado: true,
-      es_sugerido: false,
     }
-    setInsumos((prev) => [...prev, nuevoInsumo])
+    updateInsumos([...insumos, nuevoInsumo])
     setShowAddInsumo(false)
     setSearchTerm('')
   }
 
   const removeInsumo = (insumoId: string) => {
-    setInsumos((prev) => prev.filter((i) => i.insumo_id !== insumoId || i.es_sugerido))
-    // If it's a suggested one, just deselect it instead of removing
-    setInsumos((prev) =>
-      prev.map((i) =>
-        i.insumo_id === insumoId && i.es_sugerido ? { ...i, seleccionado: false } : i
-      )
-    )
-  }
-
-  const selectAll = () => {
-    setInsumos((prev) => prev.map((i) => ({ ...i, seleccionado: true })))
-  }
-
-  const deselectAll = () => {
-    setInsumos((prev) => prev.map((i) => ({ ...i, seleccionado: false })))
+    updateInsumos(insumos.filter((i) => i.insumo_id !== insumoId))
   }
 
   if (isLoading) {
@@ -169,7 +111,7 @@ export function InsumoSelector({
       <div className="border border-gray-200 rounded-md p-4">
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-blue-600 rounded-full" />
-          <span className="ml-2 text-sm text-gray-500">Cargando insumos sugeridos...</span>
+          <span className="ml-2 text-sm text-gray-500">Cargando insumos...</span>
         </div>
       </div>
     )
@@ -178,67 +120,33 @@ export function InsumoSelector({
   return (
     <div className="border border-gray-200 rounded-md">
       {/* Header */}
-      <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-        <div>
-          <h4 className="text-sm font-medium text-gray-700">Insumos para la OT</h4>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {totales.cantidadSeleccionados} insumo(s) seleccionado(s)
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={selectAll}
-            className="text-xs text-blue-600 hover:text-blue-800"
-          >
-            Seleccionar todos
-          </button>
-          <span className="text-gray-300">|</span>
-          <button
-            type="button"
-            onClick={deselectAll}
-            className="text-xs text-gray-500 hover:text-gray-700"
-          >
-            Ninguno
-          </button>
-        </div>
+      <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+        <h4 className="text-sm font-medium text-gray-700">Insumos para la OT</h4>
+        <p className="text-xs text-gray-500 mt-0.5">
+          {totales.cantidadSeleccionados} insumo(s) agregado(s)
+        </p>
       </div>
 
       {/* Insumos list */}
       <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
         {insumos.length === 0 ? (
           <div className="p-4 text-center text-sm text-gray-500">
-            Este rubro no tiene insumos sugeridos en su formula.
+            No hay insumos agregados.
             <br />
-            Puede agregar insumos manualmente.
+            Use el boton de abajo para agregar insumos.
           </div>
         ) : (
           insumos.map((insumo) => (
             <div
               key={insumo.insumo_id}
-              className={`p-3 flex items-center gap-3 ${
-                insumo.seleccionado ? 'bg-white' : 'bg-gray-50 opacity-60'
-              }`}
+              className="p-3 flex items-center gap-3 bg-white"
             >
-              {/* Checkbox */}
-              <input
-                type="checkbox"
-                checked={insumo.seleccionado}
-                onChange={() => toggleInsumo(insumo.insumo_id)}
-                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-              />
-
               {/* Insumo info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-900 truncate">
                     {insumo.nombre}
                   </span>
-                  {insumo.es_sugerido && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
-                      Sugerido
-                    </span>
-                  )}
                 </div>
                 <div className="text-xs text-gray-500">
                   {formatPesos(insumo.precio_unitario)} / {insumo.unidad}
@@ -253,10 +161,9 @@ export function InsumoSelector({
                   onChange={(e) =>
                     updateCantidad(insumo.insumo_id, parseFloat(e.target.value) || 0)
                   }
-                  disabled={!insumo.seleccionado}
                   min="0"
                   step="0.01"
-                  className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
                 <span className="text-xs text-gray-500 w-8">{insumo.unidad}</span>
               </div>
@@ -268,19 +175,17 @@ export function InsumoSelector({
                 </div>
               </div>
 
-              {/* Remove button for non-suggested */}
-              {!insumo.es_sugerido && (
-                <button
-                  type="button"
-                  onClick={() => removeInsumo(insumo.insumo_id)}
-                  className="text-gray-400 hover:text-red-500 p-1"
-                  title="Quitar insumo"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
+              {/* Remove button */}
+              <button
+                type="button"
+                onClick={() => removeInsumo(insumo.insumo_id)}
+                className="text-gray-400 hover:text-red-500 p-1"
+                title="Quitar insumo"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           ))
         )}
@@ -337,7 +242,7 @@ export function InsumoSelector({
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Agregar otro insumo de la obra
+            Agregar insumo
           </button>
         )}
       </div>

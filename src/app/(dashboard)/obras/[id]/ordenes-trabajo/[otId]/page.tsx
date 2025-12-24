@@ -9,7 +9,7 @@ import { OTInsumosEstimados } from '@/components/edo/ot/ot-insumos-estimados'
 import { OTTareas } from '@/components/edo/ot/ot-tareas'
 import { OTFotos } from '@/components/edo/ot/ot-fotos'
 import { OTConsumos } from '@/components/edo/ot/ot-consumos'
-import { OTRequisiciones } from '@/components/edo/requisiciones'
+import { OTOrdenesCompra } from '@/components/edo/ot/ot-ordenes-compra'
 
 interface Props {
   params: Promise<{ id: string; otId: string }>
@@ -195,13 +195,14 @@ export default async function OTDetailPage({ params }: Props) {
     }
   })
 
-  // Get requisiciones for this OT
-  const { data: requisicionesData } = await supabase
-    .from('requisiciones')
+  // Get ordenes de compra for this OT
+  const { data: ordenesCompraData } = await supabase
+    .from('ordenes_compra')
     .select(`
       *,
-      creador:usuarios!requisiciones_created_by_fkey(id, nombre),
-      items:requisicion_items(
+      obra:obras(id, nombre),
+      creador:usuarios!ordenes_compra_created_by_fkey(id, nombre),
+      lineas:lineas_oc!lineas_oc_orden_compra_id_fkey(
         *,
         insumo:insumos(id, nombre, unidad, tipo)
       )
@@ -209,7 +210,7 @@ export default async function OTDetailPage({ params }: Props) {
     .eq('ot_id', otId)
     .order('created_at', { ascending: false })
 
-  // Get all insumos for this obra (for the requisicion form)
+  // Get all insumos for this obra (for creating OC)
   const { data: insumosObra } = await supabase
     .from('insumos')
     .select('*')
@@ -353,15 +354,14 @@ export default async function OTDetailPage({ params }: Props) {
               />
             )}
 
-            {/* Requisiciones - only show for en_ejecucion or cerrada */}
+            {/* Ordenes de Compra - only show for en_ejecucion or cerrada */}
             {(ot.estado === 'en_ejecucion' || ot.estado === 'cerrada') && (
-              <OTRequisiciones
+              <OTOrdenesCompra
                 otId={otId}
                 obraId={obraId}
-                requisiciones={(requisicionesData || []) as import('@/types/database').RequisicionWithRelations[]}
+                ordenesCompra={(ordenesCompraData || []) as unknown as import('@/types/database').OrdenCompraWithRelations[]}
                 insumos={(insumosObra || []) as import('@/types/database').Insumo[]}
                 canCreate={ot.estado === 'en_ejecucion' && canExecute || false}
-                canCancel={ot.estado === 'en_ejecucion' && canExecute || false}
               />
             )}
           </div>

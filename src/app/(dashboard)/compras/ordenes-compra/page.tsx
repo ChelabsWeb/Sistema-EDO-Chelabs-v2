@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { getOrdenesCompra, updateOCEstado, type OCFilters } from '@/app/actions/ordenes-compra'
 import { getOCForReception, registerRecepcion, type OCForReception, type RecepcionItem } from '@/app/actions/recepciones'
 import type { OrdenCompraWithRelations } from '@/types/database'
@@ -207,18 +206,9 @@ export default function OrdenesCompraPage() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Ordenes de Compra</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Gestiona las ordenes de compra del sistema
+            Gestiona las ordenes de compra del sistema. Crea OC directamente desde las OTs.
           </p>
         </div>
-        <Link
-          href="/compras/requisiciones"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Nueva OC (desde Requisiciones)
-        </Link>
       </div>
 
       {/* Summary Cards */}
@@ -331,11 +321,11 @@ export default function OrdenesCompraPage() {
         ) : ordenes.length === 0 ? (
           <div className="text-center py-12">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             <h3 className="mt-2 text-sm font-medium text-gray-900">No hay ordenes de compra</h3>
             <p className="mt-1 text-sm text-gray-500">
-              Crea una orden de compra desde la pantalla de requisiciones.
+              Las ordenes de compra se crean desde las Ordenes de Trabajo en ejecución.
             </p>
           </div>
         ) : (

@@ -18,16 +18,15 @@ const LineaOCItemSchema = z.object({
   insumo_id: z.string().uuid('ID de insumo inválido'),
   cantidad: z.number().positive('La cantidad debe ser mayor a 0'),
   precio_unitario: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
-  orden_trabajo_id: z.string().uuid().optional(),
 })
 
 const CreateOrdenCompraSchema = z.object({
   obra_id: z.string().uuid('ID de obra inválido'),
+  ot_id: z.string().uuid('ID de orden de trabajo inválido').optional(),
   proveedor: z.string().min(1, 'El proveedor es requerido'),
   rut_proveedor: z.string().optional(),
   condiciones_pago: z.string().optional(),
   fecha_entrega_esperada: z.string().optional(),
-  requisicion_ids: z.array(z.string().uuid()).min(1, 'Debe seleccionar al menos una requisición'),
   lineas: z.array(LineaOCItemSchema).min(1, 'Debe agregar al menos un item'),
 })
 
@@ -39,6 +38,7 @@ export type CreateOrdenCompraInput = z.infer<typeof CreateOrdenCompraSchema>
 
 export interface OCFilters {
   obra_id?: string
+  ot_id?: string
   estado?: string
   fecha_desde?: string
   fecha_hasta?: string
@@ -66,8 +66,8 @@ export async function getOrdenesCompra(
     return createErrorResult(ErrorCodes.AUTH_NOT_AUTHENTICATED)
   }
 
-  // Only admin, director_obra, or compras can see OCs
-  if (!['admin', 'director_obra', 'compras'].includes(profile.rol)) {
+  // Only admin, director_obra, jefe_obra, or compras can see OCs
+  if (!['admin', 'director_obra', 'jefe_obra', 'compras'].includes(profile.rol)) {
     return createErrorResult(ErrorCodes.AUTHZ_ROLE_NOT_ALLOWED, 'No tiene permisos para ver órdenes de compra')
   }
 
@@ -76,8 +76,9 @@ export async function getOrdenesCompra(
     .select(`
       *,
       obra:obras(id, nombre),
+      ot:ordenes_trabajo(id, numero, descripcion),
       creador:usuarios!ordenes_compra_created_by_fkey(id, nombre),
-      lineas:lineas_oc!lineas_oc_orden_compra_id_fkey(
+      lineas:lineas_oc(
         *,
         insumo:insumos(id, nombre, unidad, tipo)
       )
@@ -86,6 +87,10 @@ export async function getOrdenesCompra(
   // Apply filters
   if (filters?.obra_id) {
     query = query.eq('obra_id', filters.obra_id)
+  }
+
+  if (filters?.ot_id) {
+    query = query.eq('ot_id', filters.ot_id)
   }
 
   if (filters?.estado) {
@@ -111,6 +116,16 @@ export async function getOrdenesCompra(
 }
 
 // ==============================================
+// Get Ordenes de Compra by OT
+// ==============================================
+
+export async function getOrdenesCompraByOT(
+  otId: string
+): Promise<ActionResult<OrdenCompraWithRelations[]>> {
+  return getOrdenesCompra({ ot_id: otId })
+}
+
+// ==============================================
 // Get Single Orden de Compra
 // ==============================================
 
@@ -122,11 +137,11 @@ export async function getOrdenCompra(id: string): Promise<ActionResult<OrdenComp
     .select(`
       *,
       obra:obras(id, nombre),
+      ot:ordenes_trabajo(id, numero, descripcion),
       creador:usuarios!ordenes_compra_created_by_fkey(id, nombre),
-      lineas:lineas_oc!lineas_oc_orden_compra_id_fkey(
+      lineas:lineas_oc(
         *,
-        insumo:insumos(id, nombre, unidad, tipo),
-        orden_trabajo:ordenes_trabajo(id, numero, descripcion)
+        insumo:insumos(id, nombre, unidad, tipo)
       )
     `)
     .eq('id', id)
@@ -137,35 +152,14 @@ export async function getOrdenCompra(id: string): Promise<ActionResult<OrdenComp
     return { success: false, error: 'Orden de compra no encontrada' }
   }
 
-  // Get linked requisiciones
-  const { data: ocReqs } = await supabase
-    .from('oc_requisiciones')
-    .select(`
-      requisicion:requisiciones(
-        *,
-        ot:ordenes_trabajo(id, numero, descripcion, obra_id),
-        creador:usuarios!requisiciones_created_by_fkey(id, nombre),
-        items:requisicion_items(
-          *,
-          insumo:insumos(id, nombre, unidad, tipo)
-        )
-      )
-    `)
-    .eq('orden_compra_id', id)
-
-  const requisiciones = ocReqs?.map(r => r.requisicion).filter(Boolean) || []
-
   return {
     success: true,
-    data: {
-      ...data,
-      requisiciones,
-    } as unknown as OrdenCompraWithRelations
+    data: data as unknown as OrdenCompraWithRelations
   }
 }
 
 // ==============================================
-// Create Orden de Compra
+// Create Orden de Compra (directly from OT)
 // ==============================================
 
 export async function createOrdenCompra(input: CreateOrdenCompraInput): Promise<ActionResult<OrdenCompra>> {
@@ -180,7 +174,7 @@ export async function createOrdenCompra(input: CreateOrdenCompraInput): Promise<
     }
   }
 
-  const { obra_id, proveedor, rut_proveedor, condiciones_pago, fecha_entrega_esperada, requisicion_ids, lineas } = validation.data
+  const { obra_id, ot_id, proveedor, rut_proveedor, condiciones_pago, fecha_entrega_esperada, lineas } = validation.data
 
   // Get current user
   const { data: { user } } = await supabase.auth.getUser()
@@ -199,28 +193,35 @@ export async function createOrdenCompra(input: CreateOrdenCompraInput): Promise<
     return createErrorResult(ErrorCodes.AUTH_NOT_AUTHENTICATED)
   }
 
-  // Only compras and admin can create OCs
-  if (!['admin', 'compras'].includes(profile.rol)) {
-    return createErrorResult(ErrorCodes.AUTHZ_ROLE_NOT_ALLOWED, 'Solo Compras puede crear órdenes de compra')
+  // Admin, compras, director_obra, and jefe_obra can create OCs
+  if (!['admin', 'compras', 'director_obra', 'jefe_obra'].includes(profile.rol)) {
+    return createErrorResult(ErrorCodes.AUTHZ_ROLE_NOT_ALLOWED, 'No tiene permisos para crear órdenes de compra')
   }
 
-  // Verify all requisiciones exist and are pending
-  const { data: requisiciones, error: reqError } = await supabase
-    .from('requisiciones')
-    .select('id, estado, ot_id')
-    .in('id', requisicion_ids)
+  // If ot_id provided, verify OT exists and belongs to the obra
+  if (ot_id) {
+    const { data: ot, error: otError } = await supabase
+      .from('ordenes_trabajo')
+      .select('id, obra_id, estado')
+      .eq('id', ot_id)
+      .is('deleted_at', null)
+      .single()
 
-  if (reqError || !requisiciones || requisiciones.length !== requisicion_ids.length) {
-    return createErrorResult(ErrorCodes.RES_NOT_FOUND, 'Algunas requisiciones no fueron encontradas')
-  }
+    if (otError || !ot) {
+      return createErrorResult(ErrorCodes.RES_NOT_FOUND, 'Orden de trabajo no encontrada')
+    }
 
-  // Check all requisiciones are pending
-  const nonPendingReqs = requisiciones.filter(r => r.estado !== 'pendiente')
-  if (nonPendingReqs.length > 0) {
-    return createErrorResult(
-      ErrorCodes.BIZ_OPERATION_NOT_ALLOWED,
-      'Solo se pueden incluir requisiciones pendientes en una OC'
-    )
+    if (ot.obra_id !== obra_id) {
+      return createErrorResult(ErrorCodes.BIZ_OPERATION_NOT_ALLOWED, 'La OT no pertenece a esta obra')
+    }
+
+    // OT must be aprobada or en_ejecucion to create OC
+    if (!['aprobada', 'en_ejecucion'].includes(ot.estado || '')) {
+      return createErrorResult(
+        ErrorCodes.BIZ_OPERATION_NOT_ALLOWED,
+        'Solo se pueden crear OC para OTs aprobadas o en ejecución'
+      )
+    }
   }
 
   // Calculate total
@@ -231,6 +232,7 @@ export async function createOrdenCompra(input: CreateOrdenCompraInput): Promise<
     .from('ordenes_compra')
     .insert({
       obra_id,
+      ot_id: ot_id || null,
       proveedor,
       rut_proveedor: rut_proveedor || null,
       condiciones_pago: condiciones_pago || null,
@@ -253,7 +255,7 @@ export async function createOrdenCompra(input: CreateOrdenCompraInput): Promise<
     insumo_id: linea.insumo_id,
     cantidad_solicitada: linea.cantidad,
     precio_unitario: linea.precio_unitario,
-    orden_trabajo_id: linea.orden_trabajo_id || null,
+    orden_trabajo_id: ot_id || null,
   }))
 
   const { error: lineasError } = await supabase
@@ -267,37 +269,9 @@ export async function createOrdenCompra(input: CreateOrdenCompraInput): Promise<
     return createErrorResult(ErrorCodes.DB_QUERY_ERROR, 'Error al crear los items de la orden')
   }
 
-  // Link requisiciones to OC
-  const ocReqsToInsert = requisicion_ids.map(req_id => ({
-    orden_compra_id: oc.id,
-    requisicion_id: req_id,
-  }))
-
-  const { error: ocReqError } = await supabase
-    .from('oc_requisiciones')
-    .insert(ocReqsToInsert)
-
-  if (ocReqError) {
-    console.error('Error linking requisiciones:', ocReqError)
-    // Rollback
-    await supabase.from('lineas_oc').delete().eq('orden_compra_id', oc.id)
-    await supabase.from('ordenes_compra').delete().eq('id', oc.id)
-    return createErrorResult(ErrorCodes.DB_QUERY_ERROR, 'Error al vincular las requisiciones')
+  if (ot_id) {
+    revalidatePath(`/obras/[id]/ordenes-trabajo/${ot_id}`)
   }
-
-  // Update requisiciones estado to 'en_proceso'
-  const { error: updateError } = await supabase
-    .from('requisiciones')
-    .update({ estado: 'en_proceso' })
-    .in('id', requisicion_ids)
-
-  if (updateError) {
-    console.error('Error updating requisiciones estado:', updateError)
-    // Don't rollback here, the OC was created successfully
-    // Just log the error
-  }
-
-  revalidatePath('/compras/requisiciones')
   revalidatePath('/compras/ordenes-compra')
 
   return {
@@ -380,109 +354,76 @@ export async function updateOCEstado(
 }
 
 // ==============================================
-// Get Grouped Items from Selected Requisiciones
+// Get Insumos Estimados from OT (for creating OC)
 // ==============================================
 
-export interface GroupedItem {
+export interface OTInsumoForOC {
   insumo_id: string
   insumo_nombre: string
   insumo_unidad: string
   insumo_tipo: string
-  cantidad_total: number
-  precio_referencia: number | null
-  requisicion_ids: string[]
-  ot_ids: string[]
+  cantidad_estimada: number
+  precio_estimado: number
 }
 
-export async function getGroupedItemsFromRequisiciones(
-  requisicionIds: string[]
-): Promise<ActionResult<{ items: GroupedItem[]; obra_id: string }>> {
+export async function getOTInsumosForOC(
+  otId: string
+): Promise<ActionResult<{ insumos: OTInsumoForOC[]; obra_id: string }>> {
   const supabase = await createClient()
 
-  if (requisicionIds.length === 0) {
-    return { success: false, error: 'Debe seleccionar al menos una requisición' }
-  }
-
-  // Get requisiciones with items
-  const { data: requisiciones, error } = await supabase
-    .from('requisiciones')
+  // Get OT with insumos estimados
+  const { data: ot, error } = await supabase
+    .from('ordenes_trabajo')
     .select(`
       id,
-      ot_id,
+      obra_id,
       estado,
-      ot:ordenes_trabajo(id, obra_id),
-      items:requisicion_items(
+      insumos_estimados:ot_insumos_estimados(
         id,
         insumo_id,
-        cantidad,
+        cantidad_estimada,
+        precio_estimado,
         insumo:insumos(id, nombre, unidad, tipo, precio_referencia)
       )
     `)
-    .in('id', requisicionIds)
-    .eq('estado', 'pendiente')
+    .eq('id', otId)
+    .is('deleted_at', null)
+    .single()
 
-  if (error) {
-    console.error('Error fetching requisiciones:', error)
-    return { success: false, error: 'Error al cargar las requisiciones' }
+  if (error || !ot) {
+    console.error('Error fetching OT for OC:', error)
+    return { success: false, error: 'Orden de trabajo no encontrada' }
   }
 
-  if (!requisiciones || requisiciones.length === 0) {
-    return { success: false, error: 'No se encontraron requisiciones pendientes' }
-  }
+  // Map insumos estimados
+  const insumos: OTInsumoForOC[] = []
+  const insumosEstimados = ot.insumos_estimados as Array<{
+    id: string
+    insumo_id: string
+    cantidad_estimada: number
+    precio_estimado: number
+    insumo: { id: string; nombre: string; unidad: string; tipo: string; precio_referencia: number | null } | null
+  }> | null
 
-  // Get obra_id from first requisicion
-  const firstReq = requisiciones[0]
-  const ot = firstReq.ot as { id: string; obra_id: string } | null
-  if (!ot) {
-    return { success: false, error: 'No se pudo determinar la obra' }
-  }
-  const obra_id = ot.obra_id
-
-  // Group items by insumo_id
-  const grouped: Record<string, GroupedItem> = {}
-
-  for (const req of requisiciones) {
-    const items = req.items as Array<{
-      id: string
-      insumo_id: string
-      cantidad: number
-      insumo: { id: string; nombre: string; unidad: string; tipo: string; precio_referencia: number | null } | null
-    }> | null
-
-    if (!items) continue
-
-    for (const item of items) {
-      if (!item.insumo) continue
-
-      const key = item.insumo_id
-      if (!grouped[key]) {
-        grouped[key] = {
-          insumo_id: item.insumo_id,
-          insumo_nombre: item.insumo.nombre,
-          insumo_unidad: item.insumo.unidad,
-          insumo_tipo: item.insumo.tipo,
-          cantidad_total: 0,
-          precio_referencia: item.insumo.precio_referencia,
-          requisicion_ids: [],
-          ot_ids: [],
-        }
-      }
-
-      grouped[key].cantidad_total += item.cantidad
-      if (!grouped[key].requisicion_ids.includes(req.id)) {
-        grouped[key].requisicion_ids.push(req.id)
-      }
-      if (req.ot_id && !grouped[key].ot_ids.includes(req.ot_id)) {
-        grouped[key].ot_ids.push(req.ot_id)
-      }
+  if (insumosEstimados) {
+    for (const ie of insumosEstimados) {
+      if (!ie.insumo) continue
+      insumos.push({
+        insumo_id: ie.insumo_id,
+        insumo_nombre: ie.insumo.nombre,
+        insumo_unidad: ie.insumo.unidad,
+        insumo_tipo: ie.insumo.tipo,
+        cantidad_estimada: ie.cantidad_estimada,
+        precio_estimado: ie.precio_estimado,
+      })
     }
   }
 
   return {
     success: true,
     data: {
-      items: Object.values(grouped),
-      obra_id,
+      insumos,
+      obra_id: ot.obra_id,
     }
   }
 }
