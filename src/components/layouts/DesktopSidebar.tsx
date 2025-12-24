@@ -101,16 +101,25 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-medium transition-all duration-200',
+                'group relative flex items-center gap-3 px-4 py-3 rounded-[12px] text-sm font-medium transition-all duration-200',
                 isActive
-                  ? 'bg-[--color-apple-blue]/10 text-[--color-apple-blue] border-l-[3px] border-[--color-apple-blue] pl-[9px]'
-                  : 'text-[--color-apple-gray-500] hover:bg-[--color-apple-gray-100]/50 hover:text-[--color-apple-gray-600]'
+                  ? 'bg-[--color-apple-blue] text-white shadow-lg shadow-[--color-apple-blue]/25'
+                  : 'text-[--color-apple-gray-500] hover:bg-[--color-apple-gray-100] hover:text-[--color-apple-gray-600]'
               )}
             >
-              <span className={cn(isActive && 'text-[--color-apple-blue]')}>
+              <span className={cn(
+                'transition-transform duration-200',
+                isActive ? 'text-white' : 'text-[--color-apple-gray-400] group-hover:text-[--color-apple-gray-500]',
+                'group-hover:scale-110'
+              )}>
                 {item.icon}
               </span>
-              {item.label}
+              <span className="relative">
+                {item.label}
+                {isActive && (
+                  <span className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-white/40 rounded-full" />
+                )}
+              </span>
             </Link>
           )
         })}

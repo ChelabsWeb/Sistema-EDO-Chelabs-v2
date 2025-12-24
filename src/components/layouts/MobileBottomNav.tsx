@@ -68,7 +68,7 @@ export function MobileBottomNav({ userRole }: MobileBottomNavProps) {
   })
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-xl border-t border-[--color-apple-gray-200]/50 flex items-start justify-around px-2 pt-2 z-50 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-xl border-t border-[--color-apple-gray-200]/50 flex items-start justify-around px-3 pt-2 z-50 pb-safe">
       {visibleNavItems.map((item) => {
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
         return (
@@ -76,21 +76,20 @@ export function MobileBottomNav({ userRole }: MobileBottomNavProps) {
             key={item.href}
             href={item.href}
             className={cn(
-              'flex flex-col items-center justify-center min-w-[64px] h-12 rounded-[12px] transition-all duration-200 active:scale-95',
-              // Touch target: min 48x48px per UX9
+              'flex flex-col items-center justify-center min-w-[60px] h-14 px-3 rounded-[14px] transition-all duration-200 active:scale-95',
               isActive
-                ? 'text-[--color-apple-blue]'
-                : 'text-[--color-apple-gray-400] hover:text-[--color-apple-gray-600]'
+                ? 'bg-[--color-apple-blue] text-white shadow-lg shadow-[--color-apple-blue]/30'
+                : 'text-[--color-apple-gray-400] hover:text-[--color-apple-gray-600] hover:bg-[--color-apple-gray-100]'
             )}
           >
             <span className={cn(
               'transition-transform duration-200',
-              isActive && 'scale-110'
+              isActive && 'scale-105'
             )}>
               {item.icon}
             </span>
             <span className={cn(
-              'text-[10px] mt-1 font-medium',
+              'text-[10px] mt-0.5 font-medium',
               isActive && 'font-semibold'
             )}>{item.label}</span>
           </Link>
