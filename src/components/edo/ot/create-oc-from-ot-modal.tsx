@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatPesos } from '@/lib/utils/currency'
 import { createOrdenCompra } from '@/app/actions/ordenes-compra'
+import { DatePicker } from '@/components/ui/date-picker'
+import { format } from 'date-fns'
 import type { Insumo } from '@/types/database'
 
 interface LineaItem {
@@ -27,7 +29,7 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
   const [proveedor, setProveedor] = useState('')
   const [rutProveedor, setRutProveedor] = useState('')
   const [condicionesPago, setCondicionesPago] = useState('')
-  const [fechaEntrega, setFechaEntrega] = useState('')
+  const [fechaEntrega, setFechaEntrega] = useState<Date | undefined>()
   const [lineas, setLineas] = useState<LineaItem[]>([])
   const [selectedInsumo, setSelectedInsumo] = useState('')
   const [cantidad, setCantidad] = useState('')
@@ -76,7 +78,7 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
         proveedor: proveedor.trim(),
         rut_proveedor: rutProveedor.trim() || undefined,
         condiciones_pago: condicionesPago.trim() || undefined,
-        fecha_entrega_esperada: fechaEntrega || undefined,
+        fecha_entrega_esperada: fechaEntrega ? format(fechaEntrega, 'yyyy-MM-dd') : undefined,
         lineas: lineas.map(l => ({
           insumo_id: l.insumo_id,
           cantidad: l.cantidad,
@@ -172,11 +174,11 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
                   <label className="block text-sm font-medium text-[--color-apple-gray-500] mb-1.5">
                     Fecha de Entrega Esperada
                   </label>
-                  <input
-                    type="date"
-                    value={fechaEntrega}
-                    onChange={(e) => setFechaEntrega(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-[--color-apple-gray-200]/50 bg-[--color-apple-gray-50] rounded-[12px] focus:ring-2 focus:ring-[--color-apple-blue]/20 focus:border-[--color-apple-blue] focus:bg-white transition-all duration-200 outline-none text-[--color-apple-gray-600]"
+                  <DatePicker
+                    date={fechaEntrega}
+                    onSelect={setFechaEntrega}
+                    placeholder="Seleccionar fecha"
+                    fromDate={new Date()}
                   />
                 </div>
               </div>
