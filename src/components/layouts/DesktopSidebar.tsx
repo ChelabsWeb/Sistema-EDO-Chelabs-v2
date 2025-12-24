@@ -81,19 +81,19 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
   })
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="fixed left-0 top-0 h-full w-64 bg-[--color-apple-gray-50]/80 backdrop-blur-xl border-r border-[--color-apple-gray-200]/50 flex flex-col">
       {/* Logo/Brand */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-200">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+      <div className="h-16 flex items-center px-6 border-b border-[--color-apple-gray-200]/50">
+        <Link href="/dashboard" className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-gradient-to-br from-[--color-apple-blue-light] to-[--color-apple-blue] rounded-[10px] flex items-center justify-center shadow-[0_2px_8px_rgba(0,102,204,0.3)]">
             <span className="text-white font-bold text-sm">EDO</span>
           </div>
-          <span className="font-semibold text-gray-900">Sistema EDO</span>
+          <span className="font-semibold text-[--color-apple-gray-600] tracking-tight">Sistema EDO</span>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
         {visibleNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
@@ -101,13 +101,15 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-medium transition-all duration-200',
                 isActive
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-[--color-apple-blue]/10 text-[--color-apple-blue] border-l-[3px] border-[--color-apple-blue] pl-[9px]'
+                  : 'text-[--color-apple-gray-500] hover:bg-[--color-apple-gray-100]/50 hover:text-[--color-apple-gray-600]'
               )}
             >
-              {item.icon}
+              <span className={cn(isActive && 'text-[--color-apple-blue]')}>
+                {item.icon}
+              </span>
               {item.label}
             </Link>
           )
@@ -115,18 +117,18 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
       </nav>
 
       {/* User info */}
-      <div className="border-t border-gray-200 p-4">
+      <div className="border-t border-[--color-apple-gray-200]/50 p-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-gray-600 font-medium text-sm">
+          <div className="w-10 h-10 bg-gradient-to-br from-[--color-apple-gray-200] to-[--color-apple-gray-300] rounded-full flex items-center justify-center">
+            <span className="text-[--color-apple-gray-600] font-medium text-sm">
               {userName?.charAt(0).toUpperCase() || userEmail?.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-medium text-[--color-apple-gray-600] truncate">
               {userName || userEmail}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[--color-apple-gray-400]">
               {getRoleDisplayName(userRole)}
             </p>
           </div>
@@ -134,7 +136,7 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
         <form action="/api/auth/signout" method="post" className="mt-3">
           <button
             type="submit"
-            className="w-full text-left text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="w-full text-left text-sm text-[--color-apple-gray-400] hover:text-[--color-apple-gray-600] px-3 py-2 rounded-[10px] hover:bg-[--color-apple-gray-100]/50 transition-all duration-200"
           >
             Cerrar sesión
           </button>

@@ -68,7 +68,7 @@ export function MobileBottomNav({ userRole }: MobileBottomNavProps) {
   })
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex items-center justify-around px-2 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-xl border-t border-[--color-apple-gray-200]/50 flex items-start justify-around px-2 pt-2 z-50 pb-safe">
       {visibleNavItems.map((item) => {
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
         return (
@@ -76,15 +76,23 @@ export function MobileBottomNav({ userRole }: MobileBottomNavProps) {
             key={item.href}
             href={item.href}
             className={cn(
-              'flex flex-col items-center justify-center min-w-[64px] h-12 rounded-lg transition-colors',
+              'flex flex-col items-center justify-center min-w-[64px] h-12 rounded-[12px] transition-all duration-200 active:scale-95',
               // Touch target: min 48x48px per UX9
               isActive
-                ? 'text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-[--color-apple-blue]'
+                : 'text-[--color-apple-gray-400] hover:text-[--color-apple-gray-600]'
             )}
           >
-            {item.icon}
-            <span className="text-xs mt-1 font-medium">{item.label}</span>
+            <span className={cn(
+              'transition-transform duration-200',
+              isActive && 'scale-110'
+            )}>
+              {item.icon}
+            </span>
+            <span className={cn(
+              'text-[10px] mt-1 font-medium',
+              isActive && 'font-semibold'
+            )}>{item.label}</span>
           </Link>
         )
       })}

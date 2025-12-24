@@ -11,19 +11,19 @@ interface OTStatusBadgeProps {
 const statusConfig: Record<OTStatus, { label: string; className: string }> = {
   borrador: {
     label: 'Borrador',
-    className: 'bg-gray-100 text-gray-800 border-gray-200',
+    className: 'bg-slate-100 text-slate-600 border-slate-200',
   },
   aprobada: {
     label: 'Aprobada',
-    className: 'bg-blue-100 text-blue-800 border-blue-200',
+    className: 'bg-sky-50 text-sky-700 border-sky-200',
   },
   en_ejecucion: {
     label: 'En Ejecución',
-    className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    className: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   cerrada: {
     label: 'Cerrada',
-    className: 'bg-green-100 text-green-800 border-green-200',
+    className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   },
 }
 
@@ -47,26 +47,26 @@ export function OTStatusIcon({ estado }: { estado: OTStatus | string }) {
   switch (estado) {
     case 'borrador':
       return (
-        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       )
     case 'aprobada':
       return (
-        <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg className="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       )
     case 'en_ejecucion':
       return (
-        <svg className="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       )
     case 'cerrada':
       return (
-        <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
         </svg>
       )
     default:

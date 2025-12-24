@@ -107,76 +107,76 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-apple-fade-in" onClick={onClose} />
 
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Nueva Orden de Compra</h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <div className="relative bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-[--color-apple-gray-200]/50 animate-apple-scale-in">
+          <div className="sticky top-0 bg-white/80 backdrop-blur-xl border-b border-[--color-apple-gray-200]/50 px-6 py-5 flex items-center justify-between rounded-t-[20px]">
+            <h3 className="text-xl font-semibold text-[--color-apple-gray-600] tracking-tight">Nueva Orden de Compra</h3>
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-[--color-apple-gray-100] hover:bg-[--color-apple-gray-200] flex items-center justify-center text-[--color-apple-gray-400] hover:text-[--color-apple-gray-600] transition-all duration-200">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <div className="p-6 space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+              <div className="bg-[--color-apple-red]/5 border border-[--color-apple-red]/20 text-[--color-apple-red] px-4 py-3 rounded-[12px] text-sm">
                 {error}
               </div>
             )}
 
             {/* Datos del proveedor */}
             <div className="space-y-4">
-              <h4 className="font-medium text-gray-900">Datos del Proveedor</h4>
+              <h4 className="font-medium text-[--color-apple-gray-600]">Datos del Proveedor</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[--color-apple-gray-500] mb-1.5">
                     Proveedor *
                   </label>
                   <input
                     type="text"
                     value={proveedor}
                     onChange={(e) => setProveedor(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2.5 border border-[--color-apple-gray-200]/50 bg-[--color-apple-gray-50] rounded-[12px] focus:ring-2 focus:ring-[--color-apple-blue]/20 focus:border-[--color-apple-blue] focus:bg-white transition-all duration-200 outline-none text-[--color-apple-gray-600] placeholder:text-[--color-apple-gray-400]"
                     placeholder="Nombre del proveedor"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[--color-apple-gray-500] mb-1.5">
                     RUT
                   </label>
                   <input
                     type="text"
                     value={rutProveedor}
                     onChange={(e) => setRutProveedor(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2.5 border border-[--color-apple-gray-200]/50 bg-[--color-apple-gray-50] rounded-[12px] focus:ring-2 focus:ring-[--color-apple-blue]/20 focus:border-[--color-apple-blue] focus:bg-white transition-all duration-200 outline-none text-[--color-apple-gray-600] placeholder:text-[--color-apple-gray-400]"
                     placeholder="12.345.678-9"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[--color-apple-gray-500] mb-1.5">
                     Condiciones de Pago
                   </label>
                   <input
                     type="text"
                     value={condicionesPago}
                     onChange={(e) => setCondicionesPago(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2.5 border border-[--color-apple-gray-200]/50 bg-[--color-apple-gray-50] rounded-[12px] focus:ring-2 focus:ring-[--color-apple-blue]/20 focus:border-[--color-apple-blue] focus:bg-white transition-all duration-200 outline-none text-[--color-apple-gray-600] placeholder:text-[--color-apple-gray-400]"
                     placeholder="Ej: 30 días"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[--color-apple-gray-500] mb-1.5">
                     Fecha de Entrega Esperada
                   </label>
                   <input
                     type="date"
                     value={fechaEntrega}
                     onChange={(e) => setFechaEntrega(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2.5 border border-[--color-apple-gray-200]/50 bg-[--color-apple-gray-50] rounded-[12px] focus:ring-2 focus:ring-[--color-apple-blue]/20 focus:border-[--color-apple-blue] focus:bg-white transition-all duration-200 outline-none text-[--color-apple-gray-600]"
                   />
                 </div>
               </div>
@@ -309,11 +309,11 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
           </div>
 
           {/* Footer */}
-          <div className="sticky bottom-0 bg-gray-50 border-t px-6 py-4 flex justify-end gap-3">
+          <div className="sticky bottom-0 bg-[--color-apple-gray-50]/80 backdrop-blur-xl border-t border-[--color-apple-gray-200]/50 px-6 py-5 flex justify-end gap-3 rounded-b-[20px]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-5 py-2.5 text-sm font-medium text-[--color-apple-gray-600] bg-[--color-apple-gray-100] rounded-[12px] hover:bg-[--color-apple-gray-200] transition-all duration-200 active:scale-[0.97]"
             >
               Cancelar
             </button>
@@ -321,7 +321,7 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
               type="button"
               onClick={handleSubmit}
               disabled={isPending || lineas.length === 0 || !proveedor.trim()}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 text-sm font-medium text-white bg-[--color-apple-blue] rounded-[12px] hover:bg-[--color-apple-blue-dark] shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.97]"
             >
               {isPending ? 'Creando...' : 'Crear Orden de Compra'}
             </button>

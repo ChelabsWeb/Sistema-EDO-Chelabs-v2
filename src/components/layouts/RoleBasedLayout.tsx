@@ -25,7 +25,7 @@ export function RoleBasedLayout({
   const { showSidebar, showBottomNav } = useRoleBasedLayout({ role: userRole })
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[--color-apple-gray-100]">
       {/* Desktop Sidebar */}
       {showSidebar && (
         <DesktopSidebar
@@ -49,7 +49,7 @@ export function RoleBasedLayout({
         className={cn(
           'transition-all duration-200',
           showSidebar && 'ml-64', // Desktop: offset for sidebar
-          showBottomNav && 'pt-14 pb-16' // Mobile: offset for header and bottom nav
+          showBottomNav && 'pt-14 pb-20' // Mobile: offset for header and bottom nav
         )}
       >
         {children}
