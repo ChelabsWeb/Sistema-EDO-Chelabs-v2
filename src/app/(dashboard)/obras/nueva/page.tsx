@@ -199,7 +199,7 @@ export default function NuevaObraPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="min-w-[120px] btn-glow"
+              className="min-w-[120px] btn-glow bg-[#0066cc] hover:bg-[#004499] text-white"
             >
               {loading ? (
                 <span className="flex items-center gap-2">

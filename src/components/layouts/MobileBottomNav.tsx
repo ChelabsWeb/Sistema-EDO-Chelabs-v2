@@ -78,19 +78,19 @@ export function MobileBottomNav({ userRole }: MobileBottomNavProps) {
             className={cn(
               'flex flex-col items-center justify-center min-w-[60px] h-14 px-3 rounded-[14px] transition-all duration-200 active:scale-95',
               isActive
-                ? 'bg-[--color-apple-blue] text-white shadow-lg shadow-[--color-apple-blue]/30'
-                : 'text-[--color-apple-gray-400] hover:text-[--color-apple-gray-600] hover:bg-[--color-apple-gray-100]'
+                ? 'bg-[#e8e8ed] text-[#1d1d1f]'
+                : 'text-[#86868b] hover:text-[#1d1d1f] hover:bg-[#e8e8ed]/50'
             )}
           >
             <span className={cn(
               'transition-transform duration-200',
-              isActive && 'scale-105'
+              isActive ? 'text-[#1d1d1f] scale-105' : ''
             )}>
               {item.icon}
             </span>
             <span className={cn(
               'text-[10px] mt-0.5 font-medium',
-              isActive && 'font-semibold'
+              isActive && 'font-semibold text-[#1d1d1f]'
             )}>{item.label}</span>
           </Link>
         )

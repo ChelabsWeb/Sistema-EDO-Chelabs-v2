@@ -25,7 +25,7 @@ export function RoleBasedLayout({
   const { showSidebar, showBottomNav } = useRoleBasedLayout({ role: userRole })
 
   return (
-    <div className="min-h-screen bg-[--color-apple-gray-100]">
+    <div className="min-h-screen bg-[#f5f5f7]">
       {/* Desktop Sidebar */}
       {showSidebar && (
         <DesktopSidebar

@@ -307,6 +307,7 @@ export function InsumosPredefinidosDialog({
           <Button
             onClick={handleSubmit}
             disabled={selectedCount === 0 || submitting}
+            className="bg-[#0066cc] hover:bg-[#004499] text-white"
           >
             {submitting ? 'Agregando...' : `Agregar ${selectedCount} insumo(s)`}
           </Button>

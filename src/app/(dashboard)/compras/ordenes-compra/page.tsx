@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getOrdenesCompra, updateOCEstado, type OCFilters } from '@/app/actions/ordenes-compra'
 import { getOCForReception, registerRecepcion, type OCForReception, type RecepcionItem } from '@/app/actions/recepciones'
@@ -361,8 +361,8 @@ export default function OrdenesCompraPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {ordenes.map(oc => (
-                <>
-                  <tr key={oc.id} className="hover:bg-gray-50">
+                <React.Fragment key={oc.id}>
+                  <tr className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <button
                         onClick={() => setExpandedId(expandedId === oc.id ? null : oc.id)}
@@ -461,7 +461,7 @@ export default function OrdenesCompraPage() {
                   </tr>
                   {/* Expanded row with details */}
                   {expandedId === oc.id && (
-                    <tr key={`${oc.id}-details`}>
+                    <tr>
                       <td colSpan={9} className="px-4 py-4 bg-gray-50">
                         <div className="space-y-4">
                           {/* OC Info */}
@@ -609,7 +609,7 @@ export default function OrdenesCompraPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>

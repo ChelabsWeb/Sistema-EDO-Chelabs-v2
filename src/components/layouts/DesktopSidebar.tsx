@@ -103,22 +103,20 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
               className={cn(
                 'group relative flex items-center gap-3 px-4 py-3 rounded-[12px] text-sm font-medium transition-all duration-200',
                 isActive
-                  ? 'bg-[--color-apple-blue] text-white shadow-lg shadow-[--color-apple-blue]/25'
-                  : 'text-[--color-apple-gray-500] hover:bg-[--color-apple-gray-100] hover:text-[--color-apple-gray-600]'
+                  ? 'bg-[#e8e8ed] text-[#1d1d1f]'
+                  : 'text-[#86868b] hover:bg-[#e8e8ed]/50 hover:text-[#1d1d1f]'
               )}
             >
               <span className={cn(
-                'transition-transform duration-200',
-                isActive ? 'text-white' : 'text-[--color-apple-gray-400] group-hover:text-[--color-apple-gray-500]',
-                'group-hover:scale-110'
+                'transition-transform duration-200 group-hover:scale-110',
+                isActive ? 'text-[#1d1d1f]' : 'text-[#86868b] group-hover:text-[#1d1d1f]'
               )}>
                 {item.icon}
               </span>
-              <span className="relative">
+              <span className={cn(
+                isActive && 'font-semibold'
+              )}>
                 {item.label}
-                {isActive && (
-                  <span className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-white/40 rounded-full" />
-                )}
               </span>
             </Link>
           )
