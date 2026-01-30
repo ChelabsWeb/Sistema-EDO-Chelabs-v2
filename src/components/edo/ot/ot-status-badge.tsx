@@ -43,33 +43,21 @@ export function OTStatusBadge({ estado, size = 'default' }: OTStatusBadgeProps) 
   )
 }
 
-export function OTStatusIcon({ estado }: { estado: OTStatus | string }) {
+export function OTStatusIcon({ estado, className }: { estado: OTStatus | string, className?: string }) {
+  const iconProps = { className: cn("w-4 h-4", className) }
+
   switch (estado) {
     case 'borrador':
-      return (
-        <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-        </svg>
-      )
+      return <FileEdit {...iconProps} className={cn("text-slate-500", className)} />
     case 'aprobada':
-      return (
-        <svg className="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      )
+      return <CheckCircle2 {...iconProps} className={cn("text-sky-600", className)} />
     case 'en_ejecucion':
-      return (
-        <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      )
+      return <Zap {...iconProps} className={cn("text-amber-600", className)} />
     case 'cerrada':
-      return (
-        <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-        </svg>
-      )
+      return <Lock {...iconProps} className={cn("text-emerald-600", className)} />
     default:
-      return null
+      return <Activity {...iconProps} className={cn("text-slate-400", className)} />
   }
 }
+
+import { FileEdit, CheckCircle2, Zap, Lock, Activity } from 'lucide-react'

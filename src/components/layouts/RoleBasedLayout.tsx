@@ -25,7 +25,7 @@ export function RoleBasedLayout({
   const { showSidebar, showBottomNav } = useRoleBasedLayout({ role: userRole })
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7]">
+    <div className="min-h-screen bg-[--background] selection:bg-[--color-apple-blue]/10">
       {/* Desktop Sidebar */}
       {showSidebar && (
         <DesktopSidebar
@@ -47,12 +47,14 @@ export function RoleBasedLayout({
       {/* Main Content */}
       <main
         className={cn(
-          'transition-all duration-200',
-          showSidebar && 'ml-64', // Desktop: offset for sidebar
-          showBottomNav && 'pt-14 pb-20' // Mobile: offset for header and bottom nav
+          'transition-all duration-500 ease-in-out',
+          showSidebar && 'md:pl-[288px]', // 24px (left-6) + 256px (w-64) + 8px gap
+          showBottomNav && 'pt-16 pb-24' // Mobile: offset for header and bottom nav
         )}
       >
-        {children}
+        <div className="animate-apple-fade-in">
+          {children}
+        </div>
       </main>
 
       {/* Mobile Bottom Navigation */}

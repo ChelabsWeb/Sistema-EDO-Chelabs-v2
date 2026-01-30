@@ -10,6 +10,19 @@ export default async function DashboardLayout({
 }) {
   const supabase = await createClient()
 
+  // Demo Mode Profile
+  if (process.env.DEMO_MODE === 'true') {
+    return (
+      <DashboardLayoutClient
+        userRole="admin"
+        userName="Usuario Demo"
+        userEmail="demo@chelabs.com"
+      >
+        {children}
+      </DashboardLayoutClient>
+    )
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser()

@@ -2,6 +2,8 @@
 
 import { formatPesos } from '@/lib/utils/currency'
 import type { InsumoTipo } from '@/types/database'
+import { Package, Users, Calculator, Info } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface InsumoEstimado {
   id: string
@@ -29,88 +31,95 @@ export function OTInsumosEstimados({ insumos, cantidad }: OTInsumosEstimadosProp
 
   if (insumos.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Insumos Estimados</h2>
-        </div>
-        <div className="p-6 text-center">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-          <p className="mt-2 text-sm text-gray-500">
-            No hay fórmula definida para el rubro seleccionado
-          </p>
-        </div>
+      <div className="p-10 bg-apple-gray-50/10 dark:bg-black/10 rounded-[32px] border border-dashed border-apple-gray-200 dark:border-white/5 flex flex-col items-center justify-center text-center">
+        <Calculator className="w-12 h-12 mb-4 text-apple-gray-200" />
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">No hay fórmula definida</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-900">Insumos Estimados</h2>
-        <div className="text-sm text-gray-500">
-          Calculado para {cantidad} unidades
+    <div className="overflow-hidden bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/[0.05] shadow-apple-float">
+      <div className="p-10 pb-4 flex justify-between items-center bg-apple-gray-50/30 dark:bg-white/[0.01]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-apple-blue/10 flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-apple-blue" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Insumos Estimados</h2>
+            <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Base de cálculo: {cantidad} unidades</p>
+          </div>
         </div>
       </div>
 
-      {materiales.length > 0 && (
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-            <span className="w-2 h-2 bg-blue-500 rounded-full" />
-            Materiales
-          </h3>
-          <div className="space-y-2">
-            {materiales.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between items-center py-2 text-sm"
-              >
-                <div className="flex-1">
-                  <span className="text-gray-900">{item.insumos?.nombre}</span>
-                  <span className="text-gray-500 ml-2">
-                    ({item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad})
-                  </span>
+      <div className="p-8 space-y-10">
+        {materiales.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] flex items-center gap-2">
+              <Package className="w-3.5 h-3.5 text-apple-blue" />
+              Materiales Requeridos
+            </h3>
+            <div className="grid gap-3">
+              {materiales.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center p-4 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-2xl border border-apple-gray-100 dark:border-white/[0.05] hover:border-apple-blue/20 transition-all"
+                >
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-foreground">{item.insumos?.nombre}</p>
+                    <p className="text-[10px] text-apple-gray-400 font-medium">
+                      Intensidad: <span className="text-apple-blue font-black">{(item.cantidad_estimada / cantidad).toFixed(3)}</span> {item.insumos?.unidad}/un
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-foreground">{formatPesos(item.precio_estimado)}</p>
+                    <p className="text-[10px] font-medium text-apple-gray-300 italic">{item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad}</p>
+                  </div>
                 </div>
-                <div className="text-right font-medium text-gray-900">
-                  {formatPesos(item.precio_estimado)}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {manoDeObra.length > 0 && (
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-            <span className="w-2 h-2 bg-orange-500 rounded-full" />
-            Mano de Obra
-          </h3>
-          <div className="space-y-2">
-            {manoDeObra.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between items-center py-2 text-sm"
-              >
-                <div className="flex-1">
-                  <span className="text-gray-900">{item.insumos?.nombre}</span>
-                  <span className="text-gray-500 ml-2">
-                    ({item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad})
-                  </span>
+        {manoDeObra.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] flex items-center gap-2">
+              <Users className="w-3.5 h-3.5 text-orange-500" />
+              Recurso Humano
+            </h3>
+            <div className="grid gap-3">
+              {manoDeObra.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center p-4 bg-orange-500/[0.02] dark:bg-orange-500/[0.05] rounded-2xl border border-orange-500/10 hover:border-orange-500/30 transition-all"
+                >
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-foreground">{item.insumos?.nombre}</p>
+                    <p className="text-[10px] text-orange-500/60 font-medium">
+                      Carga: <span className="font-black">{(item.cantidad_estimada / cantidad).toFixed(3)}</span> hs/un
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-foreground">{formatPesos(item.precio_estimado)}</p>
+                    <p className="text-[10px] font-medium text-apple-gray-300 italic">{item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad}</p>
+                  </div>
                 </div>
-                <div className="text-right font-medium text-gray-900">
-                  {formatPesos(item.precio_estimado)}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      <div className="px-6 py-4 bg-gray-50 flex justify-between items-center">
-        <span className="font-medium text-gray-900">Total Estimado</span>
-        <span className="text-xl font-bold text-blue-600">{formatPesos(total)}</span>
+      <div className="p-8 bg-apple-blue text-white flex justify-between items-center relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 blur-[60px] translate-x-1/2 -translate-y-1/2 rounded-full" />
+        <div className="relative z-10">
+          <p className="text-[10px] font-black text-white/60 uppercase tracking-widest">Inversión Estimada Total</p>
+          <p className="text-3xl font-black tracking-tighter">{formatPesos(total)}</p>
+        </div>
+        <div className="relative z-10 flex flex-col items-end">
+          <Info className="w-5 h-5 text-white/40 mb-1" />
+          <p className="text-[9px] font-medium text-white/60 max-w-[120px] text-right leading-tight">Incluye materiales y mano de obra directa.</p>
+        </div>
       </div>
     </div>
   )

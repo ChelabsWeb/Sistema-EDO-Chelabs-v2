@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { formatPesos } from '@/lib/utils/currency'
 import type { OrdenCompraWithRelations, Insumo } from '@/types/database'
 import { CreateOCFromOTModal } from './create-oc-from-ot-modal'
+import { ShoppingCart, Plus, ChevronRight, Package, Truck, CheckCircle2, AlertCircle, XCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface Props {
   otId: string
@@ -14,94 +16,97 @@ interface Props {
   canCreate: boolean
 }
 
-const estadoColors: Record<string, string> = {
-  pendiente: 'bg-yellow-100 text-yellow-800',
-  enviada: 'bg-blue-100 text-blue-800',
-  recibida_parcial: 'bg-orange-100 text-orange-800',
-  recibida_completa: 'bg-green-100 text-green-800',
-  cancelada: 'bg-red-100 text-red-800',
-}
-
-const estadoLabels: Record<string, string> = {
-  pendiente: 'Pendiente',
-  enviada: 'Enviada',
-  recibida_parcial: 'Recibida Parcial',
-  recibida_completa: 'Recibida',
-  cancelada: 'Cancelada',
+const estadoConfig: Record<string, { label: string; color: string; bg: string; icon: any }> = {
+  pendiente: { label: 'Pendiente', color: 'text-amber-600', bg: 'bg-amber-500/10', icon: AlertCircle },
+  enviada: { label: 'Enviada', color: 'text-blue-600', bg: 'bg-blue-500/10', icon: Truck },
+  recibida_parcial: { label: 'Parcial', color: 'text-orange-600', bg: 'bg-orange-500/10', icon: Package },
+  recibida_completa: { label: 'Recibida', color: 'text-emerald-600', bg: 'bg-emerald-500/10', icon: CheckCircle2 },
+  cancelada: { label: 'Cancelada', color: 'text-red-600', bg: 'bg-red-500/10', icon: XCircle },
 }
 
 export function OTOrdenesCompra({ otId, obraId, ordenesCompra, insumos, canCreate }: Props) {
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Órdenes de Compra</h2>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-apple-blue/10 rounded-xl flex items-center justify-center">
+            <ShoppingCart className="w-5 h-5 text-apple-blue" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground tracking-tight">Órdenes de Compra</h3>
+        </div>
         {canCreate && insumos.length > 0 && (
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-apple-blue text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-apple-blue-dark transition-all active:scale-95 shadow-apple-sm group"
           >
-            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
             Nueva OC
           </button>
         )}
       </div>
 
-      <div className="p-6">
+      <div className="space-y-4">
         {ordenesCompra.length === 0 ? (
-          <div className="text-center py-8">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <p className="mt-2 text-sm text-gray-500">No hay órdenes de compra para esta OT</p>
+          <div className="text-center py-20 bg-apple-gray-50/50 dark:bg-black/10 rounded-[32px] border border-dashed border-apple-gray-200 dark:border-white/5 mx-2">
+            <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <Package className="w-8 h-8 text-apple-gray-200" />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Sin suministros registrados</p>
             {canCreate && insumos.length > 0 && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-3 text-sm text-blue-600 hover:text-blue-800"
+                className="mt-4 text-xs font-black text-apple-blue uppercase tracking-widest hover:underline"
               >
                 Crear primera orden de compra
               </button>
             )}
           </div>
         ) : (
-          <div className="space-y-4">
-            {ordenesCompra.map((oc) => (
-              <Link
-                key={oc.id}
-                href={`/compras/ordenes-compra/${oc.id}`}
-                className="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/50 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900">OC-{oc.numero}</span>
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${estadoColors[oc.estado || 'pendiente']}`}>
-                        {estadoLabels[oc.estado || 'pendiente']}
-                      </span>
+          <div className="grid gap-4 mx-2">
+            {ordenesCompra.map((oc) => {
+              const config = estadoConfig[oc.estado || 'pendiente'] || estadoConfig.pendiente
+              const Icon = config.icon
+
+              return (
+                <Link
+                  key={oc.id}
+                  href={`/compras/ordenes-compra/${oc.id}`}
+                  className="group flex items-center justify-between p-6 bg-white dark:bg-apple-gray-50 rounded-[32px] border border-apple-gray-100 dark:border-white/5 hover:border-apple-blue/40 transition-all duration-500 shadow-apple hover:shadow-apple-float"
+                >
+                  <div className="flex items-center gap-6">
+                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-105 shadow-sm", config.bg, config.color)}>
+                      <Icon className="w-7 h-7" />
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Proveedor: {oc.proveedor || 'Sin especificar'}
-                    </p>
-                    {oc.lineas && oc.lineas.length > 0 && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        {oc.lineas.length} {oc.lineas.length === 1 ? 'item' : 'items'}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold text-gray-900">{formatPesos(oc.total)}</div>
-                    {oc.fecha_emision && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        {new Date(oc.fecha_emision).toLocaleDateString('es-UY')}
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-lg font-black text-foreground tracking-tight">OC-{oc.numero}</span>
+                        <span className={cn("px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border", config.bg, config.color, "border-current/10")}>
+                          {config.label}
+                        </span>
                       </div>
-                    )}
+                      <p className="text-xs font-medium text-apple-gray-400">
+                        Proveedor: <span className="text-foreground font-bold">{oc.proveedor || 'Sin especificar'}</span>
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+
+                  <div className="flex items-center gap-8">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-lg font-black text-foreground tracking-tighter">{formatPesos(oc.total)}</p>
+                      <div className="flex items-center justify-end gap-2 text-[10px] font-bold text-apple-gray-300 uppercase tracking-widest mt-0.5">
+                        <Package className="w-3 h-3" />
+                        {oc.lineas?.length || 0} ITEMS
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-300 group-hover:bg-apple-blue group-hover:text-white transition-all duration-500">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         )}
       </div>

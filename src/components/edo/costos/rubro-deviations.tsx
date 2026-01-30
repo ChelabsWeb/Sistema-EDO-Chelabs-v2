@@ -2,34 +2,31 @@
 
 import { formatPesos } from '@/lib/utils/currency'
 import type { RubroDeviationSummary } from '@/app/actions/costos'
+import { TrendingUp, AlertTriangle, CheckCircle2, Minus } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface RubroDeviationsProps {
   deviations: RubroDeviationSummary[]
 }
 
-const statusColors = {
-  ok: 'bg-green-100 text-green-800',
-  warning: 'bg-yellow-100 text-yellow-800',
-  alert: 'bg-red-100 text-red-800',
-}
-
-const statusLabels = {
-  ok: 'OK',
-  warning: 'Alerta',
-  alert: 'Critico',
+const statusConfig = {
+  ok: { color: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: CheckCircle2, label: 'Bajo Control' },
+  warning: { color: 'text-amber-500', bg: 'bg-amber-500/10', icon: AlertTriangle, label: 'Precaución' },
+  alert: { color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertTriangle, label: 'Sobrecosto' },
 }
 
 export function RubroDeviations({ deviations }: RubroDeviationsProps) {
   if (deviations.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Desvios por Rubro</h2>
-        <p className="text-gray-500 text-center py-4">No hay datos de desvios disponibles</p>
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <div className="w-16 h-16 bg-apple-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center shadow-inner">
+          <Minus className="w-8 h-8 text-apple-gray-200" />
+        </div>
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Sin datos de desvío</p>
       </div>
     )
   }
 
-  // Calculate totals
   const totals = deviations.reduce(
     (acc, d) => ({
       presupuesto: acc.presupuesto + d.presupuesto,
@@ -45,108 +42,75 @@ export function RubroDeviations({ deviations }: RubroDeviationsProps) {
     : 0
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Desvios por Rubro</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Comparacion de costos estimados vs reales por categoria
-        </p>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        {deviations.map((d) => {
+          const config = statusConfig[d.status] || statusConfig.ok
+          const Icon = config.icon
+
+          return (
+            <div key={d.rubro_id} className="p-4 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-3xl border border-apple-gray-100 dark:border-white/5 hover:border-apple-blue/20 transition-all group">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shadow-sm", config.bg, config.color)}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase">{d.rubro_nombre}</h4>
+                    <p className="text-[9px] font-bold text-apple-gray-300 uppercase tracking-widest">{d.ots_count} Órdenes Activas</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={cn(
+                    "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest",
+                    config.bg, config.color
+                  )}>
+                    {d.desvio_porcentaje > 0 ? '+' : ''}{d.desvio_porcentaje.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2.5 bg-white dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
+                  <p className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest leading-none mb-1">Estimado</p>
+                  <p className="text-xs font-black text-foreground tracking-tight">{formatPesos(d.costo_estimado_total)}</p>
+                </div>
+                <div className="p-2.5 bg-white dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
+                  <p className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest leading-none mb-1">Real</p>
+                  <p className="text-xs font-black text-foreground tracking-tight">{d.costo_real_total > 0 ? formatPesos(d.costo_real_total) : '-'}</p>
+                </div>
+                <div className="p-2.5 bg-white dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
+                  <p className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest leading-none mb-1">Diferencia</p>
+                  <p className={cn(
+                    "text-xs font-black tracking-tight",
+                    d.desvio > 0 ? "text-red-500" : d.desvio < 0 ? "text-emerald-500" : "text-foreground"
+                  )}>
+                    {d.desvio > 0 ? '+' : ''}{formatPesos(d.desvio)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Rubro
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Presupuesto
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estimado
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Real
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Desvio
-              </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estado
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {deviations.map((d) => (
-              <tr key={d.rubro_id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{d.rubro_nombre}</div>
-                  <div className="text-xs text-gray-500">{d.ots_count} OTs</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {formatPesos(d.presupuesto)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {formatPesos(d.costo_estimado_total)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {d.costo_real_total > 0 ? formatPesos(d.costo_real_total) : '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                  {d.costo_real_total > 0 ? (
-                    <span className={d.desvio > 0 ? 'text-red-600 font-medium' : d.desvio < 0 ? 'text-green-600' : 'text-gray-900'}>
-                      {d.desvio > 0 ? '+' : ''}{formatPesos(d.desvio)}
-                      <span className="text-xs ml-1">
-                        ({d.desvio_porcentaje > 0 ? '+' : ''}{d.desvio_porcentaje.toFixed(1)}%)
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="text-gray-400">-</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {d.costo_real_total > 0 ? (
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[d.status]}`}>
-                      {statusLabels[d.status]}
-                    </span>
-                  ) : (
-                    <span className="text-gray-400 text-xs">Sin datos</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot className="bg-gray-50">
-            <tr className="font-medium">
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                TOTAL
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                {formatPesos(totals.presupuesto)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                {formatPesos(totals.estimado)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                {totals.real > 0 ? formatPesos(totals.real) : '-'}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                {totals.real > 0 ? (
-                  <span className={totals.desvio > 0 ? 'text-red-600 font-medium' : totals.desvio < 0 ? 'text-green-600' : 'text-gray-900'}>
-                    {totals.desvio > 0 ? '+' : ''}{formatPesos(totals.desvio)}
-                    <span className="text-xs ml-1">
-                      ({totalDesvioPorcentaje > 0 ? '+' : ''}{totalDesvioPorcentaje.toFixed(1)}%)
-                    </span>
-                  </span>
-                ) : (
-                  <span className="text-gray-400">-</span>
-                )}
-              </td>
-              <td className="px-6 py-4"></td>
-            </tr>
-          </tfoot>
-        </table>
+      {/* Mini Summary Footer */}
+      <div className="p-6 bg-apple-blue/[0.03] dark:bg-apple-blue/10 rounded-[32px] border border-apple-blue/10">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[9px] font-black text-apple-blue uppercase tracking-[0.2em] mb-1">Desvío Global Obra</p>
+            <h4 className={cn(
+              "text-xl font-black tracking-tighter",
+              totals.desvio > 0 ? "text-red-500" : "text-emerald-500"
+            )}>
+              {totals.desvio > 0 ? '+' : ''}{formatPesos(totals.desvio)}
+            </h4>
+          </div>
+          <div className="text-right">
+            <p className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest leading-none mb-1">Eficiencia</p>
+            <p className="text-sm font-black text-foreground">{(100 - totalDesvioPorcentaje).toFixed(1)}%</p>
+          </div>
+        </div>
       </div>
     </div>
   )

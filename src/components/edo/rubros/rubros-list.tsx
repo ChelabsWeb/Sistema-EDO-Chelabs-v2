@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { RubroCard } from './rubro-card'
 import { getRubrosWithInsumos } from '@/app/actions/rubro-insumos'
 import type { RubroWithInsumos, UserRole } from '@/types/database'
+import { Plus, Layers, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface RubrosListProps {
   obraId: string
@@ -37,67 +39,50 @@ export function RubrosList({ obraId, userRole, valorUr }: RubrosListProps) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">Rubros</h2>
-        </div>
-        <div className="p-6">
-          <div className="flex items-center justify-center py-8">
-            <svg className="w-6 h-6 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+        <Loader2 className="w-10 h-10 text-apple-blue animate-spin mb-4" />
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Sincronizando Estructura...</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+    <div className="space-y-8">
+      {/* Header Info (Subtle) */}
+      <div className="flex items-center justify-between px-2">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Rubros</h2>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {predefinidos.length} predefinidos, {personalizados.length} personalizados
+          <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em]">
+            {predefinidos.length} PREDEFINIDOS <span className="mx-2 text-apple-gray-100 dark:text-white/10">•</span> {personalizados.length} PERSONALIZADOS
           </p>
         </div>
         <Link
           href={`/obras/${obraId}/rubros/nuevo`}
-          className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+          className="flex items-center gap-2 text-xs font-black text-apple-blue uppercase tracking-widest hover:bg-apple-blue/5 px-4 py-2 rounded-full transition-all group"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
+          <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
           Nuevo Rubro
         </Link>
       </div>
-      <div className="p-4">
+
+      <div>
         {rubros.length === 0 ? (
-          <div className="text-center py-8">
-            <svg
-              className="w-12 h-12 text-gray-300 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
-            <p className="text-gray-500 mb-4">No hay rubros definidos</p>
+          <div className="text-center py-20 space-y-6 bg-apple-gray-50/10 dark:bg-black/10 rounded-[40px] border border-dashed border-apple-gray-200 dark:border-white/5 mx-2">
+            <div className="w-20 h-20 bg-white/50 dark:bg-white/5 rounded-[28px] flex items-center justify-center mx-auto shadow-apple-sm">
+              <Layers className="w-10 h-10 text-apple-gray-200" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-foreground tracking-tight">Estructura Vacía</h3>
+              <p className="text-sm font-medium text-apple-gray-400 max-w-xs mx-auto">Comienza agregando los rubros que compondrán el presupuesto de esta obra.</p>
+            </div>
             <Link
               href={`/obras/${obraId}/rubros/nuevo`}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-apple-blue text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-apple-blue-dark transition-all active:scale-[0.95] shadow-apple-sm"
             >
               Agregar primer rubro
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-6">
             {rubros.map((rubro) => (
               <RubroCard
                 key={rubro.id}
