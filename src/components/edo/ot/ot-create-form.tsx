@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation'
 import { createOT, getRubroBudgetStatus } from '@/app/actions/ordenes-trabajo'
 import { formatPesos } from '@/lib/utils/currency'
 import { InsumoSelector, type InsumoSeleccionado } from './insumo-selector'
+import {
+  AlertTriangle, CheckCircle2, Calculator, TrendingUp, Wallet,
+  Tag, AlignLeft, ChevronDown, Check, Info, ArrowRight, Loader2
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface Rubro {
   id: string
@@ -75,7 +80,6 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
   // Handle insumos selection change
   const handleInsumosChange = useCallback((insumos: InsumoSeleccionado[]) => {
     setInsumosSeleccionados(insumos)
-    // Calculate cost from selected insumos
     const total = insumos.reduce((sum, i) => sum + i.cantidad * i.precio_unitario, 0)
     setCostoEstimado(total)
   }, [])
@@ -86,7 +90,6 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
     setIsSubmitting(true)
 
     try {
-      // Prepare insumos for the server action
       const insumosParaEnviar = insumosSeleccionados.map((i) => ({
         insumo_id: i.insumo_id,
         cantidad_estimada: i.cantidad,
@@ -115,160 +118,195 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
   const excedesPresupuesto = budgetStatus && costoEstimado > budgetStatus.disponible
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-12 relative z-10">
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="p-6 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-3xl flex items-center gap-4 text-red-600 dark:text-red-400 animate-apple-slide-up">
+          <AlertTriangle className="w-6 h-6 shrink-0" />
+          <p className="text-sm font-bold uppercase tracking-tight">{error}</p>
         </div>
       )}
 
-      {/* Rubro Selection */}
-      <div>
-        <label htmlFor="rubro" className="block text-sm font-medium text-gray-700 mb-1">
-          Rubro *
-        </label>
-        <select
-          id="rubro"
-          value={selectedRubroId}
-          onChange={(e) => setSelectedRubroId(e.target.value)}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="">Seleccionar rubro...</option>
-          {rubros.map((rubro) => (
-            <option key={rubro.id} value={rubro.id}>
-              {rubro.nombre} ({rubro.unidad})
-            </option>
-          ))}
-        </select>
+      {/* Section: Rubro Selection */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 px-2">
+          <Tag className="w-4 h-4 text-apple-blue" />
+          <label htmlFor="rubro" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Selección de Rubro Presupuestal</label>
+        </div>
+        <div className="relative group">
+          <select
+            id="rubro"
+            value={selectedRubroId}
+            onChange={(e) => setSelectedRubroId(e.target.value)}
+            required
+            className="w-full h-20 pl-8 pr-16 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-200 dark:border-white/10 rounded-[28px] text-xl font-black text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all appearance-none"
+          >
+            <option value="" className="font-sans text-base">Elegir rubro de la obra...</option>
+            {rubros.map((rubro) => (
+              <option key={rubro.id} value={rubro.id} className="font-sans text-base">
+                {rubro.nombre} {rubro.unidad ? `(${rubro.unidad})` : ''}
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-apple-gray-300">
+            <ChevronDown className="w-6 h-6 group-focus-within:rotate-180 transition-transform" />
+          </div>
+        </div>
       </div>
 
-      {/* Budget Status */}
+      {/* Section: Budget Monitor (Bento Style) */}
       {budgetStatus && (
-        <div className="bg-gray-50 rounded-md p-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Estado del Presupuesto del Rubro</h4>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <div className="text-gray-500">Presupuesto</div>
-              <div className="font-medium">{formatPesos(budgetStatus.presupuesto)}</div>
+        <div className="bg-apple-gray-50/50 dark:bg-black/40 rounded-[40px] border border-apple-gray-100 dark:border-white/5 p-10 space-y-8 animate-apple-slide-up relative overflow-hidden">
+          {isLoadingBudget && (
+            <div className="absolute inset-0 backdrop-blur-sm bg-white/20 dark:bg-black/20 flex items-center justify-center z-20">
+              <Loader2 className="w-10 h-10 text-apple-blue animate-spin" />
             </div>
-            <div>
-              <div className="text-gray-500">Gastado</div>
-              <div className="font-medium">{formatPesos(budgetStatus.gastado)}</div>
+          )}
+
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-3">
+              <Wallet className="w-5 h-5 text-apple-blue" />
+              <h4 className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.3em]">Estado de Inversión</h4>
             </div>
-            <div>
-              <div className="text-gray-500">Disponible</div>
-              <div className={`font-medium ${budgetStatus.disponible < 0 ? 'text-red-600' : ''}`}>
+            <span className={cn(
+              "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+              budgetStatus.porcentaje_usado > 100 ? "bg-red-500/10 text-red-600 border-red-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+            )}>
+              {budgetStatus.porcentaje_usado.toFixed(1)}% Comprometido
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Base del Rubro</p>
+              <p className="text-2xl font-black text-foreground tracking-tighter">{formatPesos(budgetStatus.presupuesto)}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Comprometido</p>
+              <p className="text-2xl font-black text-foreground tracking-tighter">{formatPesos(budgetStatus.gastado)}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Capital Disponible</p>
+              <p className={cn(
+                "text-2xl font-black tracking-tighter",
+                budgetStatus.disponible < 0 ? 'text-red-500' : 'text-emerald-500'
+              )}>
                 {formatPesos(budgetStatus.disponible)}
+              </p>
+            </div>
+          </div>
+
+          <div className="relative pt-4">
+            <div className="h-4 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden shadow-inner flex">
+              <div
+                className={cn(
+                  "h-full transition-all duration-1000 ease-out flex items-center justify-center",
+                  budgetStatus.porcentaje_usado > 100 ? 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]' :
+                    budgetStatus.porcentaje_usado > 80 ? 'bg-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.4)]' :
+                      'bg-apple-blue shadow-[0_0_20px_rgba(0,122,255,0.4)]'
+                )}
+                style={{ width: `${Math.min(budgetStatus.porcentaje_usado, 100)}%` }}
+              >
+                {budgetStatus.porcentaje_usado > 30 && <div className="h-0.5 w-[80%] bg-white/20 rounded-full" />}
               </div>
             </div>
           </div>
-          <div className="mt-2">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Uso del presupuesto</span>
-              <span>{budgetStatus.porcentaje_usado.toFixed(1)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all ${
-                  budgetStatus.porcentaje_usado > 100 ? 'bg-red-500' :
-                  budgetStatus.porcentaje_usado > 80 ? 'bg-yellow-500' :
-                  'bg-green-500'
-                }`}
-                style={{ width: `${Math.min(budgetStatus.porcentaje_usado, 100)}%` }}
-              />
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Descripcion */}
-      <div>
-        <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-1">
-          Descripcion *
-        </label>
-        <textarea
-          id="descripcion"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          required
-          rows={3}
-          maxLength={500}
-          placeholder="Describa el trabajo a realizar..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <p className="mt-1 text-xs text-gray-500">{descripcion.length}/500 caracteres</p>
+      {/* Section: Description */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 px-2">
+          <AlignLeft className="w-4 h-4 text-apple-blue" />
+          <label htmlFor="descripcion" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Definición del Trabajo</label>
+        </div>
+        <div className="relative group">
+          <textarea
+            id="descripcion"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            required
+            rows={4}
+            maxLength={500}
+            placeholder="Describe técnicamente lo que se debe ejecutar en esta etapa..."
+            className="w-full p-8 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-200 dark:border-white/10 rounded-[32px] text-lg font-medium text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all resize-none shadow-inner"
+          />
+          <div className="absolute bottom-6 right-8 text-[10px] font-black text-apple-gray-200 uppercase tracking-widest">
+            {descripcion.length}/500
+          </div>
+        </div>
       </div>
 
-      {/* Insumos Selector */}
+      {/* Section: Insumos Inventory Selector */}
       {selectedRubroId && (
-        <InsumoSelector
-          obraId={obraId}
-          insumosObra={insumosObra}
-          onChange={handleInsumosChange}
-          isLoading={isLoadingBudget}
-        />
+        <div className="space-y-8 py-4">
+          <div className="flex items-center gap-3 px-2 border-b border-apple-gray-100 dark:border-white/5 pb-4">
+            <Calculator className="w-5 h-5 text-apple-blue" />
+            <h4 className="text-xl font-black text-foreground tracking-tighter">Planificación de Recursos</h4>
+          </div>
+          <InsumoSelector
+            obraId={obraId}
+            insumosObra={insumosObra}
+            onChange={handleInsumosChange}
+            isLoading={isLoadingBudget}
+          />
+        </div>
       )}
 
-      {/* Estimated Cost */}
-      <div className="bg-blue-50 rounded-md p-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h4 className="text-sm font-medium text-gray-700">Costo Estimado Total</h4>
-            {excedesPresupuesto && (
-              <p className="text-xs text-yellow-600 mt-1">
-                Excede el presupuesto disponible del rubro
+      {/* High-Impact Summary Bar */}
+      <div className={cn(
+        "sticky bottom-0 z-40 -mx-10 -mb-10 p-10 backdrop-blur-xl border-t transition-all duration-500",
+        excedesPresupuesto
+          ? "bg-amber-500/10 border-amber-500/20"
+          : "bg-white/80 dark:bg-black/60 border-apple-gray-100 dark:border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.05)]"
+      )}>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-10 max-w-5xl mx-auto">
+          <div className="flex items-center gap-8">
+            <div className="space-y-1">
+              <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Costo Estimado</p>
+              <p className={cn(
+                "text-4xl font-black tracking-tighter leading-none transition-colors",
+                excedesPresupuesto ? 'text-amber-500' : 'text-apple-blue'
+              )}>
+                {formatPesos(costoEstimado)}
               </p>
+            </div>
+            {excedesPresupuesto && (
+              <div className="flex items-center gap-3 p-4 bg-amber-500 text-white rounded-2xl animate-apple-fade-in shadow-lg">
+                <AlertTriangle className="w-5 h-5 shrink-0" />
+                <div className="text-[10px] font-black uppercase leading-tight tracking-wider">
+                  Requiere Aprobación<br />del Director
+                </div>
+              </div>
             )}
           </div>
-          <div className={`text-2xl font-bold ${excedesPresupuesto ? 'text-yellow-600' : 'text-blue-600'}`}>
-            {formatPesos(costoEstimado)}
+
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="flex-1 md:flex-none px-10 h-16 rounded-full text-xs font-black uppercase tracking-widest text-apple-gray-400 hover:text-foreground transition-all"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || !selectedRubroId || !descripcion}
+              className="flex-[2] md:flex-none h-20 px-14 rounded-[28px] bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-apple-blue-dark active:scale-95 transition-all shadow-apple-float disabled:opacity-30 flex items-center justify-center gap-4 group"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+                  Sincronizando...
+                </>
+              ) : (
+                <>
+                  Lanzar como Borrador
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Warning if exceeds budget */}
-      {excedesPresupuesto && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-          <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <div>
-              <h4 className="text-sm font-medium text-yellow-800">Advertencia de Presupuesto</h4>
-              <p className="text-sm text-yellow-700 mt-1">
-                Esta OT excede el presupuesto disponible del rubro por{' '}
-                <strong>{formatPesos(costoEstimado - (budgetStatus?.disponible || 0))}</strong>.
-                Puede continuar, pero requerira aprobacion del Director de Obra.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting || !selectedRubroId || !descripcion}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? (
-            <>
-              <span className="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-              Guardando...
-            </>
-          ) : (
-            'Guardar como Borrador'
-          )}
-        </button>
       </div>
     </form>
   )

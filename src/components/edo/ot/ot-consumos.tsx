@@ -243,39 +243,77 @@ export function OTConsumos({ otId, obraId, consumos: initialConsumos, canEdit }:
                 </div>
 
                 {isEditing && (
-                  <div className="mt-8 p-6 bg-apple-gray-50/50 dark:bg-black/20 rounded-[28px] border border-apple-gray-100 dark:border-white/5 animate-apple-slide-up">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest ml-1">Cantidad Consumida ({insumo.unidad})</label>
-                        <input
-                          type="number"
-                          value={cantidadInput}
-                          onChange={(e) => setCantidadInput(e.target.value)}
-                          autoFocus
-                          placeholder={`Ej: ${insumo.cantidad_estimada}`}
-                          className="w-full h-14 bg-white dark:bg-black border border-apple-gray-200 dark:border-white/10 rounded-2xl px-5 text-lg font-bold outline-none focus:ring-4 focus:ring-apple-blue/10 transition-all"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest ml-1">Observaciones</label>
-                        <input
-                          type="text"
-                          value={notasInput}
-                          onChange={(e) => setNotasInput(e.target.value)}
-                          placeholder="Ej: Desperdicio por lluvia..."
-                          className="w-full h-14 bg-white dark:bg-black border border-apple-gray-200 dark:border-white/10 rounded-2xl px-5 text-sm font-medium outline-none focus:ring-4 focus:ring-apple-blue/10 transition-all"
-                        />
-                      </div>
+                  <div className="mt-8 p-8 bg-apple-gray-50 dark:bg-black/40 rounded-[40px] border border-apple-blue/20 dark:border-apple-blue/10 animate-apple-slide-up shadow-inner relative overflow-hidden group/form">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover/form:opacity-10 transition-opacity">
+                      <Calculator className="w-32 h-32" />
                     </div>
-                    <div className="flex justify-end gap-3 mt-8">
-                      <button onClick={handleCancelEdit} className="h-12 px-8 rounded-2xl text-sm font-bold text-apple-gray-400 hover:text-foreground transition-all">Cancelar</button>
-                      <button
-                        onClick={() => handleSaveConsumo(insumo)}
-                        disabled={isSaving}
-                        className="h-12 px-10 rounded-2xl bg-apple-blue text-white text-sm font-black uppercase tracking-widest hover:bg-apple-blue-dark active:scale-95 transition-all disabled:opacity-50"
-                      >
-                        {isSaving ? "Guardando..." : "Guardar Registro"}
-                      </button>
+
+                    <div className="relative z-10 space-y-10">
+                      <div className="flex flex-col md:flex-row gap-10">
+                        <div className="flex-[2] space-y-4">
+                          <div className="flex items-center justify-between px-2">
+                            <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Cantidad Utilizada</label>
+                            <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">{insumo.unidad} actual</span>
+                          </div>
+                          <div className="relative group/input">
+                            <input
+                              type="number"
+                              value={cantidadInput}
+                              onChange={(e) => setCantidadInput(e.target.value)}
+                              autoFocus
+                              placeholder={`0.00`}
+                              className="w-full bg-white dark:bg-apple-gray-50 border border-apple-gray-200 dark:border-white/10 rounded-[28px] px-8 py-10 text-5xl font-black text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all placeholder:text-apple-gray-100"
+                            />
+                            <div className="absolute right-8 top-1/2 -translate-y-1/2">
+                              <span className="text-xl font-black text-apple-gray-200 group-focus-within/input:text-apple-blue transition-colors">{insumo.unidad}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex-[3] space-y-4">
+                          <div className="px-2">
+                            <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Notas / Observaciones de Campo</label>
+                          </div>
+                          <textarea
+                            value={notasInput}
+                            onChange={(e) => setNotasInput(e.target.value)}
+                            placeholder="Ej: Desperdicio por rotura de bolsa, excedente en cimentación..."
+                            className="w-full h-[124px] bg-white dark:bg-apple-gray-50 border border-apple-gray-200 dark:border-white/10 rounded-[28px] px-8 py-6 text-base font-medium outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4 border-t border-apple-gray-200/50 dark:border-white/5">
+                        <div className="flex items-center gap-4 text-[10px] font-bold text-apple-gray-300 uppercase tracking-widest">
+                          <AlertTriangle className="w-4 h-4 text-amber-500" />
+                          El registro afectará el costo real de la obra inmediatamente.
+                        </div>
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <button
+                            onClick={handleCancelEdit}
+                            className="flex-1 md:flex-none px-10 h-16 rounded-full text-xs font-black uppercase tracking-widest text-apple-gray-400 hover:text-foreground hover:bg-apple-gray-100 dark:hover:bg-white/5 transition-all"
+                          >
+                            Descartar
+                          </button>
+                          <button
+                            onClick={() => handleSaveConsumo(insumo)}
+                            disabled={isSaving}
+                            className="flex-[2] md:flex-none px-12 h-16 rounded-full bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-apple-blue-dark active:scale-95 transition-all shadow-apple-float disabled:opacity-50 flex items-center justify-center gap-3"
+                          >
+                            {isSaving ? (
+                              <>
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Procesando...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 className="w-5 h-5" />
+                                Registrar Consumo
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

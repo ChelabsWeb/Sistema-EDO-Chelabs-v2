@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { getOrdenesCompra, updateOCEstado, type OCFilters } from '@/app/actions/ordenes-compra'
 import { getOCForReception, registerRecepcion, type OCForReception, type RecepcionItem } from '@/app/actions/recepciones'
 import type { OrdenCompraWithRelations } from '@/types/database'
@@ -399,6 +400,13 @@ export default function OrdenesCompraPage() {
                           </td>
                           <td className="px-10 py-8 text-right">
                             <div className="flex items-center justify-end gap-2">
+                              <Link
+                                href={`/compras/ordenes-compra/${oc.id}`}
+                                className="w-10 h-10 rounded-full bg-apple-gray-50 dark:bg-white/10 text-apple-gray-400 flex items-center justify-center hover:bg-apple-blue hover:text-white transition-all active:scale-90"
+                                title="Ver Detalle Digital"
+                              >
+                                <Search className="w-5 h-5" />
+                              </Link>
                               {oc.estado === 'pendiente' && (
                                 <button onClick={() => handleUpdateEstado(oc.id, 'enviada')} disabled={updatingId === oc.id} className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all active:scale-90" title="Enviar">
                                   <Truck className="w-5 h-5" />

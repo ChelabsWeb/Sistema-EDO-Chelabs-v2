@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { updateInsumo, getInsumo } from '@/app/actions/insumos'
 import { getObra } from '@/app/actions/obras'
+import { ArrowLeft, Package, Tag, DollarSign, CheckCircle2, Loader2, Info, Users, Save } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface Props {
   params: Promise<{ id: string; insumoId: string }>
@@ -32,14 +34,15 @@ export default function EditarInsumoPage({ params }: Props) {
       setObraId(resolvedParams.id)
       setInsumoId(resolvedParams.insumoId)
 
-      // Load obra info
-      const obraResult = await getObra(resolvedParams.id)
+      const [obraResult, insumoResult] = await Promise.all([
+        getObra(resolvedParams.id),
+        getInsumo(resolvedParams.insumoId)
+      ])
+
       if (obraResult.success) {
         setObraNombre(obraResult.data.nombre)
       }
 
-      // Load insumo data
-      const insumoResult = await getInsumo(resolvedParams.insumoId)
       if (insumoResult.success) {
         const insumo = insumoResult.data
         setFormData({
@@ -65,10 +68,8 @@ export default function EditarInsumoPage({ params }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!obraId || !insumoId) return
-
     setSaving(true)
     setError(null)
-
     const result = await updateInsumo({
       id: insumoId,
       nombre: formData.nombre,
@@ -76,144 +77,158 @@ export default function EditarInsumoPage({ params }: Props) {
       tipo: formData.tipo,
       precio_referencia: formData.precio_referencia ? parseFloat(formData.precio_referencia) : null,
     })
-
     if (!result.success) {
       setError(result.error)
       setSaving(false)
       return
     }
-
     router.push(`/obras/${obraId}/insumos`)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Cargando...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-apple-gray-50/20 dark:bg-black/20 animate-pulse">
+        <Loader2 className="w-12 h-12 text-apple-blue animate-spin mb-4" />
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Cargando Suministro...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center gap-4">
-          <Link href={`/obras/${obraId}/insumos`} className="text-gray-500 hover:text-gray-700">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-black/40 p-6 md:p-14 antialiased">
+      {/* Header Glassmorphic */}
+      <header className="fixed top-0 left-0 right-0 z-50 px-8 py-6 backdrop-blur-xl bg-white/70 dark:bg-apple-gray-50/70 border-b border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link
+            href={`/obras/${obraId}/insumos`}
+            className="w-10 h-10 rounded-full glass dark:glass-dark flex items-center justify-center text-apple-gray-400 hover:text-foreground transition-all active:scale-95 shadow-apple-sm"
+          >
+            <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Editar Insumo</h1>
-            <p className="text-sm text-gray-500">{obraNombre}</p>
+            <h1 className="text-xl font-black text-foreground tracking-tight">Editar Insumo</h1>
+            <p className="text-[10px] font-black text-apple-blue uppercase tracking-widest">{obraNombre}</p>
           </div>
         </div>
       </header>
 
-      {/* Form */}
-      <main className="max-w-2xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-6">
+      <main className="max-w-3xl mx-auto pt-28 pb-20 animate-apple-slide-up">
+        <form onSubmit={handleSubmit} className="space-y-10">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
+            <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-[32px] text-red-600 flex items-center gap-4">
+              <Info className="w-6 h-6 shrink-0" />
+              <p className="text-sm font-bold tracking-tight">{error}</p>
             </div>
           )}
 
-          <div>
-            <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
-              Nombre del Insumo *
-            </label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              required
-              value={formData.nombre}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Ej: Cemento Portland, Arena, Oficial Albanil"
-            />
-          </div>
+          <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-10 border border-apple-gray-100 dark:border-white/5 shadow-apple-float space-y-12">
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="unidad" className="block text-sm font-medium text-gray-700">
-                Unidad de Medida *
-              </label>
-              <select
-                id="unidad"
-                name="unidad"
-                value={formData.unidad}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            {/* Field: Name */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.3em] ml-2 block">Nombre del Insumo</label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  name="nombre"
+                  required
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  className="w-full px-8 py-6 bg-apple-gray-50 dark:bg-black/20 rounded-[28px] border border-apple-gray-100 dark:border-white/10 focus:outline-none focus:border-apple-blue focus:ring-8 focus:ring-apple-blue/5 transition-all text-xl font-bold"
+                />
+                <div className="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-apple-blue/10 rounded-xl flex items-center justify-center text-apple-blue">
+                  <Package className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+
+            {/* Field Group: Unity & Type */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.3em] ml-2 block">Unidad de Medida</label>
+                <div className="relative">
+                  <select
+                    name="unidad"
+                    value={formData.unidad}
+                    onChange={handleChange}
+                    className="w-full px-8 py-5 bg-apple-gray-50 dark:bg-black/20 rounded-[28px] border border-apple-gray-100 dark:border-white/10 focus:outline-none focus:border-apple-blue transition-all text-lg font-bold appearance-none"
+                  >
+                    <option value="unidad">Unidad (un)</option>
+                    <option value="kg">Kilogramo (kg)</option>
+                    <option value="lt">Litro (lt)</option>
+                    <option value="m2">Metro cuadrado (m2)</option>
+                    <option value="m3">Metro cúbico (m3)</option>
+                    <option value="ml">Metro lineal (ml)</option>
+                    <option value="bolsa">Bolsa</option>
+                    <option value="hr">Hora (hr)</option>
+                    <option value="jornal">Jornal</option>
+                  </select>
+                  <Tag className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 text-apple-gray-300 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.3em] ml-2 block">Tipo de Insumo</label>
+                <div className="flex gap-2 p-1.5 bg-apple-gray-50 dark:bg-black/20 rounded-[24px] border border-apple-gray-100 dark:border-white/10">
+                  {(['material', 'mano_de_obra'] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setFormData(f => ({ ...f, tipo: t }))}
+                      className={cn(
+                        "flex-1 py-3.5 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all gap-2 flex items-center justify-center",
+                        formData.tipo === t
+                          ? "bg-white dark:bg-apple-gray-50 text-foreground shadow-apple-sm scale-[1.02]"
+                          : "text-apple-gray-400 hover:text-foreground"
+                      )}
+                    >
+                      {t === 'material' ? <Package className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
+                      {t === 'material' ? 'Material' : 'Recurso'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Field: Price */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.3em] ml-2 block">Precio Referencia (UYU)</label>
+              <div className="relative group">
+                <div className="absolute left-8 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                  <span className="text-xl font-black text-apple-blue">$</span>
+                </div>
+                <input
+                  type="number"
+                  name="precio_referencia"
+                  step="0.01"
+                  min="0"
+                  value={formData.precio_referencia}
+                  onChange={handleChange}
+                  className="w-full pl-16 pr-8 py-6 bg-apple-gray-50 dark:bg-black/20 rounded-[28px] border border-apple-gray-100 dark:border-white/10 focus:outline-none focus:border-apple-blue focus:ring-8 focus:ring-apple-blue/5 transition-all text-3xl font-black tracking-tighter"
+                  placeholder="0.00"
+                />
+                <div className="absolute right-8 top-1/2 -translate-y-1/2 text-xs font-black text-apple-gray-200 uppercase tracking-widest pointer-events-none">
+                  POR {formData.unidad.toUpperCase()}
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col md:flex-row gap-4 pt-4">
+              <Link
+                href={`/obras/${obraId}/insumos`}
+                className="flex-1 py-6 bg-apple-gray-100 dark:bg-white/5 text-apple-gray-400 rounded-[32px] font-black text-xs uppercase tracking-[0.2em] border border-apple-gray-100 dark:border-white/5 hover:text-foreground transition-all text-center"
               >
-                <option value="unidad">Unidad</option>
-                <option value="kg">Kilogramo (kg)</option>
-                <option value="lt">Litro (lt)</option>
-                <option value="m2">Metro cuadrado (m2)</option>
-                <option value="m3">Metro cubico (m3)</option>
-                <option value="ml">Metro lineal (ml)</option>
-                <option value="bolsa">Bolsa</option>
-                <option value="hr">Hora (hr)</option>
-                <option value="jornal">Jornal</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">
-                Tipo *
-              </label>
-              <select
-                id="tipo"
-                name="tipo"
-                value={formData.tipo}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                Cancelar
+              </Link>
+              <button
+                type="submit"
+                disabled={saving || !formData.nombre}
+                className="flex-[2] py-6 bg-apple-blue text-white rounded-[32px] font-black text-xs uppercase tracking-[0.2em] shadow-apple-float hover:bg-apple-blue-dark transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
               >
-                <option value="material">Material</option>
-                <option value="mano_de_obra">Mano de Obra</option>
-              </select>
+                {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                {saving ? 'Guardando...' : 'Guardar Cambios'}
+              </button>
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="precio_referencia" className="block text-sm font-medium text-gray-700">
-              Precio de Referencia (UYU)
-            </label>
-            <div className="mt-1 relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">$</span>
-              <input
-                type="number"
-                id="precio_referencia"
-                name="precio_referencia"
-                value={formData.precio_referencia}
-                onChange={handleChange}
-                step="0.01"
-                min="0"
-                className="block w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="0.00"
-              />
-            </div>
-            <p className="mt-1 text-sm text-gray-500">
-              Precio de referencia por unidad. Se usa para estimar costos.
-            </p>
-          </div>
-
-          <div className="flex justify-end gap-4 pt-4">
-            <Link
-              href={`/obras/${obraId}/insumos`}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              Cancelar
-            </Link>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? 'Guardando...' : 'Guardar Cambios'}
-            </button>
           </div>
         </form>
       </main>

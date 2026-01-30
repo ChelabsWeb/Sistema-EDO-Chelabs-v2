@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 
 export default async function UsuariosPage() {
   const supabase = await createClient()
-  const isDemo = process.env.DEMO_MODE === 'true'
+  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
 
   let user = null
   if (!isDemo) {
@@ -116,7 +116,7 @@ export default async function UsuariosPage() {
               </p>
               <Link
                 href="/admin/usuarios/nuevo"
-                className="inline-flex items-center gap-3 px-12 py-6 bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] rounded-full hover:bg-apple-blue-dark transition-all shadow-apple-float active:scale-[0.95]"
+                className="inline-flex items-center gap-3 px-12 py-6 bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] rounded-full hover:bg-apple-blue-dark transition-all shadow-apple-float active:scale-95"
               >
                 Registrar primer usuario
               </Link>
@@ -162,7 +162,7 @@ export default async function UsuariosPage() {
                         <div className="h-1 w-1 rounded-full bg-apple-gray-200" />
                         <div className="flex items-center gap-1.5 text-xs font-bold text-apple-gray-400">
                           <Calendar className="w-3.5 h-3.5 opacity-50" />
-                          Desde {new Date(usuario.created_at).toLocaleDateString('es-UY', { month: 'short', year: 'numeric' })}
+                          Desde {usuario.created_at ? new Date(usuario.created_at).toLocaleDateString('es-UY', { month: 'short', year: 'numeric' }) : '-'}
                         </div>
                       </div>
                     </div>

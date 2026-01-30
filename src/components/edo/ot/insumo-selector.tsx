@@ -2,6 +2,12 @@
 
 import { useState, useMemo } from 'react'
 import { formatPesos } from '@/lib/utils/currency'
+import {
+  Package, Users, Trash2, PlusCircle, Search,
+  ChevronRight, Calculator, X, Layers, ShoppingCart,
+  ArrowDownCircle, Plus
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export interface InsumoSeleccionado {
   insumo_id: string
@@ -108,162 +114,201 @@ export function InsumoSelector({
 
   if (isLoading) {
     return (
-      <div className="border border-gray-200 rounded-md p-4">
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-blue-600 rounded-full" />
-          <span className="ml-2 text-sm text-gray-500">Cargando insumos...</span>
-        </div>
+      <div className="p-12 glass dark:glass-dark rounded-[40px] border border-apple-gray-100 dark:border-white/5 flex flex-col items-center justify-center gap-4 animate-apple-fade-in">
+        <div className="w-12 h-12 border-4 border-apple-blue/20 border-t-apple-blue rounded-full animate-spin" />
+        <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Sincronizando inventario...</p>
       </div>
     )
   }
 
   return (
-    <div className="border border-gray-200 rounded-md">
-      {/* Header */}
-      <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-        <h4 className="text-sm font-medium text-gray-700">Insumos para la OT</h4>
-        <p className="text-xs text-gray-500 mt-0.5">
-          {totales.cantidadSeleccionados} insumo(s) agregado(s)
-        </p>
-      </div>
-
-      {/* Insumos list */}
-      <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+    <div className="space-y-6 animate-apple-slide-up">
+      {/* Dynamic Inventory Stream */}
+      <div className="space-y-4">
         {insumos.length === 0 ? (
-          <div className="p-4 text-center text-sm text-gray-500">
-            No hay insumos agregados.
-            <br />
-            Use el boton de abajo para agregar insumos.
+          <div className="p-16 border-2 border-dashed border-apple-gray-100 dark:border-white/5 rounded-[40px] text-center group hover:border-apple-blue/30 transition-colors">
+            <div className="w-20 h-20 bg-apple-gray-50 dark:bg-white/5 rounded-[32px] flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+              <Layers className="w-10 h-10 text-apple-gray-200" />
+            </div>
+            <p className="text-lg font-black text-apple-gray-300 tracking-tight">Carga de Recursos Vacía</p>
+            <p className="text-xs font-bold text-apple-gray-400 mt-2 uppercase tracking-widest leading-loose">Agregue materiales o mano de obra<br />para estimar el costo de la OT</p>
           </div>
         ) : (
-          insumos.map((insumo) => (
-            <div
-              key={insumo.insumo_id}
-              className="p-3 flex items-center gap-3 bg-white"
-            >
-              {/* Insumo info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-900 truncate">
-                    {insumo.nombre}
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500">
-                  {formatPesos(insumo.precio_unitario)} / {insumo.unidad}
-                </div>
-              </div>
+          <div className="grid grid-cols-1 gap-4">
+            {insumos.map((insumo) => {
+              const itemObra = insumosObra.find(io => io.id === insumo.insumo_id)
+              const isManoDeObra = itemObra?.tipo === 'mano_de_obra'
 
-              {/* Cantidad input */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={insumo.cantidad}
-                  onChange={(e) =>
-                    updateCantidad(insumo.insumo_id, parseFloat(e.target.value) || 0)
-                  }
-                  min="0"
-                  step="0.01"
-                  className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <span className="text-xs text-gray-500 w-8">{insumo.unidad}</span>
-              </div>
+              return (
+                <div
+                  key={insumo.insumo_id}
+                  className="group bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/5 rounded-[32px] p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-apple-lg hover:-translate-y-1 transition-all duration-500"
+                >
+                  <div className="flex items-center gap-5">
+                    <div className={cn(
+                      "w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110",
+                      isManoDeObra ? "bg-orange-500/10 text-orange-500" : "bg-apple-blue/10 text-apple-blue"
+                    )}>
+                      {isManoDeObra ? <Users className="w-7 h-7" /> : <Package className="w-7 h-7" />}
+                    </div>
+                    <div>
+                      <h5 className="text-base font-black text-foreground tracking-tight">{insumo.nombre}</h5>
+                      <p className="text-[10px] font-bold text-apple-gray-300 uppercase tracking-widest">
+                        {formatPesos(insumo.precio_unitario)} por {insumo.unidad}
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Subtotal */}
-              <div className="text-right min-w-[80px]">
-                <div className="text-sm font-medium text-gray-900">
-                  {formatPesos(insumo.cantidad * insumo.precio_unitario)}
+                  <div className="flex items-center gap-8">
+                    <div className="flex flex-col items-end gap-1">
+                      <label className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">Cantidad</label>
+                      <div className="relative group/field">
+                        <input
+                          type="number"
+                          value={insumo.cantidad}
+                          onChange={(e) => updateCantidad(insumo.insumo_id, parseFloat(e.target.value) || 0)}
+                          min="0"
+                          step="0.01"
+                          placeholder="0"
+                          className="w-28 px-4 py-3 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/10 rounded-xl text-center text-lg font-black text-foreground outline-none focus:ring-4 focus:ring-apple-blue/10 focus:border-apple-blue transition-all"
+                        />
+                        <span className="absolute right-[-24px] top-1/2 -translate-y-1/2 text-[10px] font-black text-apple-gray-300 uppercase">{insumo.unidad}</span>
+                      </div>
+                    </div>
+
+                    <div className="min-w-[120px] text-right">
+                      <p className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Subtotal</p>
+                      <p className="text-xl font-black text-foreground tracking-tighter">
+                        {formatPesos(insumo.cantidad * insumo.precio_unitario)}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeInsumo(insumo.insumo_id)}
+                      className="w-10 h-10 rounded-full bg-red-500/5 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-90 border border-red-500/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              {/* Remove button */}
-              <button
-                type="button"
-                onClick={() => removeInsumo(insumo.insumo_id)}
-                className="text-gray-400 hover:text-red-500 p-1"
-                title="Quitar insumo"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          ))
+              )
+            })}
+          </div>
         )}
       </div>
 
-      {/* Add insumo section */}
-      <div className="border-t border-gray-200 p-3">
+      {/* Action Area: Add Resource */}
+      <div className="relative pt-4">
         {showAddInsumo ? (
-          <div className="space-y-2">
-            <input
-              type="text"
-              placeholder="Buscar insumo de la obra..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
-            />
-            <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md">
+          <div className="bg-white dark:bg-apple-gray-50 border-2 border-apple-blue rounded-[40px] p-8 shadow-apple-lg animate-apple-slide-up space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <Search className="w-32 h-32" />
+            </div>
+
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1 w-full space-y-2">
+                <div className="flex items-center gap-3 px-2">
+                  <Search className="w-4 h-4 text-apple-blue" />
+                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Master de Suministros</p>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Escriba material o labor..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full h-16 px-8 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/10 rounded-2xl text-xl font-black text-foreground outline-none focus:ring-4 focus:ring-apple-blue/10 transition-all placeholder:text-apple-gray-200"
+                  autoFocus
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowAddInsumo(false); setSearchTerm('') }}
+                className="w-16 h-16 rounded-full bg-apple-gray-100 dark:bg-white/5 flex items-center justify-center text-apple-gray-400 hover:text-foreground transition-all"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar relative z-10">
               {insumosDisponibles.length === 0 ? (
-                <div className="p-3 text-sm text-gray-500 text-center">
-                  No hay insumos disponibles
+                <div className="col-span-2 py-12 text-center text-apple-gray-400 font-bold italic">
+                  No se encontraron coincidencias en el catálogo de la obra.
                 </div>
               ) : (
-                insumosDisponibles.slice(0, 10).map((insumo) => (
+                insumosDisponibles.slice(0, 12).map((insumo) => (
                   <button
                     key={insumo.id}
                     type="button"
                     onClick={() => addInsumo(insumo)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-50 flex justify-between items-center"
+                    className="w-full px-6 py-5 bg-apple-gray-50/50 dark:bg-white/[0.02] hover:bg-apple-blue hover:text-white border border-apple-gray-100 dark:border-white/5 rounded-2xl flex items-center justify-between transition-all group/item shadow-sm active:scale-95"
                   >
-                    <span className="text-sm text-gray-900">{insumo.nombre}</span>
-                    <span className="text-xs text-gray-500">{insumo.unidad}</span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-opacity">
+                        <Plus className="w-4 h-4" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-[15px] font-black tracking-tight">{insumo.nombre}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest opacity-60">
+                          Base: {formatPesos(insumo.precio_referencia || 0)} / {insumo.unidad}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-30 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all" />
                   </button>
                 ))
               )}
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setShowAddInsumo(false)
-                setSearchTerm('')
-              }}
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Cancelar
-            </button>
           </div>
         ) : (
           <button
             type="button"
             onClick={() => setShowAddInsumo(true)}
-            className="w-full py-2 text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1"
+            className="w-full h-20 bg-white dark:bg-apple-gray-50 border-2 border-dashed border-apple-gray-200 dark:border-white/10 rounded-[40px] flex items-center justify-center gap-4 hover:border-apple-blue hover:bg-apple-blue/5 group transition-all active:scale-[0.98]"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Agregar insumo
+            <div className="w-12 h-12 bg-apple-blue text-white rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-apple-blue/20">
+              <PlusCircle className="w-6 h-6" />
+            </div>
+            <span className="text-sm font-black text-apple-gray-400 group-hover:text-apple-blue uppercase tracking-[0.2em] transition-colors">Vincular Recurso Adicional</span>
           </button>
         )}
       </div>
 
-      {/* Totals */}
-      <div className="border-t border-gray-200 bg-gray-50 p-4">
-        <div className="space-y-1 text-sm">
-          <div className="flex justify-between text-gray-600">
-            <span>Materiales:</span>
-            <span>{formatPesos(totales.materiales)}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Mano de Obra:</span>
-            <span>{formatPesos(totales.manoDeObra)}</span>
-          </div>
-          <div className="flex justify-between font-medium text-gray-900 pt-2 border-t border-gray-200">
-            <span>Total Estimado:</span>
-            <span className="text-blue-600">{formatPesos(totales.total)}</span>
+      {/* Aggregate Totals Panel */}
+      {insumos.length > 0 && (
+        <div className="bg-gradient-to-br from-white to-apple-gray-50 dark:from-apple-gray-50 dark:to-black/40 border border-apple-gray-100 dark:border-white/5 rounded-[40px] p-10 mt-12 shadow-apple-float animate-apple-slide-up">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="space-y-6 flex-1 w-full">
+              <div className="flex items-center justify-between text-[11px] font-black text-apple-gray-400 uppercase tracking-widest px-2">
+                <div className="flex items-center gap-2"><Package className="w-4 h-4" /> Materiales</div>
+                <span>{formatPesos(totales.materiales)}</span>
+              </div>
+              <div className="h-2 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-apple-blue rounded-full" style={{ width: `${(totales.materiales / (totales.total || 1)) * 100}%` }} />
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] font-black text-apple-gray-400 uppercase tracking-widest px-2">
+                <div className="flex items-center gap-2"><Users className="w-4 h-4" /> Mano de Obra</div>
+                <span>{formatPesos(totales.manoDeObra)}</span>
+              </div>
+              <div className="h-2 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-orange-500 rounded-full" style={{ width: `${(totales.manoDeObra / (totales.total || 1)) * 100}%` }} />
+              </div>
+            </div>
+
+            <div className="h-px md:h-24 w-full md:w-px bg-apple-gray-200 dark:bg-white/10" />
+
+            <div className="text-center md:text-right space-y-2">
+              <div className="flex items-center justify-center md:justify-end gap-3 text-apple-blue">
+                <ShoppingCart className="w-6 h-6" />
+                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Total Ejecución Estimada</p>
+              </div>
+              <h4 className="text-5xl font-black text-foreground tracking-tighter">{formatPesos(totales.total)}</h4>
+              <p className="text-xs font-bold text-apple-gray-400">{totales.cantidadSeleccionados} recursos configurados para esta OT</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

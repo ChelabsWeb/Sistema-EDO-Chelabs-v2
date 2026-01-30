@@ -42,6 +42,12 @@ const navItems: NavItem[] = [
     roles: ['admin', 'director_obra', 'jefe_obra', 'compras'],
   },
   {
+    href: '/reportes',
+    label: 'Analítica',
+    icon: BarChart3,
+    roles: ['admin', 'director_obra'],
+  },
+  {
     href: '/admin/usuarios',
     label: 'Usuarios',
     icon: Users,

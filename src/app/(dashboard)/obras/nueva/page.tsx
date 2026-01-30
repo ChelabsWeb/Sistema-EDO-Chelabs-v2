@@ -7,8 +7,9 @@ import { createObra } from '@/app/actions/obras'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ArrowLeft, Building2, MapPin, Users, DollarSign, Calendar } from 'lucide-react'
+import { ArrowLeft, Building2, MapPin, Users, DollarSign, Calendar, Sparkles, Check, Loader2, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
 
 export default function NuevaObraPage() {
   const router = useRouter()
@@ -54,94 +55,104 @@ export default function NuevaObraPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[--color-apple-gray-100]">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-[--color-apple-gray-200]/50 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center gap-4">
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-black p-6 md:p-14 antialiased selection:bg-apple-blue/10">
+      {/* Premium Header */}
+      <header className="max-w-4xl mx-auto flex items-center justify-between mb-16 animate-apple-fade-in">
+        <div className="flex items-center gap-6">
           <Link
             href="/obras"
-            className="w-10 h-10 rounded-full bg-[--color-apple-gray-100] hover:bg-[--color-apple-gray-200] flex items-center justify-center transition-colors"
+            className="w-12 h-12 glass dark:glass-dark rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-95 group shadow-apple-sm"
           >
-            <ArrowLeft className="w-5 h-5 text-[--color-apple-gray-500]" />
+            <ArrowLeft className="w-5 h-5 text-apple-gray-400 group-hover:text-apple-blue" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-[--color-apple-gray-600]">Nueva Obra</h1>
-            <p className="text-sm text-[--color-apple-gray-400]">Crea un nuevo proyecto de construccion</p>
+            <p className="text-[10px] font-black text-apple-blue uppercase tracking-[0.2em] mb-0.5">Gestión de Portafolio</p>
+            <h1 className="text-3xl font-black text-foreground tracking-tight">Nueva Iniciación</h1>
           </div>
+        </div>
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-white/5 rounded-full border border-apple-gray-100 dark:border-white/10 shadow-apple-sm">
+          <Sparkles className="w-4 h-4 text-apple-blue" />
+          <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Proyecto Nivel 1</span>
         </div>
       </header>
 
-      {/* Form */}
-      <main className="max-w-2xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-white/50 overflow-hidden">
-          {/* Error Alert */}
+      {/* Main Content Card */}
+      <main className="max-w-4xl mx-auto animate-apple-slide-up">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-apple-gray-50 rounded-[48px] shadow-apple-float border border-apple-gray-100 dark:border-white/5 overflow-hidden relative">
+          {/* Subtle Accent Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-apple-blue/5 blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+
           {error && (
-            <div className="mx-6 mt-6 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/50 text-red-700 px-4 py-3 rounded-[16px] flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-                <span className="text-red-500 text-lg">!</span>
-              </div>
-              <span className="text-sm font-medium">{error}</span>
+            <div className="mx-10 mt-10 p-6 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-3xl flex items-center gap-4 text-red-600 dark:text-red-400 animate-apple-slide-up">
+              <AlertCircle className="w-6 h-6 shrink-0" />
+              <p className="text-sm font-bold uppercase tracking-tight">{error}</p>
             </div>
           )}
 
-          <div className="p-6 md:p-8 space-y-6">
-            {/* Nombre */}
-            <div className="space-y-2">
-              <label htmlFor="nombre" className="flex items-center gap-2 text-sm font-semibold text-[--color-apple-gray-600]">
-                <Building2 className="w-4 h-4 text-[--color-apple-gray-400]" />
-                Nombre de la Obra *
-              </label>
-              <Input
-                type="text"
-                id="nombre"
-                name="nombre"
-                required
-                value={formData.nombre}
-                onChange={handleChange}
-                placeholder="Ej: Edificio Torres del Parque"
-              />
+          <div className="p-10 md:p-16 space-y-14 relative z-10">
+            {/* Identity Group */}
+            <div className="space-y-10">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 px-2">
+                  <Building2 className="w-4 h-4 text-apple-blue" />
+                  <label htmlFor="nombre" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Identidad del Proyecto</label>
+                </div>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  required
+                  value={formData.nombre}
+                  onChange={handleChange}
+                  placeholder="Ej: Edificio Torres del Parque"
+                  className="w-full text-4xl md:text-5xl font-black text-foreground tracking-tighter bg-transparent border-b-2 border-apple-gray-50 dark:border-white/5 focus:border-apple-blue outline-none transition-all pb-6 placeholder:text-apple-gray-100"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 px-2">
+                    <Users className="w-4 h-4 text-apple-gray-300" />
+                    <label htmlFor="cooperativa" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Entidad / Cooperativa</label>
+                  </div>
+                  <Input
+                    type="text"
+                    id="cooperativa"
+                    name="cooperativa"
+                    value={formData.cooperativa}
+                    onChange={handleChange}
+                    placeholder="Nombre oficial..."
+                    className="h-14 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-medium"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 px-2">
+                    <MapPin className="w-4 h-4 text-apple-gray-300" />
+                    <label htmlFor="direccion" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Ubicación de Obra</label>
+                  </div>
+                  <Input
+                    type="text"
+                    id="direccion"
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={handleChange}
+                    placeholder="Dirección exacta..."
+                    className="h-14 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-medium"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Cooperativa */}
-            <div className="space-y-2">
-              <label htmlFor="cooperativa" className="flex items-center gap-2 text-sm font-semibold text-[--color-apple-gray-600]">
-                <Users className="w-4 h-4 text-[--color-apple-gray-400]" />
-                Cooperativa
-              </label>
-              <Input
-                type="text"
-                id="cooperativa"
-                name="cooperativa"
-                value={formData.cooperativa}
-                onChange={handleChange}
-                placeholder="Ej: Cooperativa Las Acacias"
-              />
-            </div>
-
-            {/* Direccion */}
-            <div className="space-y-2">
-              <label htmlFor="direccion" className="flex items-center gap-2 text-sm font-semibold text-[--color-apple-gray-600]">
-                <MapPin className="w-4 h-4 text-[--color-apple-gray-400]" />
-                Direccion
-              </label>
-              <Input
-                type="text"
-                id="direccion"
-                name="direccion"
-                value={formData.direccion}
-                onChange={handleChange}
-                placeholder="Ej: Av. Rivera 1234, Montevideo"
-              />
-            </div>
-
-            {/* Presupuesto */}
-            <div className="space-y-2">
-              <label htmlFor="presupuesto_total" className="flex items-center gap-2 text-sm font-semibold text-[--color-apple-gray-600]">
-                <DollarSign className="w-4 h-4 text-[--color-apple-gray-400]" />
-                Presupuesto Total (UYU)
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-[--color-apple-gray-400] font-medium">$</span>
+            {/* Financial Group */}
+            <div className="pt-10 border-t border-apple-gray-100 dark:border-white/5 space-y-6">
+              <div className="flex items-center gap-3 px-2">
+                <DollarSign className="w-4 h-4 text-apple-blue" />
+                <label htmlFor="presupuesto_total" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Presupuesto Total de Inversión UYU</label>
+              </div>
+              <div className="relative group max-w-md">
+                <div className="absolute inset-y-0 left-8 flex items-center">
+                  <span className="text-3xl font-black text-apple-gray-100 group-focus-within:text-apple-blue transition-colors">$</span>
+                </div>
                 <Input
                   type="number"
                   id="presupuesto_total"
@@ -150,71 +161,87 @@ export default function NuevaObraPage() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="pl-8"
+                  className="h-24 pl-16 pr-8 text-4xl font-black text-foreground rounded-[32px] bg-apple-gray-50 dark:bg-black/20 border-apple-gray-100 dark:border-white/10 focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all"
                   placeholder="0.00"
                 />
               </div>
             </div>
 
-            {/* Fechas con DatePicker moderno */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-[--color-apple-gray-600]">
-                  <Calendar className="w-4 h-4 text-[--color-apple-gray-400]" />
-                  Fecha de Inicio
-                </label>
-                <DatePicker
-                  date={fechaInicio}
-                  onSelect={setFechaInicio}
-                  placeholder="Seleccionar fecha"
-                  toDate={fechaFin}
-                />
+            {/* Timeline Group */}
+            <div className="pt-10 border-t border-apple-gray-100 dark:border-white/5 space-y-8">
+              <div className="flex items-center gap-3 px-2">
+                <Calendar className="w-4 h-4 text-apple-blue" />
+                <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Cronograma Estimado</label>
               </div>
 
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-[--color-apple-gray-600]">
-                  <Calendar className="w-4 h-4 text-[--color-apple-gray-400]" />
-                  Fecha Fin Estimada
-                </label>
-                <DatePicker
-                  date={fechaFin}
-                  onSelect={setFechaFin}
-                  placeholder="Seleccionar fecha"
-                  fromDate={fechaInicio}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest ml-4">Arranque de Obra</p>
+                  <div className="p-4 bg-apple-gray-50 dark:bg-black/20 rounded-[32px] border border-apple-gray-100 dark:border-white/5 shadow-inner">
+                    <DatePicker
+                      date={fechaInicio}
+                      onSelect={setFechaInicio}
+                      placeholder="Fijar fecha de inicio"
+                      toDate={fechaFin}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest ml-4">Entrega Proyectada</p>
+                  <div className="p-4 bg-apple-gray-50 dark:bg-black/20 rounded-[32px] border border-apple-gray-100 dark:border-white/5 shadow-inner">
+                    <DatePicker
+                      date={fechaFin}
+                      onSelect={setFechaFin}
+                      placeholder="Fijar cierre estimado"
+                      fromDate={fechaInicio}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="px-6 md:px-8 py-6 bg-[--color-apple-gray-50] border-t border-[--color-apple-gray-200]/50 flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push('/obras')}
-              className="min-w-[100px]"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="min-w-[120px] btn-glow bg-[#0066cc] hover:bg-[#004499] text-white"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Guardando...
-                </span>
-              ) : (
-                'Crear Obra'
-              )}
-            </Button>
-          </div>
+          {/* Sticky Apple-Style Footer */}
+          <footer className="px-10 py-10 bg-apple-gray-50/50 dark:bg-black/20 backdrop-blur-md border-t border-apple-gray-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 relative z-20">
+            <div className="flex items-center gap-4 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
+              <Check className="w-5 h-5 text-emerald-500" />
+              Los datos podrán editarse después
+            </div>
+
+            <div className="flex items-center gap-6 w-full md:w-auto">
+              <button
+                type="button"
+                onClick={() => router.push('/obras')}
+                className="flex-1 md:flex-none px-10 py-5 text-apple-gray-400 font-black text-xs uppercase tracking-widest hover:text-foreground transition-all"
+              >
+                Descartar
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !formData.nombre}
+                className="flex-[2] md:flex-none h-20 px-14 rounded-[28px] bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-apple-blue-dark active:scale-95 transition-all shadow-apple-float disabled:opacity-30 flex items-center justify-center gap-4 group"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    Iniciando...
+                  </>
+                ) : (
+                  <>
+                    Crear Nueva Obra
+                    <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                  </>
+                )}
+              </button>
+            </div>
+          </footer>
         </form>
+
+        {/* Semantic Hint Area */}
+        <div className="mt-12 text-center text-[10px] font-black text-apple-gray-200 uppercase tracking-[0.4em]">
+          Sistema de Gestión EDO • v2.0 Ultimate Edition
+        </div>
       </main>
     </div>
   )
