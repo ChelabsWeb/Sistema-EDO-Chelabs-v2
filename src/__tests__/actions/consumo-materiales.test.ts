@@ -1,5 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// Mock createClient
+vi.mock('@/lib/supabase/server', () => ({
+    createClient: vi.fn(),
+}))
+
+// Mock costos
+vi.mock('@/app/actions/costos', () => ({
+    updateOTCostoReal: vi.fn().mockResolvedValue({ success: true, data: 0 }),
+}))
+
 import { registerConsumo, getConsumosByOT } from '@/app/actions/consumo-materiales'
+import { createMockSupabaseClient } from '@/test-utils/supabase-mock'
+import { userFixtures, consumoFixtures, insumoFixtures } from '@/test-utils/fixtures'
+import { createClient } from '@/lib/supabase/server'
 
 describe('consumo-materiales.ts - Material Consumption', () => {
     beforeEach(() => {
@@ -8,46 +22,48 @@ describe('consumo-materiales.ts - Material Consumption', () => {
 
     describe('registerConsumo', () => {
         it('should register consumption successfully', async () => {
-            const newConsumo = {
-                orden_trabajo_id: 'ot-1',
-                obra_id: 'obra-1',
-                insumo_id: 'insumo-1',
-                cantidad_consumida: 100,
-                cantidad_estimada: 90,
-            }
+            const user = userFixtures.jefe()
+            const consumo = consumoFixtures.default()
 
-            const { createClient } = await import('@/lib/supabase/server')
-            const mockClient = await createClient()
-
-            // Mock auth
-            vi.mocked(mockClient.auth.getUser).mockResolvedValue({
-                data: { user: { id: 'user-1', email: 'test@test.com' } as any },
-                error: null,
+            const mockClient = createMockSupabaseClient({
+                auth: { user: { id: user.auth_user_id } as any, session: null, error: null },
             })
 
-            // Mock insert
-            vi.mocked(mockClient.from).mockReturnValue({
-                ...mockClient.from(''),
-                insert: vi.fn().mockReturnThis(),
-                select: vi.fn().mockResolvedValue({
-                    data: [{ ...newConsumo, id: 'consumo-new' }],
-                    error: null
-                }),
-            } as any)
+            // Sequential mock using a counter
+            let callCount = 0
+            mockClient.from = vi.fn().mockImplementation((table: string) => {
+                callCount++
+                if (table === 'usuarios') {
+                    return { ...mockClient, single: vi.fn().mockResolvedValue({ data: user, error: null }) }
+                }
+                if (table === 'consumo_materiales') {
+                    if (callCount === 2) {
+                        return { ...mockClient, single: vi.fn().mockResolvedValue({ data: null, error: null }) }
+                    }
+                    if (callCount === 3) {
+                        return { ...mockClient, single: vi.fn().mockResolvedValue({ data: { id: 'new-id' }, error: null }) }
+                    }
+                }
+                return mockClient
+            })
 
-            const result = await registerConsumo(newConsumo)
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await registerConsumo({
+                orden_trabajo_id: consumo.orden_trabajo_id,
+                obra_id: 'obra-1',
+                insumo_id: consumo.insumo_id,
+                cantidad_consumida: 100,
+            })
 
             expect(result.success).toBe(true)
         })
 
         it('should reject consumption without authentication', async () => {
-            const { createClient } = await import('@/lib/supabase/server')
-            const mockClient = await createClient()
-
-            vi.mocked(mockClient.auth.getUser).mockResolvedValue({
-                data: { user: null },
-                error: { message: 'Not authenticated' } as any,
+            const mockClient = createMockSupabaseClient({
+                auth: { user: null, session: null, error: { message: 'Not authenticated' } as any }
             })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
             const result = await registerConsumo({
                 orden_trabajo_id: 'ot-1',
@@ -57,17 +73,17 @@ describe('consumo-materiales.ts - Material Consumption', () => {
             })
 
             expect(result.success).toBe(false)
-            expect(result.error).toContain('autenticado')
+            if (!result.success) {
+                expect(result.error).toContain('autenticado')
+            }
         })
 
         it('should validate cantidad_consumida is positive', async () => {
-            const { createClient } = await import('@/lib/supabase/server')
-            const mockClient = await createClient()
-
-            vi.mocked(mockClient.auth.getUser).mockResolvedValue({
-                data: { user: { id: 'user-1' } as any },
-                error: null,
+            const user = userFixtures.jefe()
+            const mockClient = createMockSupabaseClient({
+                auth: { user: { id: user.auth_user_id } as any, session: null, error: null }
             })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
             const result = await registerConsumo({
                 orden_trabajo_id: 'ot-1',
@@ -77,56 +93,53 @@ describe('consumo-materiales.ts - Material Consumption', () => {
             })
 
             expect(result.success).toBe(false)
-            expect(result.error).toContain('cantidad')
+            if (!result.success) {
+                expect(result.error).toContain('cantidad')
+            }
         })
     })
 
     describe('getConsumosByOT', () => {
         it('should retrieve consumptions for an OT', async () => {
+            const insumo = insumoFixtures.cemento()
             const mockConsumos = [
                 {
-                    id: 'consumo-1',
-                    cantidad_consumida: 100,
-                    insumo: { nombre: 'Cemento', precio_unitario: 15 },
-                },
-                {
-                    id: 'consumo-2',
-                    cantidad_consumida: 2,
-                    insumo: { nombre: 'Arena', precio_unitario: 1200 },
-                },
+                    ...consumoFixtures.default(),
+                    insumos: {
+                        id: insumo.id,
+                        nombre: insumo.nombre,
+                        unidad: insumo.unidad,
+                        precio_referencia: insumo.precio_referencia
+                    }
+                }
             ]
 
-            const { createClient } = await import('@/lib/supabase/server')
-            const mockClient = await createClient()
-
-            vi.mocked(mockClient.from).mockReturnValue({
-                ...mockClient.from(''),
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockResolvedValue({ data: mockConsumos, error: null }),
-            } as any)
+            const mockClient = createMockSupabaseClient({
+                select: { data: mockConsumos, error: null }
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
             const result = await getConsumosByOT('ot-1')
 
             expect(result.success).toBe(true)
-            expect(result.data).toHaveLength(2)
+            if (result.success) {
+                expect(result.data).toHaveLength(1)
+                expect(result.data[0].insumo.nombre).toBe(insumo.nombre)
+            }
         })
 
         it('should return empty array when no consumptions exist', async () => {
-            const { createClient } = await import('@/lib/supabase/server')
-            const mockClient = await createClient()
-
-            vi.mocked(mockClient.from).mockReturnValue({
-                ...mockClient.from(''),
-                select: vi.fn().mockReturnThis(),
-                eq: vi.fn().mockReturnThis(),
-                order: vi.fn().mockResolvedValue({ data: [], error: null }),
-            } as any)
+            const mockClient = createMockSupabaseClient({
+                select: { data: [], error: null }
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
             const result = await getConsumosByOT('ot-1')
 
             expect(result.success).toBe(true)
-            expect(result.data).toHaveLength(0)
+            if (result.success) {
+                expect(result.data).toHaveLength(0)
+            }
         })
     })
 

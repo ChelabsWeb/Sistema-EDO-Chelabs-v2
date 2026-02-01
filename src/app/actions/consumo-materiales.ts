@@ -38,6 +38,10 @@ interface ConsumoConInsumo {
  * Register material consumption for an OT
  */
 export async function registerConsumo(input: RegisterConsumoInput): Promise<ActionResult<{ id: string }>> {
+  if (input.cantidad_consumida <= 0) {
+    return { success: false, error: 'La cantidad consumida debe ser mayor a cero' }
+  }
+
   const supabase = await createClient()
 
   // Check user authentication

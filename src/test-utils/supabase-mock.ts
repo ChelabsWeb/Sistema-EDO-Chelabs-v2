@@ -19,21 +19,21 @@ export function createMockSupabaseClient(overrides: Partial<MockSupabaseConfig> 
         single: overrides.single || { data: null, error: null },
     }
 
-    const mockClient = {
+    const mockClient: any = {
         auth: {
-            getUser: vi.fn().mockResolvedValue({
+            getUser: vi.fn().mockImplementation(() => Promise.resolve({
                 data: { user: config.auth.user },
                 error: config.auth.error,
-            }),
-            getSession: vi.fn().mockResolvedValue({
+            })),
+            getSession: vi.fn().mockImplementation(() => Promise.resolve({
                 data: { session: config.auth.session },
                 error: config.auth.error,
-            }),
-            signInWithPassword: vi.fn().mockResolvedValue({
+            })),
+            signInWithPassword: vi.fn().mockImplementation(() => Promise.resolve({
                 data: { user: config.auth.user, session: config.auth.session },
                 error: config.auth.error,
-            }),
-            signOut: vi.fn().mockResolvedValue({ error: null }),
+            })),
+            signOut: vi.fn().mockImplementation(() => Promise.resolve({ error: null })),
         },
         from: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
@@ -55,41 +55,23 @@ export function createMockSupabaseClient(overrides: Partial<MockSupabaseConfig> 
         range: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         limit: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue(config.single),
-        maybeSingle: vi.fn().mockResolvedValue(config.single),
-    } as unknown as SupabaseClient
+        single: vi.fn().mockImplementation(function (this: any) {
+            return Promise.resolve(config.single)
+        }),
+        maybeSingle: vi.fn().mockImplementation(function (this: any) {
+            return Promise.resolve(config.single)
+        }),
+        // Handle the .then() pattern common in Supabase JS
+        then: vi.fn().mockImplementation(function (this: any, callback: any) {
+            if (callback) return Promise.resolve(callback(config.select))
+            return Promise.resolve(config.select)
+        }),
+    }
 
-        // Setup chainable responses
-        ; (mockClient.select as any).mockImplementation(() => {
-            const chain = {
-                ...mockClient,
-                then: (resolve: any) => resolve(config.select),
-            }
-            return chain
-        })
-        ; (mockClient.insert as any).mockImplementation(() => {
-            const chain = {
-                ...mockClient,
-                then: (resolve: any) => resolve(config.insert),
-            }
-            return chain
-        })
-        ; (mockClient.update as any).mockImplementation(() => {
-            const chain = {
-                ...mockClient,
-                then: (resolve: any) => resolve(config.update),
-            }
-            return chain
-        })
-        ; (mockClient.delete as any).mockImplementation(() => {
-            const chain = {
-                ...mockClient,
-                then: (resolve: any) => resolve(config.delete),
-            }
-            return chain
-        })
+    // Set up more granular return values if needed
+    mockClient.from.mockImplementation(() => mockClient)
 
-    return mockClient
+    return mockClient as unknown as SupabaseClient
 }
 
 /**
