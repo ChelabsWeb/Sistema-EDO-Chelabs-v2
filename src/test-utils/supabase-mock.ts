@@ -19,23 +19,7 @@ export function createMockSupabaseClient(overrides: Partial<MockSupabaseConfig> 
         single: overrides.single || { data: null, error: null },
     }
 
-    const mockClient: any = {
-        auth: {
-            getUser: vi.fn().mockImplementation(() => Promise.resolve({
-                data: { user: config.auth.user },
-                error: config.auth.error,
-            })),
-            getSession: vi.fn().mockImplementation(() => Promise.resolve({
-                data: { session: config.auth.session },
-                error: config.auth.error,
-            })),
-            signInWithPassword: vi.fn().mockImplementation(() => Promise.resolve({
-                data: { user: config.auth.user, session: config.auth.session },
-                error: config.auth.error,
-            })),
-            signOut: vi.fn().mockImplementation(() => Promise.resolve({ error: null })),
-        },
-        from: vi.fn().mockReturnThis(),
+    const mockQueryBuilder: any = {
         select: vi.fn().mockReturnThis(),
         insert: vi.fn().mockReturnThis(),
         update: vi.fn().mockReturnThis(),
@@ -61,15 +45,44 @@ export function createMockSupabaseClient(overrides: Partial<MockSupabaseConfig> 
         maybeSingle: vi.fn().mockImplementation(function (this: any) {
             return Promise.resolve(config.single)
         }),
-        // Handle the .then() pattern common in Supabase JS
         then: vi.fn().mockImplementation(function (this: any, callback: any) {
             if (callback) return Promise.resolve(callback(config.select))
             return Promise.resolve(config.select)
         }),
     }
 
-    // Set up more granular return values if needed
-    mockClient.from.mockImplementation(() => mockClient)
+    const mockClient: any = {
+        auth: {
+            getUser: vi.fn().mockImplementation(() => Promise.resolve({
+                data: { user: config.auth.user },
+                error: config.auth.error,
+            })),
+            getSession: vi.fn().mockImplementation(() => Promise.resolve({
+                data: { session: config.auth.session },
+                error: config.auth.error,
+            })),
+            signInWithPassword: vi.fn().mockImplementation(() => Promise.resolve({
+                data: { user: config.auth.user, session: config.auth.session },
+                error: config.auth.error,
+            })),
+            signOut: vi.fn().mockImplementation(() => Promise.resolve({ error: null })),
+        },
+        from: vi.fn().mockReturnValue(mockQueryBuilder),
+        // Helper aliases also need to delegate or be absent? 
+        // Supabase client has .from(). .rpc() etc.
+        // It does NOT have .select() directly usually.
+    }
+
+    // Some tests might rely on mockClient.select() existing if they used simplified mocks?
+    // But real Supabase client uses .from().
+
+    // Adding storage mock just in case
+    mockClient.storage = {
+        from: vi.fn().mockReturnValue({
+            upload: vi.fn(),
+            getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'https://example.com' } })
+        })
+    }
 
     return mockClient as unknown as SupabaseClient
 }
@@ -105,14 +118,6 @@ export interface MockSupabaseConfig {
     }
 }
 
-/**
- * Mocks the createClient function from @/lib/supabase/server
- */
-export function mockSupabaseServer(client: SupabaseClient) {
-    vi.mock('@/lib/supabase/server', () => ({
-        createClient: vi.fn().mockResolvedValue(client),
-    }))
-}
 
 /**
  * Clears all Supabase mocks

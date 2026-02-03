@@ -68,6 +68,45 @@ describe('insumos.ts - Insumos Management', () => {
                 expect(result.data.precio_unitario).toBe(150)
             }
         })
+
+        it('should handle unauthenticated user', async () => {
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: null }, error: null } as any)
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createInsumo({ obra_id: MOCK_IDS.OBRA, nombre: 'Test', unidad: 'u', tipo: 'material', precio_referencia: 10 })
+
+            expect(result.success).toBe(false)
+        })
+
+        it('should handle database insertion error', async () => {
+            const admin = userFixtures.admin()
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: admin.auth_user_id } }, error: null } as any)
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                    }
+                }
+                if (table === 'insumos') {
+                    return {
+                        insert: vi.fn().mockReturnThis(),
+                        select: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB Error' } })
+                    }
+                }
+                return {}
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createInsumo({ obra_id: MOCK_IDS.OBRA, nombre: 'Test', unidad: 'u', tipo: 'material', precio_referencia: 10 })
+
+            expect(result.success).toBe(false)
+        })
     })
 
     describe('updateInsumo', () => {
@@ -111,6 +150,36 @@ describe('insumos.ts - Insumos Management', () => {
             if (result.success) {
                 expect(result.data.precio_unitario).toBe(200)
             }
+        })
+
+        it('should handle missing insumo on update', async () => {
+            const admin = userFixtures.admin()
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: admin.auth_user_id } }, error: null } as any)
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                    }
+                }
+                if (table === 'insumos') {
+                    return {
+                        update: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        select: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } })
+                    }
+                }
+                return {}
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await updateInsumo({ id: 'nonexistent', precio_referencia: 100 })
+
+            expect(result.success).toBe(false)
         })
     })
 
