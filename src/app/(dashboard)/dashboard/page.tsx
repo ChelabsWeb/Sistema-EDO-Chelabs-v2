@@ -5,6 +5,11 @@ import { DashboardContent } from '@/components/dashboard/DashboardContent'
 export default async function DashboardPage() {
   const supabase = await createClient()
 
+  // Demo Mode - Skip auth
+  if (process.env.DEMO_MODE === 'true') {
+    return renderDemoMode()
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -251,3 +256,88 @@ function getTimeAgo(date: Date): string {
   if (diffDays < 7) return `hace ${diffDays} día${diffDays > 1 ? 's' : ''}`
   return date.toLocaleDateString('es-UY')
 }
+
+// Demo Mode Renderer
+function renderDemoMode() {
+  const mockExecutionData = [
+    { name: 'Lun', valor: 45, date: '2024-01-01', otsCreated: 2 },
+    { name: 'Mar', valor: 52, date: '2024-01-02', otsCreated: 3 },
+    { name: 'Mie', valor: 48, date: '2024-01-03', otsCreated: 1 },
+    { name: 'Jue', valor: 61, date: '2024-01-04', otsCreated: 4 },
+    { name: 'Vie', valor: 55, date: '2024-01-05', otsCreated: 2 },
+    { name: 'Sab', valor: 67, date: '2024-01-06', otsCreated: 5 },
+    { name: 'Dom', valor: 70, date: '2024-01-07', otsCreated: 3 },
+  ]
+
+  const mockBudgetData = [
+    { name: 'Edificio Central', estimacion: 4000, real: 4200, obraId: 'demo-1' },
+    { name: 'Plaza Norte', estimacion: 3000, real: 2800, obraId: 'demo-2' },
+    { name: 'Complejo Sur', estimacion: 2000, real: 2100, obraId: 'demo-3' },
+    { name: 'Torre Este', estimacion: 2780, real: 2300, obraId: 'demo-4' },
+  ]
+
+  const mockActivity = [
+    {
+      id: '1',
+      type: 'ot',
+      title: 'OT #1024 creada',
+      desc: 'Edificio Las Heras - en_ejecucion',
+      time: 'hace 5 min',
+      status: 'success',
+      link: '/ordenes-trabajo/demo-1',
+      metadata: { numero: 1024, estado: 'en_ejecucion', costo_estimado: 15000 }
+    },
+    {
+      id: '2',
+      type: 'compra',
+      title: 'Orden de Compra #2048',
+      desc: 'Materiales URU - $25,000',
+      time: 'hace 2 horas',
+      status: 'warning',
+      link: '/compras/ordenes-compra/demo-1',
+      metadata: { numero: 2048, estado: 'pendiente', total: 25000 }
+    },
+    {
+      id: '3',
+      type: 'user',
+      title: 'Usuario Juan Pérez',
+      desc: 'jefe_obra - juan@example.com',
+      time: 'hace 4 horas',
+      status: 'info',
+      link: '/admin/usuarios/demo-1',
+      metadata: { nombre: 'Juan Pérez', rol: 'jefe_obra', email: 'juan@example.com' }
+    },
+  ]
+
+  const mockObras = [
+    { id: 'demo-1', nombre: 'Edificio Central', direccion: 'Av. Principal 123', estado: 'activa', presupuesto_total: 100000, created_at: new Date().toISOString() },
+    { id: 'demo-2', nombre: 'Plaza Norte', direccion: 'Calle Norte 456', estado: 'activa', presupuesto_total: 80000, created_at: new Date().toISOString() },
+    { id: 'demo-3', nombre: 'Complejo Sur', direccion: 'Av. Sur 789', estado: 'activa', presupuesto_total: 120000, created_at: new Date().toISOString() },
+    { id: 'demo-4', nombre: 'Torre Este', direccion: 'Calle Este 321', estado: 'activa', presupuesto_total: 90000, created_at: new Date().toISOString() },
+  ]
+
+  const mockOrdenesTrabajo = [
+    { id: 'demo-ot-1', numero: 1024, estado: 'en_ejecucion', costo_estimado: 15000, costo_real: 14500, created_at: new Date().toISOString(), obra_id: 'demo-1', descripcion: 'Albañilería', obras: { nombre: 'Edificio Central' } },
+    { id: 'demo-ot-2', numero: 1025, estado: 'borrador', costo_estimado: 12000, costo_real: null, created_at: new Date().toISOString(), obra_id: 'demo-2', descripcion: 'Electricidad', obras: { nombre: 'Plaza Norte' } },
+    { id: 'demo-ot-3', numero: 1026, estado: 'cerrada', costo_estimado: 8000, costo_real: 8200, created_at: new Date().toISOString(), obra_id: 'demo-3', descripcion: 'Plomería', obras: { nombre: 'Complejo Sur' } },
+  ]
+
+  return (
+    <DashboardContent
+      userName="Demo User"
+      obrasCount={4}
+      otEnEjecucion={12}
+      otPendientes={8}
+      otCerradas={45}
+      otsConDesvio={3}
+      otsConDesvioCritico={1}
+      executionData={mockExecutionData}
+      budgetData={mockBudgetData}
+      activityFeed={mockActivity}
+      obras={mockObras}
+      ordenesTrabajo={mockOrdenesTrabajo}
+      otsConDesvioCriticoData={[]}
+    />
+  )
+}
+
