@@ -31,7 +31,7 @@ describe('ordenes-trabajo.ts - Work Orders', () => {
     })
 
     describe('createOT', () => {
-        it('should create OT with insumos and calculate cost', async () => {
+        it('should create OT with insumos and calculate cost correctly', async () => {
             const admin = userFixtures.admin()
             const input = {
                 obra_id: MOCK_IDS.OBRA,
@@ -49,52 +49,73 @@ describe('ordenes-trabajo.ts - Work Orders', () => {
                 error: null,
             } as any)
 
+            let otInsertData: any = null
+
             mockClient.from = vi.fn().mockImplementation((table) => {
-                const mockBuilder: any = {
-                    select: vi.fn().mockReturnThis(),
-                    insert: vi.fn().mockReturnThis(),
-                    eq: vi.fn().mockReturnThis(),
-                    in: vi.fn().mockReturnThis(),
-                    single: vi.fn(),
-                }
-
                 if (table === 'usuarios') {
-                    mockBuilder.single.mockResolvedValue({ data: admin, error: null })
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                    }
                 } else if (table === 'insumos') {
-                    mockBuilder.then = vi.fn((resolve) =>
-                        resolve({
-                            data: [{ id: MOCK_IDS.INSUMO, precio_referencia: 100 }],
-                            error: null,
-                        })
-                    )
+                    // Return actual price data so calculation can run
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        in: vi.fn().mockReturnThis(),
+                        then: vi.fn((resolve) =>
+                            resolve({
+                                data: [{ id: MOCK_IDS.INSUMO, precio_referencia: 100, precio_unitario: 100 }],
+                                error: null,
+                            })
+                        )
+                    }
                 } else if (table === 'ordenes_trabajo') {
-                    mockBuilder.single.mockResolvedValue({
-                        data: {
-                            id: MOCK_IDS.OT,
-                            ...input,
-                            costo_estimado: 1000,
-                            estado: 'borrador',
-                        },
-                        error: null,
-                    })
+                    // Capture what's being inserted to validate calculation
+                    return {
+                        insert: vi.fn((data) => {
+                            otInsertData = data
+                            return {
+                                select: vi.fn().mockReturnThis(),
+                                single: vi.fn().mockResolvedValue({
+                                    data: {
+                                        id: MOCK_IDS.OT,
+                                        ...data,
+                                    },
+                                    error: null,
+                                })
+                            }
+                        })
+                    }
                 } else if (table === 'ot_insumos_estimados') {
-                    mockBuilder.insert.mockResolvedValue({ error: null })
+                    return {
+                        insert: vi.fn().mockResolvedValue({ error: null })
+                    }
                 } else if (table === 'ot_historial') {
-                    mockBuilder.insert.mockResolvedValue({ error: null })
+                    return {
+                        insert: vi.fn().mockResolvedValue({ error: null })
+                    }
                 }
-
-                return mockBuilder
+                return {}
             })
 
             vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
             const result = await createOT(input)
 
+            // Validate result
             expect(result.success).toBe(true)
             if (result.success) {
                 expect(result.data.estado).toBe('borrador')
+                // ACTUAL BUSINESS LOGIC VALIDATION: Cost should be calculated as 10 * 100 = 1000
                 expect(result.data.costo_estimado).toBe(1000)
             }
+
+            // Validate the insert was called with correct calculated cost
+            expect(otInsertData).toBeDefined()
+            expect(otInsertData.costo_estimado).toBe(1000) // 10 qty * 100 price
+            expect(otInsertData.estado).toBe('borrador')
+            expect(otInsertData.created_by).toBe(admin.id)
         })
 
         it('should reject creation by unauthorized role', async () => {
