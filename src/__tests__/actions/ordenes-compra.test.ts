@@ -129,6 +129,73 @@ describe('ordenes-compra.ts - Purchase Orders', () => {
                 expect(result.error).toContain('no pertenece')
             }
         })
+
+        it('should handle unauthenticated user', async () => {
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: null }, error: null } as any)
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createOrdenCompra(validInput)
+            expect(result.success).toBe(false)
+        })
+
+        it('should handle missing OT', async () => {
+            const admin = userFixtures.admin()
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: admin.auth_user_id } }, error: null } as any)
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                }
+                if (table === 'ordenes_trabajo') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    is: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } })
+                }
+                return {}
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createOrdenCompra(validInput)
+            expect(result.success).toBe(false)
+        })
+
+        it('should handle database insertion error', async () => {
+            const admin = userFixtures.admin()
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: admin.auth_user_id } }, error: null } as any)
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                }
+                if (table === 'ordenes_trabajo') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    is: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({
+                        data: { id: MOCK_IDS.OT, obra_id: MOCK_IDS.OBRA, estado: 'en_ejecucion' },
+                        error: null
+                    })
+                }
+                if (table === 'ordenes_compra') return {
+                    insert: vi.fn().mockReturnThis(),
+                    select: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB Error' } })
+                }
+                return {}
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createOrdenCompra(validInput)
+            expect(result.success).toBe(false)
+        })
     })
 
     describe('updateOCEstado', () => {
@@ -187,6 +254,30 @@ describe('ordenes-compra.ts - Purchase Orders', () => {
             if (!result.success) {
                 expect(result.code).toBe('BIZ_001')
             }
+        })
+
+        it('should handle missing OC on update', async () => {
+            const user = { ...userFixtures.admin(), rol: 'compras' }
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: user.auth_user_id } }, error: null } as any)
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: user, error: null })
+                }
+                if (table === 'ordenes_compra') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } })
+                }
+                return {}
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await updateOCEstado('nonexistent', 'enviada')
+            expect(result.success).toBe(false)
         })
     })
 

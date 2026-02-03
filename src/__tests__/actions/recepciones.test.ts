@@ -120,5 +120,47 @@ describe('recepciones.ts - Material Receptions', () => {
                 expect(result.code).toBe('BIZ_004')
             }
         })
+
+        it('should handle unauthenticated user', async () => {
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: null }, error: null } as any)
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const input = {
+                orden_compra_id: MOCK_IDS.OC,
+                items: [{ linea_oc_id: MOCK_IDS.LINEA_1, cantidad_a_recibir: 5 }]
+            }
+
+            const result = await registerRecepcion(input)
+            expect(result.success).toBe(false)
+        })
+
+        it('should handle missing OC', async () => {
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: admin.auth_user_id } }, error: null } as any)
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                }
+                if (table === 'ordenes_compra') return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } })
+                }
+                return {}
+            })
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const input = {
+                orden_compra_id: 'nonexistent',
+                items: [{ linea_oc_id: MOCK_IDS.LINEA_1, cantidad_a_recibir: 5 }]
+            }
+
+            const result = await registerRecepcion(input)
+            expect(result.success).toBe(false)
+        })
     })
 })

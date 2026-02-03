@@ -1,0 +1,236 @@
+﻿
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90mC:/Users/Usuario/Documents/GitHub/Sistema-EDO-Chelabs-v2[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [31mÔØ»[39m src/__tests__/actions/consumo-materiales.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 21[2mms[22m[39m
+[31m       [31m├ù[31m should register consumption successfully[39m[32m 11[2mms[22m[39m
+       [32mÔ£ô[39m should reject consumption without authentication[32m 2[2mms[22m[39m
+       [32mÔ£ô[39m should validate cantidad_consumida is positive[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should retrieve consumptions for an OT[32m 3[2mms[22m[39m
+       [32mÔ£ô[39m should return empty array when no consumptions exist[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should detect over-consumption vs estimate[32m 0[2mms[22m[39m
+       [32mÔ£ô[39m should calculate total consumption cost[32m 0[2mms[22m[39m
+node.exe : [90mstderr[2m | 
+src/__tests__/actions/ordenes-compra.test.ts[2m > 
+[22m[2mordenes-compra.ts - Purchase Orders[2m > 
+[22m[2mcreateOrdenCompra[2m > [22m[2mshould handle 
+database insertion error
+En C:\Program Files\nodejs\npx.ps1: 29 Carácter: 3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90mstderr 
+   [2m...insertion error:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mError creating orden de compra: { message: 
+[32m'DB Error'[39m }
+
+[90mstderr[2m | 
+src/__tests__/actions/rubros.test.ts[2m > 
+[22m[2mrubros.ts - Rubros Management[2m > 
+[22m[2mcreateRubro[2m > [22m[2mshould handle 
+database insertion error
+[22m[39mError creating rubro: { message: [32m'DB 
+Error'[39m }
+
+[90mstderr[2m | 
+src/__tests__/actions/insumos.test.ts[2m > 
+[22m[2minsumos.ts - Insumos Management[2m > 
+[22m[2mcreateInsumo[2m > [22m[2mshould handle 
+database insertion error
+[22m[39mError creating insumo: { message: [32m'DB 
+Error'[39m }
+
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+[90mstderr[2m | src/__tests__/actions/obras.test.ts[2m 
+> [22m[2mobras.ts - Obras Management[2m > 
+[22m[2mcreateObra[2m > [22m[2mshould handle database 
+insertion error
+[22m[39mError creating obra: { message: [32m'DB 
+Error'[39m }
+
+ [31mÔØ»[39m src/__tests__/actions/obras.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m3 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 44[2mms[22m[39m
+       [32mÔ£ô[39m should handle missing obra[32m 6[2mms[22m[39m
+       [32mÔ£ô[39m should fail with validation errors[32m 1[2mms[22m[39m
+[31m       [31m├ù[31m should deny access to unauthorized users[39m[32m 13[2mms[22m[39m
+[31m       [31m├ù[31m should handle unauthenticated user[39m[32m 2[2mms[22m[39m
+[31m       [31m├ù[31m should handle database update error[39m[32m 2[2mms[22m[39m
+       [32mÔ£ô[39m should create an obra successfully as admin[32m 4[2mms[22m[39m
+       [32mÔ£ô[39m should fail with validation errors[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should deny access to unauthorized users[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should handle unauthenticated user[32m 1[2mms[22m[39m
+       [32mÔ£ô[39m should handle database insertion error[32m 3[2mms[22m[39m
+       [32mÔ£ô[39m should soft-delete obra and children[32m 4[2mms[22m[39m
+       [2m[90mÔåô[39m[22m should block deletion if active OTs exist
+       [32mÔ£ô[39m should return paginated data[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/papelera.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ot-fotos.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/plantillas.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts [2m([22m[2m6 tests[22m[2m | [22m[33m6 skipped[39m[2m)[22m
+ [32mÔ£ô[39m src/__tests__/actions/recepciones.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed Suites 1 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/configuracion.test.ts[2m [ 
+src/__tests__/actions/configuracion.test.ts ][22m
+[31m[1mError[22m: Transform failed with 1 error:
+C:/Users/Usuario/Documents/GitHub/Sistema-EDO-Chelabs-v2/s
+rc/__tests__/actions/configuracion.test.ts:244:0: ERROR: 
+Expected identifier but found end of file[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36mC:/Users/Usuario/Documents/GitHub/Sistema-EDO
+-Chelabs-v2/src/__tests__/actions/configuracion.test.ts[3
+9m:244:0
+[33m  
+  [33mExpected identifier but found end of file[33m
+  242 |              const mockClient = 
+createMockSupabaseClient()
+  243 |              const malformedData = [{ key: 
+'clave',
+  244 |  
+      |  ^
+  [39m
+[90m [2mÔØ»[22m failureErrorWithLog 
+node_modules/esbuild/lib/main.js:[2m1467:15[22m[39m
+[90m [2mÔØ»[22m 
+node_modules/esbuild/lib/main.js:[2m736:50[22m[39m
+[90m [2mÔØ»[22m responseCallbacks.<computed> 
+node_modules/esbuild/lib/main.js:[2m603:9[22m[39m
+[90m [2mÔØ»[22m handleIncomingPacket 
+node_modules/esbuild/lib/main.js:[2m658:12[22m[39m
+[90m [2mÔØ»[22m Socket.readFromStdout 
+node_modules/esbuild/lib/main.js:[2m581:7[22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/5]ÔÄ»[22m[39m
+
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed Tests 4 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/consumo-materiales.test.ts[2m > 
+[22mconsumo-materiales.ts - Material Consumption[2m > 
+[22mregisterConsumo[2m > [22mshould register 
+consumption successfully
+[31m[1mTypeError[22m: supabase.from(...).select is not 
+a function[39m
+[36m [2mÔØ»[22m Module.registerConsumo 
+src/app/actions/consumo-materiales.ts:[2m56:6[22m[39m
+    [90m 54| [39m  [35mconst[39m { data[33m:[39m 
+profile } [33m=[39m [35mawait[39m supabase
+    [90m 55| [39m    
+[33m.[39m[35mfrom[39m([32m'usuarios'[39m)
+    [90m 56| [39m    
+[33m.[39m[34mselect[39m([32m'id, rol, obra_id'[39m)
+    [90m   | [39m     [31m^[39m
+    [90m 57| [39m    [33m.[39m[34meq[39m([32m'auth_
+user_id'[39m[33m,[39m user[33m.[39mid)
+    [90m 58| [39m    [33m.[39m[34msingle[39m()
+[90m [2mÔØ»[22m src/__tests__/actions/consumo-materiale
+s.test.ts:[2m52:28[22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/5]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - 
+Obras Management[2m > [22mupdateObra[2m > [22mshould 
+deny access to unauthorized users
+[31m[1mAssertionError[22m: expected 'Invalid input: 
+expected object, receiÔÇª' to contain 'permisos'[39m
+
+Expected: [32m"permisos"[39m
+Received: [31m"Invalid input: expected object, received 
+string"[39m
+
+[36m [2mÔØ»[22m 
+src/__tests__/actions/obras.test.ts:[2m91:34[22m[39m
+    [90m 89| [39m
+    [90m 90| [39m            [34mexpect[39m(result[33
+m.[39msuccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m 91| [39m            [34mexpect[39m(result[33
+m.[39merror)[33m.[39m[34mtoContain[39m([32m'permisos
+'[39m)
+    [90m   | [39m                                 
+[31m^[39m
+    [90m 92| [39m        })
+    [90m 93| [39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/5]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - 
+Obras Management[2m > [22mupdateObra[2m > [22mshould 
+handle unauthenticated user
+[31m[1mAssertionError[22m: expected 'Invalid input: 
+expected object, receiÔÇª' to contain 'autenticado'[39m
+
+Expected: [32m"autenticado"[39m
+Received: [31m"Invalid input: expected object, received 
+string"[39m
+
+[36m [2mÔØ»[22m 
+src/__tests__/actions/obras.test.ts:[2m102:34[22m[39m
+    [90m100| [39m
+    [90m101| [39m            [34mexpect[39m(result[33
+m.[39msuccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m102| [39m            [34mexpect[39m(result[33
+m.[39merror)[33m.[39m[34mtoContain[39m([32m'autentic
+ado'[39m)
+    [90m   | [39m                                 
+[31m^[39m
+    [90m103| [39m        })
+    [90m104| [39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4/5]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - 
+Obras Management[2m > [22mupdateObra[2m > [22mshould 
+handle database update error
+[31m[1mAssertionError[22m: expected 'Invalid input: 
+expected object, receiÔÇª' to contain 'DB Update 
+Error'[39m
+
+Expected: [32m"DB Update Error"[39m
+Received: [31m"Invalid input: expected object, received 
+string"[39m
+
+[36m [2mÔØ»[22m 
+src/__tests__/actions/obras.test.ts:[2m133:34[22m[39m
+    [90m131| [39m
+    [90m132| [39m            [34mexpect[39m(result[33
+m.[39msuccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m133| [39m            [34mexpect[39m(result[33
+m.[39merror)[33m.[39m[34mtoContain[39m([32m'DB 
+Update Error'[39m)
+    [90m   | [39m                                 
+[31m^[39m
+    [90m134| [39m        })
+    [90m135| [39m    })
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»Ô
+Ä»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[5/5]ÔÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (20)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m146 passed[39m[22m[2m | [22m[33m7 skipped[39m[90m (157)[39m
+[2m   Start at [22m 16:52:21
+[2m   Duration [22m 3.93s[2m (transform 2.34s, setup 589ms, import 3.32s, tests 358ms, environment 26.13s)[22m
+
