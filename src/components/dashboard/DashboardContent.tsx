@@ -36,6 +36,9 @@ interface DashboardContentProps {
   executionData: any[]
   budgetData: any[]
   activityFeed: any[]
+  obras: any[]
+  ordenesTrabajo: any[]
+  otsConDesvioCriticoData: any[]
 }
 
 export function DashboardContent({
@@ -47,7 +50,10 @@ export function DashboardContent({
   otsConDesvioCritico,
   executionData,
   budgetData,
-  activityFeed
+  activityFeed,
+  obras,
+  ordenesTrabajo,
+  otsConDesvioCriticoData
 }: DashboardContentProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
@@ -328,11 +334,44 @@ export function DashboardContent({
                     <Tooltip
                       cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                       contentStyle={{
-                        backgroundColor: 'rgba(255,255,255,0.8)',
+                        backgroundColor: 'rgba(255,255,255,0.95)',
                         backdropFilter: 'blur(20px)',
                         borderRadius: '24px',
                         border: '1px solid rgba(255,255,255,0.2)',
                         boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                        padding: '16px'
+                      }}
+                      content={(props: any) => {
+                        if (!props.active || !props.payload) return null
+                        const data = props.payload[0]?.payload
+                        if (!data) return null
+
+                        const diff = data.real - data.estimacion
+                        const diffPercent = ((diff / data.estimacion) * 100).toFixed(1)
+
+                        return (
+                          <div className="p-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20">
+                            <p className="text-xs font-black text-foreground uppercase tracking-widest mb-3">{data.name}</p>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-4">
+                                <span className="text-[10px] font-bold text-apple-gray-400 uppercase">Estimado:</span>
+                                <span className="text-sm font-black text-apple-gray-500">${data.estimacion.toLocaleString()}</span>
+                              </div>
+                              <div className="flex items-center justify-between gap-4">
+                                <span className="text-[10px] font-bold text-apple-gray-400 uppercase">Real:</span>
+                                <span className="text-sm font-black text-apple-blue">${data.real.toLocaleString()}</span>
+                              </div>
+                              <div className="pt-2 border-t border-apple-gray-100">
+                                <div className="flex items-center justify-between gap-4">
+                                  <span className="text-[10px] font-bold text-apple-gray-400 uppercase">Diferencia:</span>
+                                  <span className={`text-sm font-black ${diff > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                                    {diff > 0 ? '+' : ''}${diff.toLocaleString()} ({diffPercent}%)
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
                       }}
                     />
                     <Bar dataKey="estimacion" fill="#f1f5f9" radius={[12, 12, 12, 12]} barSize={24} />
@@ -368,6 +407,32 @@ export function DashboardContent({
                   <AnimatedBadge variant="warning">
                     +{(budgetEfficiency - 100).toFixed(1)}%
                   </AnimatedBadge>
+                </div>
+              )}
+
+              {/* Obras Quick Links */}
+              {obras.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-apple-gray-100 dark:border-white/5">
+                  <h5 className="text-xs font-black text-apple-gray-400 uppercase tracking-widest mb-4">Obras Activas</h5>
+                  <div className="grid grid-cols-2 gap-3">
+                    {obras.slice(0, 4).map(obra => (
+                      <Link
+                        key={obra.id}
+                        href={`/obras/${obra.id}`}
+                        className="p-3 glass dark:glass-dark rounded-2xl hover:bg-apple-blue/5 transition-all group flex items-center justify-between"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-foreground truncate group-hover:text-apple-blue transition-colors">
+                            {obra.nombre}
+                          </p>
+                          <p className="text-[10px] text-apple-gray-400 font-medium">
+                            {obra.estado || 'activa'}
+                          </p>
+                        </div>
+                        <ArrowUpRight className="w-3 h-3 text-apple-gray-300 group-hover:text-apple-blue group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </BentoTile>
