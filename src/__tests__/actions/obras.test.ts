@@ -85,10 +85,12 @@ describe('obras.ts - Obras Management', () => {
             })
             vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
-            const result = await updateObra('some-id', { nombre: 'Updated' })
+            const result = await updateObra({ id: 'some-id', nombre: 'Updated' })
 
             expect(result.success).toBe(false)
-            expect(result.error).toContain('permisos')
+            if (!result.success) {
+                expect(result.error).toContain('permisos')
+            }
         })
 
         it('should handle unauthenticated user', async () => {
@@ -96,10 +98,12 @@ describe('obras.ts - Obras Management', () => {
             mockClient.auth.getUser = vi.fn().mockResolvedValue({ data: { user: null }, error: null } as any)
             vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
-            const result = await updateObra('some-id', { nombre: 'Updated' })
+            const result = await updateObra({ id: 'some-id', nombre: 'Updated' })
 
             expect(result.success).toBe(false)
-            expect(result.error).toContain('autenticado')
+            if (!result.success) {
+                expect(result.error).toContain('autenticado')
+            }
         })
 
         it('should handle database update error', async () => {
@@ -127,7 +131,7 @@ describe('obras.ts - Obras Management', () => {
             })
             vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
-            const result = await updateObra('some-id', { nombre: 'Updated' })
+            const result = await updateObra({ id: 'some-id', nombre: 'Updated' })
 
             expect(result.success).toBe(false)
             if (!result.success) {

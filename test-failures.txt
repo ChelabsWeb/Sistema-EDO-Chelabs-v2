@@ -1,0 +1,314 @@
+﻿
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90mC:/Users/Usuario/Documents/GitHub/Sistema-EDO-Chelabs-v2[39m
+
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mconvertURtoPesos[2m > [22mconverts UR to pesos with default cotizacion[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mconvertURtoPesos[2m > [22mconverts UR to pesos with custom cotizacion[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mconvertURtoPesos[2m > [22mhandles decimal values[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mconvertPesosToUR[2m > [22mconverts pesos to UR with default cotizacion[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mconvertPesosToUR[2m > [22mconverts pesos to UR with custom cotizacion[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mconvertPesosToUR[2m > [22mreturns 0 when cotizacion is 0 (avoid division by zero)[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatPesos[2m > [22mformats positive amounts[32m 17[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatPesos[2m > [22mformats zero[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatPesos[2m > [22mhandles null and undefined[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatPesos[2m > [22mformats negative amounts[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatUR[2m > [22mformats UR amounts with 2 decimals[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatUR[2m > [22mhandles null and undefined[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatUR[2m > [22mformats zero[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatURWithPesos[2m > [22mformats UR with pesos equivalent[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/currency.test.ts[2m > [22mCurrency Utils[2m > [22mformatURWithPesos[2m > [22mhandles null and undefined[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mgetRubroWithInsumos[2m > [22mshould return rubro with linked insumos and budget status[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mgetRubrosWithInsumos[2m > [22mshould return all rubros with insumos for an obra[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22maddInsumoToRubro[2m > [22mshould add insumo to rubro[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22maddInsumoToRubro[2m > [22mshould reject if insumo from different obra[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mremoveInsumoFromRubro[2m > [22mshould remove insumo from rubro[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mupdateRubroPresupuesto[2m > [22mshould update rubro budget[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mupdateRubroPresupuesto[2m > [22mshould reject negative budget[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mupdateInsumo[2m > [22mshould update insumo details[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubro-insumos.test.ts[2m > [22mrubro-insumos.ts - Formula Management[2m > [22mgetAvailableInsumosForRubro[2m > [22mshould return insumos not linked to rubro[32m 4[2mms[22m[39m
+ [31m├ù[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mregisterConsumo[2m > [22mshould register consumption successfully[32m 9[2mms[22m[39m
+[31m   ÔåÆ Cannot read properties of null (reading 'id')[39m
+ [32mÔ£ô[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mregisterConsumo[2m > [22mshould reject consumption without authentication[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mregisterConsumo[2m > [22mshould validate cantidad_consumida is positive[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mgetConsumosByOT[2m > [22mshould retrieve consumptions for an OT[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mgetConsumosByOT[2m > [22mshould return empty array when no consumptions exist[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mConsumption Validation Logic[2m > [22mshould detect over-consumption vs estimate[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/consumo-materiales.test.ts[2m > [22mconsumo-materiales.ts - Material Consumption[2m > [22mConsumption Validation Logic[2m > [22mshould calculate total consumption cost[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mgetUsuarios[2m > [22mshould return all users for admin[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mgetUsuarios[2m > [22mshould reject unauthorized role[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mgetUsuario[2m > [22mshould return a single user by ID[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mcreateUsuario[2m > [22mshould create a new user as admin[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mcreateUsuario[2m > [22mshould reject duplicate email[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mupdateUsuario[2m > [22mshould update user profile as admin[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mdeactivateUsuario[2m > [22mshould deactivate user as admin[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios.test.ts[2m > [22musuarios.ts - User Management[2m > [22mdeactivateUsuario[2m > [22mshould reject deactivation by unauthorized role[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22msignIn[2m > [22mshould sign in successfully[32m 7[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22msignIn[2m > [22mshould handle missing credentials[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22msignIn[2m > [22mshould handle rate limiting[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22msignIn[2m > [22mshould handle Supabase login error[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22msignOut[2m > [22mshould sign out and redirect[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22mgetCurrentUser[2m > [22mshould return user and profile when authenticated[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22mgetCurrentUser[2m > [22mshould return null when not authenticated[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22mhasRole[2m > [22mshould return true if user has allowed role[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/auth.test.ts[2m > [22mauth.ts - Authentication[2m > [22mhasRole[2m > [22mshould return false if user does not have allowed role[32m 1[2mms[22m[39m
+node.exe : [90mstderr[2m | 
+src/__tests__/actions/rubros.test.ts[2m > [22m[2mrubros.ts - 
+Rubros Management[2m > [22m[2mcreateRubro[2m > 
+[22m[2mshould handle database insertion error
+En C:\Program Files\nodejs\npx.ps1: 29 Carácter: 3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90mstderr[2m...in 
+   sertion error:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mError creating rubro: { message: [32m'DB Error'[39m }
+
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mcreateRubro[2m > [22mshould create a rubro successfully as admin[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mcreateRubro[2m > [22mshould deny access to unauthorized users[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mcreateRubro[2m > [22mshould handle unauthenticated user[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mcreateRubro[2m > [22mshould handle database insertion error[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mupdateRubro[2m > [22mshould update rubro and recalculate budget[32m 5[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mupdateRubro[2m > [22mshould handle missing rubro on update[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mdeleteRubro[2m > [22mshould soft-delete when no OTs exist[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/rubros.test.ts[2m > [22mrubros.ts - Rubros Management[2m > [22mdeleteRubro[2m > [22mshould block deletion if OTs exist[32m 1[2mms[22m[39m
+[90mstderr[2m | src/__tests__/actions/insumos.test.ts[2m > 
+[22m[2minsumos.ts - Insumos Management[2m > 
+[22m[2mcreateInsumo[2m > [22m[2mshould handle database 
+insertion error
+[22m[39mError creating insumo: { message: [32m'DB Error'[39m }
+
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mcreateInsumo[2m > [22mshould create an insumo successfully as admin[32m 6[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mcreateInsumo[2m > [22mshould handle unauthenticated user[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mcreateInsumo[2m > [22mshould handle database insertion error[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mupdateInsumo[2m > [22mshould update insumo and sync legacy price field[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mupdateInsumo[2m > [22mshould handle missing insumo on update[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mdeleteInsumo[2m > [22mshould soft-delete when no usage exists[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/insumos.test.ts[2m > [22minsumos.ts - Insumos Management[2m > [22mdeleteInsumo[2m > [22mshould block deletion if used in active OTs[32m 2[2mms[22m[39m
+[90mstderr[2m | 
+src/__tests__/actions/ordenes-compra.test.ts[2m > 
+[22m[2mordenes-compra.ts - Purchase Orders[2m > 
+[22m[2mcreateOrdenCompra[2m > [22m[2mshould handle database 
+insertion error
+[22m[39mError creating orden de compra: { message: [32m'DB 
+Error'[39m }
+
+[90mstderr[2m | src/__tests__/actions/obras.test.ts[2m > 
+[22m[2mobras.ts - Obras Management[2m > 
+[22m[2mcreateObra[2m > [22m[2mshould handle database 
+insertion error
+[22m[39mError creating obra: { message: [32m'DB Error'[39m }
+
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mcreateOrdenCompra[2m > [22mshould create OC successfully when OT is valid[32m 7[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mcreateOrdenCompra[2m > [22mshould fail if OT does not belong to obra[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mcreateOrdenCompra[2m > [22mshould handle unauthenticated user[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mcreateOrdenCompra[2m > [22mshould handle missing OT[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mcreateOrdenCompra[2m > [22mshould handle database insertion error[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mupdateOCEstado[2m > [22mshould allow valid transition from pendiente to enciada by compras[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mupdateOCEstado[2m > [22mshould prevent invalid transitions[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mupdateOCEstado[2m > [22mshould handle missing OC on update[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-compra.test.ts[2m > [22mordenes-compra.ts - Purchase Orders[2m > [22mgetOrdenesCompra[2m > [22mshould list OCs with filters[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > [22mshould handle missing obra[32m 5[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > [22mshould fail with validation errors[32m 1[2mms[22m[39m
+ [31m├ù[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > [22mshould deny access to unauthorized users[32m 11[2mms[22m[39m
+[31m   ÔåÆ expected 'Invalid input: expected object, receiÔÇª' to contain 'permisos'[39m
+ [31m├ù[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > [22mshould handle unauthenticated user[32m 2[2mms[22m[39m
+[31m   ÔåÆ expected 'Invalid input: expected object, receiÔÇª' to contain 'autenticado'[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > [22mshould handle database update error[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mcreateObra[2m > [22mshould create an obra successfully as admin[32m 4[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mcreateObra[2m > [22mshould fail with validation errors[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mcreateObra[2m > [22mshould deny access to unauthorized users[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mcreateObra[2m > [22mshould handle unauthenticated user[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mcreateObra[2m > [22mshould handle database insertion error[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mdeleteObra[2m > [22mshould soft-delete obra and children[32m 2[2mms[22m[39m
+ [2m[90mÔåô[39m[22m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mdeleteObra[2m > [22mshould block deletion if active OTs exist
+ [32mÔ£ô[39m src/__tests__/actions/obras.test.ts[2m > [22mobras.ts - Obras Management[2m > [22mgetObrasPaginated[2m > [22mshould return paginated data[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mcreateOT[2m > [22mshould create OT with insumos and calculate cost[32m 7[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mcreateOT[2m > [22mshould reject creation by unauthorized role[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mupdateOT[2m > [22mshould update OT in draft state[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mupdateOT[2m > [22mshould reject update if OT is not in draft[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mapproveOT[2m > [22mshould approve OT within budget[32m 3[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mapproveOT[2m > [22mshould require acknowledgment when exceeding budget[32m 30[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mstartOTExecution[2m > [22mshould start execution for approved OT[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mcloseOT[2m > [22mshould close OT without deviation[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mcloseOT[2m > [22mshould require acknowledgment for cost deviation[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mdeleteOT[2m > [22mshould soft-delete OT[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/ordenes-trabajo.test.ts[2m > [22mordenes-trabajo.ts - Work Orders[2m > [22mgetRubroBudgetStatus[2m > [22mshould calculate budget status correctly[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts[2m > [22musuarios-obra.ts - User-Obra Assignments[2m > [22mgetUsuariosByObra[2m > [22mshould return users assigned to obra[32m 5[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts[2m > [22musuarios-obra.ts - User-Obra Assignments[2m > [22mgetUnassignedUsuarios[2m > [22mshould return unassigned users for admin[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts[2m > [22musuarios-obra.ts - User-Obra Assignments[2m > [22mgetUnassignedUsuarios[2m > [22mshould reject non-admin[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts[2m > [22musuarios-obra.ts - User-Obra Assignments[2m > [22massignUsuarioToObra[2m > [22mshould assign user to obra as admin[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts[2m > [22musuarios-obra.ts - User-Obra Assignments[2m > [22munassignUsuarioFromObra[2m > [22mshould unassign user from obra as admin[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/usuarios-obra.test.ts[2m > [22musuarios-obra.ts - User-Obra Assignments[2m > [22mgetAllUsuarios[2m > [22mshould return all users with obra info for admin[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/papelera.test.ts[2m > [22mpapelera.ts - Trash Management[2m > [22mgetDeletedItems[2m > [22mshould return deleted items for admin[32m 4[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/papelera.test.ts[2m > [22mpapelera.ts - Trash Management[2m > [22mgetDeletedItems[2m > [22mshould reject non-admin[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/papelera.test.ts[2m > [22mpapelera.ts - Trash Management[2m > [22mrestoreItem[2m > [22mshould restore obra with cascading restore[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/papelera.test.ts[2m > [22mpapelera.ts - Trash Management[2m > [22mrestoreItem[2m > [22mshould restore single item[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/papelera.test.ts[2m > [22mpapelera.ts - Trash Management[2m > [22mpermanentDelete[2m > [22mshould permanently delete item[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould format with default config[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould handle numbers larger than minDigits[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould accept Date object for year[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould accept date string for year[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould use current year when no year provided[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould respect custom prefix[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould exclude year when includeYear is false[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould respect custom minDigits[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould respect custom separator[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTCode[2m > [22mshould combine multiple config options[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mparseOTCode[2m > [22mshould parse standard format[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mparseOTCode[2m > [22mshould parse format without year[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mparseOTCode[2m > [22mshould handle custom prefixes[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mparseOTCode[2m > [22mshould return null for invalid codes[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mgetOTDisplayCode[2m > [22mshould format OT object with created_at[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mgetOTDisplayCode[2m > [22mshould handle null created_at[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mgetOTDisplayCode[2m > [22mshould handle missing created_at[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTNumber[2m > [22mshould pad numbers to default 3 digits[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTNumber[2m > [22mshould not truncate larger numbers[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/ot-format.test.ts[2m > [22mOT Format Utilities[2m > [22mformatOTNumber[2m > [22mshould respect custom minDigits[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mcheckRateLimit[2m > [22mshould allow requests under the limit[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mcheckRateLimit[2m > [22mshould track remaining requests correctly[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mcheckRateLimit[2m > [22mshould block requests over the limit[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mcheckRateLimit[2m > [22mshould use different buckets for different identifiers[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mcheckRateLimit[2m > [22mshould reset after window expires[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mRateLimits presets[2m > [22mshould have LOGIN preset configured correctly[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mRateLimits presets[2m > [22mshould have MUTATION preset configured correctly[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/rate-limit.test.ts[2m > [22mRate Limiter[2m > [22mRateLimits presets[2m > [22mshould have UPLOAD preset configured correctly[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleDisplayName[2m > [22mreturns correct display name for admin[32m 2[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleDisplayName[2m > [22mreturns correct display name for director_obra[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleDisplayName[2m > [22mreturns correct display name for jefe_obra[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleDisplayName[2m > [22mreturns correct display name for compras[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleDisplayName[2m > [22mreturns Usuario for null role[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleAbbreviation[2m > [22mreturns correct abbreviation for admin[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleAbbreviation[2m > [22mreturns correct abbreviation for director_obra[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleAbbreviation[2m > [22mreturns correct abbreviation for jefe_obra[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleAbbreviation[2m > [22mreturns correct abbreviation for compras[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/lib/roles.test.ts[2m > [22mRole Utils[2m > [22mgetRoleAbbreviation[2m > [22mreturns empty string for null role[32m 0[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/plantillas.test.ts[2m > [22mplantillas.ts - Template Management[2m > [22mshould have basic test coverage[32m 1[2mms[22m[39m
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts[2m > [22mcostos.ts - Cost Calculation Logic[2m > [22mcalculateOTCostoReal[2m > [22mshould calculate cost correctly with material consumptions
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts[2m > [22mcostos.ts - Cost Calculation Logic[2m > [22mcalculateOTCostoReal[2m > [22mshould return 0 when no consumptions exist
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts[2m > [22mcostos.ts - Cost Calculation Logic[2m > [22mcalculateOTCostoReal[2m > [22mshould handle database errors gracefully
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts[2m > [22mcostos.ts - Cost Calculation Logic[2m > [22mupdateOTCostoReal[2m > [22mshould update OT with calculated cost
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts[2m > [22mcostos.ts - Cost Calculation Logic[2m > [22mBudget Deviation Detection[2m > [22mshould detect when actual cost exceeds estimate
+ [2m[90mÔåô[39m[22m src/__tests__/actions/costos.test.ts[2m > [22mcostos.ts - Cost Calculation Logic[2m > [22mBudget Deviation Detection[2m > [22mshould detect when actual cost is under estimate
+ [32mÔ£ô[39m src/__tests__/actions/ot-fotos.test.ts[2m > [22mot-fotos.ts - Photo Management[2m > [22mshould have basic test coverage[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/recepciones.test.ts[2m > [22mrecepciones.ts - Material Receptions[2m > [22mregisterRecepcion[2m > [22mshould register partial reception successfully[32m 5[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/recepciones.test.ts[2m > [22mrecepciones.ts - Material Receptions[2m > [22mregisterRecepcion[2m > [22mshould fail if OC is not in valid state[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/recepciones.test.ts[2m > [22mrecepciones.ts - Material Receptions[2m > [22mregisterRecepcion[2m > [22mshould handle unauthenticated user[32m 1[2mms[22m[39m
+ [32mÔ£ô[39m src/__tests__/actions/recepciones.test.ts[2m > [22mrecepciones.ts - Material Receptions[2m > [22mregisterRecepcion[2m > [22mshould handle missing OC[32m 1[2mms[22m[39m
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed Suites 1 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/configuracion.test.ts[2m [ 
+src/__tests__/actions/configuracion.test.ts ][22m
+[31m[1mError[22m: Transform failed with 1 error:
+C:/Users/Usuario/Documents/GitHub/Sistema-EDO-Chelabs-v2/src/__tes
+ts__/actions/configuracion.test.ts:244:0: ERROR: Expected 
+identifier but found end of file[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36mC:/Users/Usuario/Documents/GitHub/Sistema-EDO-Chelabs
+-v2/src/__tests__/actions/configuracion.test.ts[39m:244:0
+[33m  
+  [33mExpected identifier but found end of file[33m
+  242 |              const mockClient = createMockSupabaseClient()
+  243 |              const malformedData = [{ key: 'clave',
+  244 |  
+      |  ^
+  [39m
+[90m [2mÔØ»[22m failureErrorWithLog 
+node_modules/esbuild/lib/main.js:[2m1467:15[22m[39m
+[90m [2mÔØ»[22m 
+node_modules/esbuild/lib/main.js:[2m736:50[22m[39m
+[90m [2mÔØ»[22m responseCallbacks.<computed> 
+node_modules/esbuild/lib/main.js:[2m603:9[22m[39m
+[90m [2mÔØ»[22m handleIncomingPacket 
+node_modules/esbuild/lib/main.js:[2m658:12[22m[39m
+[90m [2mÔØ»[22m Socket.readFromStdout 
+node_modules/esbuild/lib/main.js:[2m581:7[22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/4]ÔÄ»[22m[39m
+
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m[1m[41m Failed Tests 3 
+[49m[22m[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[41m[1m FAIL [22m[49m 
+src/__tests__/actions/consumo-materiales.test.ts[2m > 
+[22mconsumo-materiales.ts - Material Consumption[2m > 
+[22mregisterConsumo[2m > [22mshould register consumption 
+successfully
+[31m[1mTypeError[22m: Cannot read properties of null (reading 
+'id')[39m
+[36m [2mÔØ»[22m Module.registerConsumo 
+src/app/actions/consumo-materiales.ts:[2m123:44[22m[39m
+    [90m121| [39m
+    [90m122| [39m  revalidatePath(`/obras/${input.obra_id}/orden
+es-trabajo/${input.ordeÔÇª
+    [90m123| [39m  [35mreturn[39m { success[33m:[39m 
+[35mtrue[39m[33m,[39m data[33m:[39m { id[33m:[39m 
+data[33m.[39mid } }
+    [90m   | [39m                                           
+[31m^[39m
+    [90m124| [39m}
+    [90m125| [39m
+[90m [2mÔØ»[22m src/__tests__/actions/consumo-materiales.test.t
+s:[2m54:28[22m[39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/4]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/__tests__/actions/obras.test.ts[2m 
+> [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > 
+[22mshould deny access to unauthorized users
+[31m[1mAssertionError[22m: expected 'Invalid input: expected 
+object, receiÔÇª' to contain 'permisos'[39m
+
+Expected: [32m"permisos"[39m
+Received: [31m"Invalid input: expected object, received 
+string"[39m
+
+[36m [2mÔØ»[22m 
+src/__tests__/actions/obras.test.ts:[2m91:34[22m[39m
+    [90m 89| [39m
+    [90m 90| [39m            [34mexpect[39m(result[33m.[39ms
+uccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m 91| [39m            [34mexpect[39m(result[33m.[39me
+rror)[33m.[39m[34mtoContain[39m([32m'permisos'[39m)
+    [90m   | [39m                                 [31m^[39m
+    [90m 92| [39m        })
+    [90m 93| [39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/4]ÔÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m src/__tests__/actions/obras.test.ts[2m 
+> [22mobras.ts - Obras Management[2m > [22mupdateObra[2m > 
+[22mshould handle unauthenticated user
+[31m[1mAssertionError[22m: expected 'Invalid input: expected 
+object, receiÔÇª' to contain 'autenticado'[39m
+
+Expected: [32m"autenticado"[39m
+Received: [31m"Invalid input: expected object, received 
+string"[39m
+
+[36m [2mÔØ»[22m 
+src/__tests__/actions/obras.test.ts:[2m102:34[22m[39m
+    [90m100| [39m
+    [90m101| [39m            [34mexpect[39m(result[33m.[39ms
+uccess)[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m102| [39m            [34mexpect[39m(result[33m.[39me
+rror)[33m.[39m[34mtoContain[39m([32m'autenticado'[39m)
+    [90m   | [39m                                 [31m^[39m
+    [90m103| [39m        })
+    [90m104| [39m
+
+[31m[2mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4/4]ÔÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (20)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m147 passed[39m[22m[2m | [22m[33m7 skipped[39m[90m (157)[39m
+[2m   Start at [22m 18:37:50
+[2m   Duration [22m 3.71s[2m (transform 1.88s, setup 517ms, import 3.17s, tests 327ms, environment 26.76s)[22m
+

@@ -240,4 +240,21 @@ describe('configuracion.ts - Configuration Management', () => {
 
         it('should handle unexpected data format from database', async () => {
             const mockClient = createMockSupabaseClient()
-            const malformedData = [{ key: 'clave',
+            const malformedData = [{ key: 'clave', val: 'valor' }] // Wrong structure
+
+            mockClient.from = vi.fn().mockImplementation(() => ({
+                select: vi.fn().mockReturnThis(),
+                order: vi.fn().mockResolvedValue({ data: malformedData, error: null }),
+            }))
+
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await getAllConfig()
+
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data).toHaveLength(1)
+            }
+        })
+    })
+})

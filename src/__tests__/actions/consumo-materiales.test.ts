@@ -42,8 +42,10 @@ describe('consumo-materiales.ts - Material Consumption', () => {
                         select: vi.fn().mockReturnThis(),
                         eq: vi.fn().mockReturnThis(),
                         insert: vi.fn().mockReturnThis(),
-                        single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
-                            .mockResolvedValueOnce({ data: { id: 'new-id' }, error: null })
+                        // First call checks for existing, second call inserts
+                        single: vi.fn()
+                            .mockResolvedValueOnce({ data: null, error: null }) // No existing record
+                            .mockResolvedValueOnce({ data: { id: 'new-id' }, error: null }) // Insert returns id
                     }
                 }
                 return mockClient
@@ -59,6 +61,9 @@ describe('consumo-materiales.ts - Material Consumption', () => {
             })
 
             expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data.id).toBe('new-id')
+            }
         })
 
         it('should reject consumption without authentication', async () => {
