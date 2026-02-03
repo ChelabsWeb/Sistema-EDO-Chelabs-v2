@@ -29,19 +29,21 @@ describe('consumo-materiales.ts - Material Consumption', () => {
                 auth: { user: { id: user.auth_user_id } as any, session: null, error: null },
             })
 
-            // Sequential mock using a counter
-            let callCount = 0
             mockClient.from = vi.fn().mockImplementation((table: string) => {
-                callCount++
                 if (table === 'usuarios') {
-                    return { ...mockClient, single: vi.fn().mockResolvedValue({ data: user, error: null }) }
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: user, error: null })
+                    }
                 }
                 if (table === 'consumo_materiales') {
-                    if (callCount === 2) {
-                        return { ...mockClient, single: vi.fn().mockResolvedValue({ data: null, error: null }) }
-                    }
-                    if (callCount === 3) {
-                        return { ...mockClient, single: vi.fn().mockResolvedValue({ data: { id: 'new-id' }, error: null }) }
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        insert: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
+                            .mockResolvedValueOnce({ data: { id: 'new-id' }, error: null })
                     }
                 }
                 return mockClient
