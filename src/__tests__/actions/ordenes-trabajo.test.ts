@@ -118,6 +118,161 @@ describe('ordenes-trabajo.ts - Work Orders', () => {
             expect(otInsertData.created_by).toBe(admin.id)
         })
 
+        it('should calculate cost correctly with multiple insumos', async () => {
+            const admin = userFixtures.admin()
+            const INSUMO_2 = '123e4567-e89b-12d3-a456-426614174005'
+            const INSUMO_3 = '123e4567-e89b-12d3-a456-426614174006'
+
+            const input = {
+                obra_id: MOCK_IDS.OBRA,
+                rubro_id: MOCK_IDS.RUBRO,
+                descripcion: 'OT with multiple materials',
+                cantidad: 1,
+                insumos_seleccionados: [
+                    { insumo_id: MOCK_IDS.INSUMO, cantidad_estimada: 10 },  // 10 * 100 = 1000
+                    { insumo_id: INSUMO_2, cantidad_estimada: 5 },          // 5 * 200 = 1000
+                    { insumo_id: INSUMO_3, cantidad_estimada: 20 },         // 20 * 50 = 1000
+                ],
+            }
+
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({
+                data: { user: { id: admin.auth_user_id } },
+                error: null,
+            } as any)
+
+            let otInsertData: any = null
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                    }
+                } else if (table === 'insumos') {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        in: vi.fn().mockReturnThis(),
+                        then: vi.fn((resolve) =>
+                            resolve({
+                                data: [
+                                    { id: MOCK_IDS.INSUMO, precio_referencia: 100, precio_unitario: 100 },
+                                    { id: INSUMO_2, precio_referencia: 200, precio_unitario: 200 },
+                                    { id: INSUMO_3, precio_referencia: 50, precio_unitario: 50 },
+                                ],
+                                error: null,
+                            })
+                        )
+                    }
+                } else if (table === 'ordenes_trabajo') {
+                    return {
+                        insert: vi.fn((data) => {
+                            otInsertData = data
+                            return {
+                                select: vi.fn().mockReturnThis(),
+                                single: vi.fn().mockResolvedValue({
+                                    data: { id: MOCK_IDS.OT, ...data },
+                                    error: null,
+                                })
+                            }
+                        })
+                    }
+                } else if (table === 'ot_insumos_estimados') {
+                    return { insert: vi.fn().mockResolvedValue({ error: null }) }
+                } else if (table === 'ot_historial') {
+                    return { insert: vi.fn().mockResolvedValue({ error: null }) }
+                }
+                return {}
+            })
+
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createOT(input)
+
+            // BUSINESS LOGIC VALIDATION: Total should be 1000 + 1000 + 1000 = 3000
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data.costo_estimado).toBe(3000)
+            }
+
+            expect(otInsertData).toBeDefined()
+            expect(otInsertData.costo_estimado).toBe(3000)
+        })
+
+        it('should handle insumos with missing prices (default to 0)', async () => {
+            const admin = userFixtures.admin()
+            const input = {
+                obra_id: MOCK_IDS.OBRA,
+                rubro_id: MOCK_IDS.RUBRO,
+                descripcion: 'OT with missing price',
+                cantidad: 1,
+                insumos_seleccionados: [
+                    { insumo_id: MOCK_IDS.INSUMO, cantidad_estimada: 10 },
+                ],
+            }
+
+            const mockClient = createMockSupabaseClient()
+            mockClient.auth.getUser = vi.fn().mockResolvedValue({
+                data: { user: { id: admin.auth_user_id } },
+                error: null,
+            } as any)
+
+            let otInsertData: any = null
+
+            mockClient.from = vi.fn().mockImplementation((table) => {
+                if (table === 'usuarios') {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        eq: vi.fn().mockReturnThis(),
+                        single: vi.fn().mockResolvedValue({ data: admin, error: null })
+                    }
+                } else if (table === 'insumos') {
+                    return {
+                        select: vi.fn().mockReturnThis(),
+                        in: vi.fn().mockReturnThis(),
+                        then: vi.fn((resolve) =>
+                            resolve({
+                                // Insumo with null prices
+                                data: [{ id: MOCK_IDS.INSUMO, precio_referencia: null, precio_unitario: null }],
+                                error: null,
+                            })
+                        )
+                    }
+                } else if (table === 'ordenes_trabajo') {
+                    return {
+                        insert: vi.fn((data) => {
+                            otInsertData = data
+                            return {
+                                select: vi.fn().mockReturnThis(),
+                                single: vi.fn().mockResolvedValue({
+                                    data: { id: MOCK_IDS.OT, ...data },
+                                    error: null,
+                                })
+                            }
+                        })
+                    }
+                } else if (table === 'ot_insumos_estimados') {
+                    return { insert: vi.fn().mockResolvedValue({ error: null }) }
+                } else if (table === 'ot_historial') {
+                    return { insert: vi.fn().mockResolvedValue({ error: null }) }
+                }
+                return {}
+            })
+
+            vi.mocked(createClient).mockResolvedValue(mockClient as any)
+
+            const result = await createOT(input)
+
+            // BUSINESS LOGIC: Missing prices should default to 0
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data.costo_estimado).toBe(0)
+            }
+
+            expect(otInsertData.costo_estimado).toBe(0)
+        })
+
         it('should reject creation by unauthorized role', async () => {
             const capataz = { ...userFixtures.admin(), rol: 'capataz' }
             const mockClient = createMockSupabaseClient()
