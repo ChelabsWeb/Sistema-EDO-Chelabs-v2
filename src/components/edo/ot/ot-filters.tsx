@@ -2,17 +2,30 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useState, useCallback } from 'react'
+import { Search, ChevronDown, SlidersHorizontal, X, Sliders } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { AppleSelector } from '@/components/ui/apple-selector'
 
 interface OTFiltersProps {
   currentEstado?: string
   currentSearch?: string
 }
 
+const ESTADOS_OT = [
+  { id: 'todos', nombre: 'Ver todos los estados' },
+  { id: 'borrador', nombre: 'Borrador' },
+  { id: 'aprobada', nombre: 'Aprobada' },
+  { id: 'en_ejecucion', nombre: 'En Ejecución' },
+  { id: 'cerrada', nombre: 'Cerrada' },
+]
+
 export function OTFilters({ currentEstado, currentSearch }: OTFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [searchValue, setSearchValue] = useState(currentSearch || '')
+  const [isFocused, setIsFocused] = useState(false)
 
   const updateFilters = useCallback(
     (key: string, value: string | null) => {
@@ -22,7 +35,7 @@ export function OTFilters({ currentEstado, currentSearch }: OTFiltersProps) {
       } else {
         params.delete(key)
       }
-      router.push(`${pathname}?${params.toString()}`)
+      router.push(`${pathname}?${params.toString()}`, { scroll: false })
     },
     [pathname, router, searchParams]
   )
@@ -38,54 +51,69 @@ export function OTFilters({ currentEstado, currentSearch }: OTFiltersProps) {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
-      {/* Search */}
-      <div className="flex gap-2">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Buscar OT..."
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+    <div className="flex flex-col sm:flex-row items-center gap-6 w-full animate-apple-fade-in">
+      {/* Premium Search Container */}
+      <div className="relative flex-1 w-full group">
+        <div className={cn(
+          "absolute left-6 top-1/2 -translate-y-1/2 transition-all duration-500 z-10",
+          isFocused ? "text-apple-blue scale-110" : "text-apple-gray-300"
+        )}>
+          <Search className="w-5 h-5" strokeWidth={2.5} />
+        </div>
+
+        <input
+          type="text"
+          placeholder="Buscar órdenes de trabajo por descripción o número..."
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className={cn(
+            "w-full h-16 pl-16 pr-14 bg-white dark:bg-apple-gray-50 border rounded-[22px] text-base font-bold tracking-tight outline-none transition-all duration-500 shadow-apple-sm",
+            isFocused
+              ? "border-apple-blue ring-8 ring-apple-blue/10 shadow-apple-md"
+              : "border-apple-gray-100 dark:border-white/5 hover:border-apple-gray-200 dark:hover:border-white/10"
+          )}
+        />
+
+        <AnimatePresence>
           {searchValue && (
-            <button
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => {
                 setSearchValue('')
                 updateFilters('search', null)
               }}
-              className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-apple-gray-50 dark:bg-white/10 text-apple-gray-400 hover:text-foreground hover:bg-apple-gray-100 transition-all z-10"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <X className="w-4 h-4" />
+            </motion.button>
           )}
-        </div>
-        <button
-          onClick={handleSearch}
-          className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
+        </AnimatePresence>
       </div>
 
-      {/* Status filter */}
-      <select
-        value={currentEstado || 'todos'}
-        onChange={(e) => updateFilters('estado', e.target.value)}
-        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+      {/* State AppleSelector */}
+      <div className="w-full sm:w-[280px]">
+        <AppleSelector
+          options={ESTADOS_OT}
+          value={currentEstado || 'todos'}
+          onSelect={(val) => updateFilters('estado', val)}
+          size="sm"
+          placeholder="Estado de la Orden"
+          searchPlaceholder="Filtrar estados..."
+        />
+      </div>
+
+      {/* Execute Button */}
+      <button
+        onClick={handleSearch}
+        className="w-full sm:w-auto h-16 px-10 bg-foreground text-background dark:bg-white dark:text-black rounded-[22px] font-black text-[11px] uppercase tracking-[0.2em] hover:scale-[1.03] active:scale-[0.97] transition-all shadow-apple-float"
       >
-        <option value="todos">Todos los estados</option>
-        <option value="borrador">Borrador</option>
-        <option value="aprobada">Aprobada</option>
-        <option value="en_ejecucion">En Ejecución</option>
-        <option value="cerrada">Cerrada</option>
-      </select>
+        Filtrar
+      </button>
     </div>
   )
 }

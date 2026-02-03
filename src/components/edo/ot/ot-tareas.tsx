@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useOptimistic, useTransition } from 'react'
+import { useState, useOptimistic, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Trash2, CheckCircle2, Circle, AlertCircle } from 'lucide-react'
+import { Plus, Trash2, CheckCircle2, Circle, AlertCircle, ClipboardList, Loader2, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Tarea {
   id: string
@@ -53,7 +54,6 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit, rubroUn
     startTransition(async () => {
       addOptimisticTarea({ id: tareaId, completada })
 
-      // Bypass DB update in DEMO_MODE or for demo- OTs
       if (otId.startsWith('demo-') || process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
         return
       }
@@ -126,135 +126,180 @@ export function OTTareas({ otId, obraId, tareas: initialTareas, canEdit, rubroUn
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-apple-gray-50">
-      <div className="p-8 space-y-6">
+    <div className="flex flex-col h-full bg-white dark:bg-apple-gray-50/50 backdrop-blur-sm">
+      <div className="p-8 space-y-8">
         {error && (
-          <div className="bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-2xl p-4 flex items-center gap-3 animate-apple-fade-in">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3"
+          >
             <AlertCircle className="w-5 h-5 text-red-500" />
-            <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
-          </div>
+            <p className="text-xs text-red-600 dark:text-red-400 font-bold uppercase tracking-tight">{error}</p>
+            <button onClick={() => setError(null)} className="ml-auto text-red-500/50 hover:text-red-500">
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
         )}
 
-        {/* Task list */}
-        <div className="space-y-3 min-h-[200px]">
+        {/* Task list with AnimatePresence */}
+        <div className="space-y-4 min-h-[200px]">
           {optimisticTareas.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 opacity-40">
-              <ClipboardList className="w-12 h-12 mb-2" />
-              <p className="text-sm font-medium">No hay tareas definidas</p>
+            <div className="flex flex-col items-center justify-center py-20 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-[32px] border border-dashed border-apple-gray-100 dark:border-white/5">
+              <div className="w-16 h-16 bg-apple-gray-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-4">
+                <ClipboardList className="w-8 h-8 text-apple-gray-200" />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Hoja de ruta vacía</p>
             </div>
           ) : (
-            optimisticTareas
-              .sort((a, b) => (a.orden || 0) - (b.orden || 0))
-              .map((tarea) => (
-                <div
-                  key={tarea.id}
-                  className={cn(
-                    "group flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300",
-                    tarea.completada
-                      ? "bg-apple-gray-50/50 dark:bg-white/[0.02] border-apple-gray-100 dark:border-white/[0.05]"
-                      : "bg-white dark:bg-white/[0.04] border-apple-gray-100 dark:border-white/[0.08] shadow-apple-sm hover:shadow-apple"
-                  )}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleToggleTarea(tarea.id, !tarea.completada)}
-                    disabled={!canEdit || isPending}
-                    className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 border-2",
-                      tarea.completada
-                        ? "bg-emerald-500 border-emerald-500 text-white scale-110"
-                        : "border-apple-gray-200 dark:border-white/20 hover:border-emerald-400"
-                    )}
-                  >
-                    {tarea.completada ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4 opacity-0 group-hover:opacity-40" />}
-                  </button>
-
-                  <div className="flex-1">
-                    <p className={cn(
-                      "text-[15px] font-medium transition-all duration-500",
-                      tarea.completada ? "text-apple-gray-400 line-through opacity-60" : "text-foreground"
-                    )}>
-                      {tarea.descripcion}
-                    </p>
-                    {tarea.cantidad !== null && (
-                      <span className="inline-flex mt-1 text-[10px] font-black text-apple-blue uppercase tracking-widest bg-apple-blue/5 px-2 py-0.5 rounded-full">
-                        {tarea.cantidad} {tarea.unidad}
-                      </span>
-                    )}
-                  </div>
-
-                  {canEdit && !tarea.completada && (
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteTarea(tarea.id)}
-                      className="opacity-0 group-hover:opacity-100 text-apple-gray-300 hover:text-red-500 transition-all p-2"
+            <div className="grid grid-cols-1 gap-3">
+              <AnimatePresence mode='popLayout'>
+                {optimisticTareas
+                  .sort((a, b) => (a.orden || 0) - (b.orden || 0))
+                  .map((tarea) => (
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      key={tarea.id}
+                      className={cn(
+                        "group flex items-center gap-5 p-5 rounded-[24px] border transition-all duration-500",
+                        tarea.completada
+                          ? "bg-apple-gray-50/30 dark:bg-white/[0.01] border-transparent opacity-60"
+                          : "bg-white dark:bg-apple-gray-50 border-apple-gray-100 dark:border-white/10 shadow-apple-sm hover:shadow-apple-float hover:border-apple-blue/20"
+                      )}
                     >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))
+                      <button
+                        type="button"
+                        onClick={() => handleToggleTarea(tarea.id, !tarea.completada)}
+                        disabled={!canEdit || isPending}
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 border-2 shrink-0 scale-up-center",
+                          tarea.completada
+                            ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                            : "bg-apple-gray-50 dark:bg-black/20 border-apple-gray-200 dark:border-white/10 hover:border-emerald-400 group-hover:scale-110"
+                        )}
+                      >
+                        {tarea.completada ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5 opacity-0 group-hover:opacity-40" />}
+                      </button>
+
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          "text-[15px] font-bold tracking-tight transition-all duration-500 truncate",
+                          tarea.completada ? "text-apple-gray-300 line-through" : "text-foreground"
+                        )}>
+                          {tarea.descripcion}
+                        </p>
+                        {tarea.cantidad !== null && (
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <span className="inline-flex text-[9px] font-black text-apple-blue uppercase tracking-widest bg-apple-blue/5 dark:bg-apple-blue/10 px-2 py-0.5 rounded-md border border-apple-blue/10">
+                              {tarea.cantidad} {tarea.unidad}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        {canEdit && !tarea.completada && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteTarea(tarea.id)}
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-apple-gray-200 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 className="w-4.5 h-4.5" />
+                          </button>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+              </AnimatePresence>
+            </div>
           )}
         </div>
 
-        {/* Action Button / Form */}
+        {/* Action Button / Form - Redesigned to be more Premium */}
         {canEdit && (
           <div className="pt-4">
-            {!showAddForm ? (
-              <button
-                onClick={() => setShowAddForm(true)}
-                className="w-full h-14 border-2 border-dashed border-apple-gray-100 dark:border-white/10 rounded-2xl flex items-center justify-center gap-2 text-apple-gray-300 hover:text-apple-blue hover:border-apple-blue/40 hover:bg-apple-blue/5 transition-all text-sm font-bold tracking-tight"
-              >
-                <Plus className="w-5 h-5" />
-                Nueva Tarea
-              </button>
-            ) : (
-              <form onSubmit={handleAddTarea} className="space-y-4 bg-apple-gray-50/50 dark:bg-white/[0.02] p-6 rounded-3xl border border-apple-gray-100 dark:border-white/[0.05] animate-apple-slide-up">
-                <input
-                  type="text"
-                  autoFocus
-                  value={newTarea}
-                  onChange={(e) => setNewTarea(e.target.value)}
-                  placeholder="¿Qué falta hacer?"
-                  className="w-full bg-transparent text-lg font-bold text-foreground placeholder-apple-gray-300 outline-none"
-                />
-                <div className="flex gap-4 items-center">
-                  <div className="flex items-center gap-2 bg-white dark:bg-black rounded-xl px-3 py-1.5 border border-apple-gray-100 dark:border-white/10">
+            <AnimatePresence mode='wait'>
+              {!showAddForm ? (
+                <motion.button
+                  key="add-btn"
+                  layoutId="add-form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowAddForm(true)}
+                  className="w-full h-16 border-2 border-dashed border-apple-gray-100 dark:border-white/5 rounded-3xl flex items-center justify-center gap-3 text-apple-gray-300 hover:text-apple-blue hover:border-apple-blue/30 hover:bg-apple-blue/5 transition-all text-[11px] font-black uppercase tracking-[0.2em] group"
+                >
+                  <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  Agregar Hito de Obra
+                </motion.button>
+              ) : (
+                <motion.form
+                  key="add-form"
+                  layoutId="add-form"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  onSubmit={handleAddTarea}
+                  className="space-y-6 bg-apple-gray-50/50 dark:bg-black/20 p-8 rounded-[32px] border border-apple-gray-100 dark:border-white/10 shadow-apple-float"
+                >
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest ml-2">Descripción del Hito</label>
                     <input
-                      type="number"
-                      step="0.01"
-                      value={newCantidad}
-                      onChange={(e) => setNewCantidad(e.target.value)}
-                      placeholder="0.00"
-                      className="w-16 bg-transparent text-sm font-bold text-foreground outline-none"
+                      type="text"
+                      autoFocus
+                      required
+                      value={newTarea}
+                      onChange={(e) => setNewTarea(e.target.value)}
+                      placeholder="Ej: Colocación de dintel..."
+                      className="w-full bg-white dark:bg-apple-gray-50 h-14 px-6 rounded-2xl text-lg font-bold text-foreground placeholder:text-apple-gray-100 focus:ring-8 focus:ring-apple-blue/5 focus:border-apple-blue border-apple-gray-100 dark:border-white/5 outline-none transition-all shadow-apple-sm"
                     />
-                    <span className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
-                      {newUnidad || rubroUnidad || 'UN'}
-                    </span>
                   </div>
-                  <div className="flex-1" />
-                  <button
-                    type="button"
-                    onClick={() => setShowAddForm(false)}
-                    className="px-4 py-2 text-xs font-bold text-apple-gray-400 hover:text-foreground transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isAdding || !newTarea.trim()}
-                    className="px-6 py-2 bg-apple-blue text-white text-xs font-black uppercase tracking-widest rounded-full hover:bg-apple-blue-dark active:scale-95 transition-all disabled:opacity-50"
-                  >
-                    Agregar
-                  </button>
-                </div>
-              </form>
-            )}
+
+                  <div className="flex flex-col sm:flex-row gap-6">
+                    <div className="space-y-3 flex-1">
+                      <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest ml-2">Cantidad (Opcional)</label>
+                      <div className="flex items-center gap-2 bg-white dark:bg-apple-gray-50 rounded-2xl px-6 h-12 border border-apple-gray-100 dark:border-white/5 shadow-apple-sm focus-within:ring-8 focus-within:ring-apple-blue/5 transition-all">
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={newCantidad}
+                          onChange={(e) => setNewCantidad(e.target.value)}
+                          placeholder="0.00"
+                          className="w-full bg-transparent text-sm font-black text-foreground outline-none"
+                        />
+                        <span className="text-[9px] font-black text-apple-blue uppercase tracking-widest whitespace-nowrap">
+                          {newUnidad || rubroUnidad || 'UND'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-end gap-3 justify-end pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddForm(false)}
+                        className="h-12 px-6 text-[10px] font-black uppercase tracking-widest text-apple-gray-300 hover:text-foreground transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isAdding || !newTarea.trim()}
+                        className="h-12 px-8 bg-apple-blue text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-apple-float hover:bg-apple-blue-dark active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                        Confirmar
+                      </button>
+                    </div>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
     </div>
   )
 }
-
-import { ClipboardList } from 'lucide-react'

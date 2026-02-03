@@ -4,6 +4,14 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createOrdenCompra } from '@/app/actions/ordenes-compra'
 import type { Insumo } from '@/types/database'
+import {
+  Plus, Trash2, ShoppingCart, Package,
+  X, CheckCircle2, AlertCircle, Loader2,
+  ListPlus, Info, Tag, ArrowRight
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { AppleSelector } from '@/components/ui/apple-selector'
 
 interface LineaItem {
   insumo_id: string
@@ -35,6 +43,7 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
     }])
 
     setSelectedInsumo('')
+    setSearchTerm('')
     setCantidad('')
   }
 
@@ -78,126 +87,228 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
     return insumos.find(i => i.id === insumoId)?.unidad || ''
   }
 
-  // Filter out already added insumos
+  const [searchTerm, setSearchTerm] = useState('')
   const availableInsumos = insumos.filter(i => !lineas.some(l => l.insumo_id === i.id))
 
+  const formattedInsumos = availableInsumos.map(i => ({
+    id: i.id,
+    nombre: i.nombre,
+    unidad: i.unidad,
+    subtitle: i.tipo === 'material' ? 'Suministro Físico' : 'Mano de Obra'
+  }))
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12 overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+        onClick={onClose}
+      />
 
-        <div className="relative bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-[#e8e8ed] px-6 py-5 flex items-center justify-between rounded-t-[20px]">
-            <h3 className="text-xl font-semibold text-[#1d1d1f]">Nueva Orden de Compra</h3>
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e8e8ed] flex items-center justify-center text-[#86868b] hover:text-[#1d1d1f] transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 40 }}
+        className="relative bg-white dark:bg-apple-gray-50 w-full max-w-2xl rounded-[56px] shadow-[0_50px_100px_rgba(0,0,0,0.4)] flex flex-col max-h-full overflow-hidden border border-apple-gray-100 dark:border-white/5"
+      >
+        {/* Header */}
+        <div className="px-10 py-10 flex items-center justify-between bg-white dark:bg-apple-gray-50 border-b border-apple-gray-100 dark:border-white/5 shrink-0">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 bg-apple-blue/10 rounded-2xl flex items-center justify-center text-apple-blue shadow-inner relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+              <ShoppingCart className="w-7 h-7 relative z-10" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em]">Logística de Suministros</p>
+              <h3 className="text-2xl font-black text-foreground tracking-tighter italic uppercase">Nueva Orden de Compra</h3>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-12 h-12 rounded-full bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-300 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
 
-          <div className="p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-10 space-y-12 custom-scrollbar">
+          <AnimatePresence>
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-                {error}
-              </div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="p-6 bg-red-500/10 border border-red-500/20 rounded-[32px] flex items-center gap-4 text-red-500 shadow-sm antialiased"
+              >
+                <AlertCircle className="w-6 h-6 shrink-0" />
+                <p className="text-sm font-black uppercase tracking-tight">{error}</p>
+              </motion.div>
             )}
+          </AnimatePresence>
 
-            {/* Add item form */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-[#1d1d1f]">¿Qué necesitas?</h4>
+          {/* Builder Section */}
+          <div className="space-y-10">
+            <div className="flex items-center gap-3 px-2">
+              <ListPlus className="w-4 h-4 text-apple-blue" />
+              <h4 className="text-[11px] font-black text-apple-gray-400 dark:text-apple-gray-300 uppercase tracking-[0.3em]">Constructor de Pedido</h4>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[#86868b] mb-1.5">
-                  Insumo
-                </label>
-                <select
-                  value={selectedInsumo}
-                  onChange={(e) => setSelectedInsumo(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-[#e8e8ed] bg-[#f5f5f7] rounded-xl focus:ring-2 focus:ring-[#0066cc]/20 focus:border-[#0066cc] focus:bg-white transition-all outline-none text-[#1d1d1f]"
-                >
-                  <option value="">Seleccionar insumo...</option>
-                  {availableInsumos.map((insumo) => (
-                    <option key={insumo.id} value={insumo.id}>
-                      {insumo.nombre} ({insumo.unidad})
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="space-y-8 bg-apple-gray-50/50 dark:bg-black/20 p-10 rounded-[48px] border border-apple-gray-100 dark:border-white/5 shadow-inner">
+              <AppleSelector
+                options={formattedInsumos}
+                value={selectedInsumo}
+                onSelect={setSelectedInsumo}
+                size="sm"
+                placeholder="Vincular insumo del catálogo..."
+                searchPlaceholder="Escriba material o labor..."
+                label="Catálogo Maestro"
+                icon={<Tag className="w-3 h-3 text-apple-blue" />}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-[#86868b] mb-1.5">
-                  Cantidad
-                </label>
-                <input
-                  type="number"
-                  value={cantidad}
-                  onChange={(e) => setCantidad(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-[#e8e8ed] bg-[#f5f5f7] rounded-xl focus:ring-2 focus:ring-[#0066cc]/20 focus:border-[#0066cc] focus:bg-white transition-all outline-none text-[#1d1d1f]"
-                  placeholder="0"
-                  min="0.01"
-                  step="0.01"
-                />
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest px-2">Cantidad a Provisionar</label>
+                <div className="relative group">
+                  <input
+                    type="number"
+                    value={cantidad}
+                    onChange={(e) => setCantidad(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full h-16 rounded-[24px] bg-white dark:bg-black/40 border border-apple-gray-100 dark:border-white/10 px-8 font-black text-xl text-foreground focus:ring-8 focus:ring-apple-blue/10 transition-all outline-none tracking-tighter"
+                    step="0.01"
+                  />
+                  {selectedInsumo && (
+                    <div className="absolute right-8 top-1/2 -translate-y-1/2 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest pointer-events-none bg-apple-gray-50 dark:bg-white/5 px-3 py-1 rounded-lg">
+                      {getInsumoUnidad(selectedInsumo)}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button
                 type="button"
                 onClick={handleAddLinea}
                 disabled={!selectedInsumo || !cantidad || Number(cantidad) <= 0}
-                className="w-full px-4 py-2.5 text-sm font-medium text-[#0066cc] bg-[#0066cc]/10 hover:bg-[#0066cc]/20 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full h-16 bg-apple-blue text-white rounded-[24px] font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-apple-blue/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-20 disabled:grayscale"
               >
-                + Agregar Item
+                <Plus className="w-5 h-5" />
+                Agregar Item
               </button>
             </div>
+          </div>
 
-            {/* Items list */}
-            {lineas.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="font-medium text-[#1d1d1f]">Items agregados</h4>
-                <div className="space-y-2">
+          {/* Consolidado Section */}
+          <div className="space-y-8">
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-3">
+                <ShoppingCart className="w-4 h-4 text-indigo-500" />
+                <h4 className="text-[11px] font-black text-apple-gray-400 uppercase tracking-widest">Pedido Consolidado</h4>
+              </div>
+              <Badge count={lineas.length} />
+            </div>
+
+            <AnimatePresence mode="popLayout" initial={false}>
+              {lineas.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="py-20 text-center bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-[48px] border border-dashed border-apple-gray-100 dark:border-white/5"
+                >
+                  <Package className="w-16 h-16 text-apple-gray-100 mx-auto mb-6 opacity-30" />
+                  <p className="text-[11px] font-black text-apple-gray-300 uppercase tracking-[0.3em] leading-relaxed">
+                    La canasta está vacía.<br />Vincule recursos arriba.
+                  </p>
+                </motion.div>
+              ) : (
+                <div className="grid gap-4">
                   {lineas.map((linea, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-[#f5f5f7] rounded-xl">
-                      <div>
-                        <p className="font-medium text-[#1d1d1f]">{getInsumoName(linea.insumo_id)}</p>
-                        <p className="text-sm text-[#86868b]">{linea.cantidad} {getInsumoUnidad(linea.insumo_id)}</p>
+                    <motion.div
+                      key={`${linea.insumo_id}-${index}`}
+                      layout
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="flex items-center justify-between p-8 bg-white dark:bg-white/[0.03] rounded-[32px] border border-apple-gray-50 dark:border-white/5 shadow-apple-sm transition-all hover:border-apple-blue/20"
+                    >
+                      <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 rounded-2xl bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                          <Package className="w-7 h-7 relative z-10" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-black text-foreground tracking-tighter uppercase italic line-clamp-1">{getInsumoName(linea.insumo_id)}</p>
+                          <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mt-0.5">
+                            Cant: <span className="text-indigo-500">{linea.cantidad}</span> {getInsumoUnidad(linea.insumo_id)}
+                          </p>
+                        </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveLinea(index)}
-                        className="w-8 h-8 rounded-full hover:bg-red-100 flex items-center justify-center text-red-500 transition-colors"
+                        className="w-12 h-12 rounded-full bg-red-500/5 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-90 border border-red-500/10"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <Trash2 className="w-5 h-5" />
                       </button>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Footer Area */}
+        <div className="p-10 bg-apple-gray-50/80 dark:bg-black/40 backdrop-blur-xl border-t border-apple-gray-100 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-8 shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-black text-foreground uppercase tracking-widest">Garantía Técnica</p>
+              <p className="text-[9px] font-bold text-apple-gray-400 uppercase tracking-[0.2em] leading-tight">
+                Emisión firmada digitalmente<br />para auditoría central.
+              </p>
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="sticky bottom-0 bg-[#f5f5f7] border-t border-[#e8e8ed] px-6 py-5 flex justify-end gap-3 rounded-b-[20px]">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-sm font-medium text-[#1d1d1f] bg-white border border-[#e8e8ed] rounded-xl hover:bg-[#f5f5f7] transition-colors"
+              className="flex-1 sm:flex-none px-8 h-12 rounded-full text-[10px] font-black text-apple-gray-300 uppercase tracking-widest hover:text-foreground transition-all"
             >
-              Cancelar
+              Cerrar
             </button>
             <button
               type="button"
               onClick={handleSubmit}
               disabled={isPending || lineas.length === 0}
-              className="px-5 py-2.5 text-sm font-medium text-white bg-[#0066cc] rounded-xl hover:bg-[#004499] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 sm:flex-none h-20 px-14 bg-apple-blue text-white rounded-[28px] font-black text-[11px] uppercase tracking-[0.2em] shadow-apple-float hover:bg-apple-blue-dark active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-20 disabled:grayscale"
             >
-              {isPending ? 'Creando...' : 'Crear Orden de Compra'}
+              {isPending ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Emitiendo...
+                </>
+              ) : (
+                <>
+                  Emitir Orden
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                </>
+              )}
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
+    </div>
+  )
+}
+
+function Badge({ count }: { count: number }) {
+  return (
+    <div className="bg-indigo-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+      {count} Items en Canasta
     </div>
   )
 }

@@ -4,6 +4,12 @@ import Link from 'next/link'
 import type { UserRole } from '@/types/database'
 import { getPlantillaWithDetails } from '@/app/actions/plantillas'
 import { formatPesos } from '@/lib/utils/currency'
+import {
+  ArrowLeft, Edit3, Layers, Boxes, Package,
+  Users, User, Star, Zap, ChevronRight,
+  LayoutGrid, BookOpen, Clock, Tag
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -49,178 +55,215 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
   const manoDeObra = plantilla.insumos?.filter(i => i.tipo === 'mano_de_obra') || []
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto">
-      {/* Breadcrumb */}
-      <nav className="mb-6">
-        <ol className="flex items-center gap-2 text-sm text-gray-500">
-          <li>
-            <Link href="/admin/plantillas" className="hover:text-gray-700">
-              Plantillas
-            </Link>
-          </li>
-          <li>/</li>
-          <li className="text-gray-900 font-medium">{plantilla.nombre}</li>
-        </ol>
+    <div className="min-h-screen bg-apple-gray-50/20 dark:bg-black/20 p-6 md:p-14 max-w-5xl mx-auto space-y-12 antialiased animate-apple-fade-in">
+      {/* Navigation & Actions */}
+      <nav className="flex items-center justify-between mb-8 animate-apple-fade-in">
+        <div className="flex items-center gap-6">
+          <Link
+            href="/admin/plantillas"
+            className="w-12 h-12 glass dark:glass-dark rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-95 group shadow-apple-sm"
+          >
+            <ArrowLeft className="w-5 h-5 text-apple-gray-400 group-hover:text-apple-blue" />
+          </Link>
+          <div className="hidden sm:block">
+            <div className="flex items-center gap-2 text-[10px] font-black text-apple-gray-200 uppercase tracking-[0.2em]">
+              <BookOpen className="w-3 h-3" />
+              Biblioteca de Rubros / Detalle
+            </div>
+          </div>
+        </div>
+
+        {canEdit && (
+          <Link
+            href={`/admin/plantillas/${plantilla.id}/editar`}
+            className="px-8 py-3.5 bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/10 rounded-2xl text-xs font-black uppercase tracking-widest text-foreground hover:bg-apple-blue hover:text-white hover:border-apple-blue transition-all shadow-apple-sm flex items-center gap-2 group"
+          >
+            <Edit3 className="w-4 h-4 transition-transform group-hover:-rotate-12" />
+            Editar Plantilla
+          </Link>
+        )}
       </nav>
 
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">{plantilla.nombre}</h1>
-              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                plantilla.es_sistema
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-blue-100 text-blue-800'
-              }`}>
-                {plantilla.es_sistema ? 'Sistema' : 'Personal'}
-              </span>
+      {/* Main Spec Card */}
+      <main className="space-y-10">
+        <header className="relative bg-white dark:bg-apple-gray-50 rounded-[48px] shadow-apple-float border border-apple-gray-100 dark:border-white/[0.05] overflow-hidden animate-apple-slide-up">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-apple-blue/5 blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+
+          <div className="p-10 md:p-16 flex flex-col md:flex-row gap-12 items-start md:items-center relative z-10">
+            <div className={cn(
+              "w-32 h-32 rounded-[40px] flex items-center justify-center shadow-lg transition-transform duration-700 hover:scale-105",
+              plantilla.es_sistema ? "bg-indigo-500/10 text-indigo-500" : "bg-emerald-500/10 text-emerald-500"
+            )}>
+              <Layers className="w-16 h-16" />
             </div>
-            <p className="text-gray-600 mt-2">Unidad: {plantilla.unidad}</p>
-            {plantilla.descripcion && (
-              <p className="text-gray-600 mt-2">{plantilla.descripcion}</p>
-            )}
-            {plantilla.creador && (
-              <p className="text-sm text-gray-500 mt-2">
-                Creada por: {plantilla.creador.nombre}
-              </p>
-            )}
-          </div>
-          {canEdit && (
-            <div className="flex gap-2">
-              <Link
-                href={`/admin/plantillas/${plantilla.id}/editar`}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Editar
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4 text-center">
-          <div className="text-2xl font-bold text-gray-900">
-            {plantilla.insumos?.length || 0}
-          </div>
-          <div className="text-sm text-gray-500">Insumos Totales</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">
-            {materiales.length}
-          </div>
-          <div className="text-sm text-gray-500">Materiales</div>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">
-            {manoDeObra.length}
-          </div>
-          <div className="text-sm text-gray-500">Mano de Obra</div>
-        </div>
-      </div>
-
-      {/* Insumos List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Insumos de la Plantilla
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Estos insumos se copiaran al catalogo de la obra al usar esta plantilla
-          </p>
-        </div>
-
-        {(!plantilla.insumos || plantilla.insumos.length === 0) ? (
-          <div className="p-8 text-center">
-            <p className="text-gray-500">Esta plantilla no tiene insumos</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-gray-200">
-            {/* Materials Section */}
-            {materiales.length > 0 && (
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  Materiales ({materiales.length})
-                </h3>
-                <div className="space-y-2">
-                  {materiales.map((insumo) => (
-                    <div
-                      key={insumo.id}
-                      className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg"
-                    >
-                      <div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {insumo.nombre}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-2">
-                          ({insumo.unidad})
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {insumo.precio_referencia
-                          ? formatPesos(insumo.precio_referencia)
-                          : '-'}
-                      </div>
-                    </div>
-                  ))}
+            <div className="flex-1 space-y-4">
+              <div className="flex flex-wrap items-center gap-4">
+                <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter uppercase leading-[1.1]">
+                  {plantilla.nombre}
+                </h1>
+                <div className={cn(
+                  "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-apple-sm",
+                  plantilla.es_sistema ? "bg-indigo-50/50 text-indigo-600 border-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20"
+                    : "bg-emerald-50/50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
+                )}>
+                  {plantilla.es_sistema ? 'Sistema Master' : 'Personal Custom'}
                 </div>
               </div>
-            )}
 
-            {/* Labor Section */}
-            {manoDeObra.length > 0 && (
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Mano de Obra ({manoDeObra.length})
-                </h3>
-                <div className="space-y-2">
-                  {manoDeObra.map((insumo) => (
-                    <div
-                      key={insumo.id}
-                      className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg"
-                    >
-                      <div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {insumo.nombre}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-2">
-                          ({insumo.unidad})
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {insumo.precio_referencia
-                          ? formatPesos(insumo.precio_referencia)
-                          : '-'}
-                      </div>
-                    </div>
-                  ))}
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2 px-4 py-2 bg-apple-gray-50 dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
+                  <Tag className="w-4 h-4 text-apple-blue" />
+                  <span className="text-sm font-black text-apple-gray-400 uppercase tracking-widest leading-none pt-0.5">UNIDAD: {plantilla.unidad}</span>
                 </div>
+                {plantilla.creador && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-apple-gray-100 flex items-center justify-center"><User className="w-3.5 h-3.5 text-apple-gray-300" /></div>
+                    <span className="text-xs font-bold text-apple-gray-300 uppercase tracking-widest">por {plantilla.creador.nombre}</span>
+                  </div>
+                )}
+              </div>
+
+              {plantilla.descripcion && (
+                <p className="text-lg font-medium text-apple-gray-400 max-w-2xl leading-relaxed italic">
+                  "{plantilla.descripcion}"
+                </p>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* Info Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between group">
+            <div>
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Insumos Totales</p>
+              <h4 className="text-4xl font-black text-foreground tracking-tighter italic">{plantilla.insumos?.length || 0}</h4>
+            </div>
+            <div className="w-14 h-14 bg-apple-blue/10 rounded-2xl flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform"><Boxes className="w-8 h-8" /></div>
+          </div>
+
+          <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between group">
+            <div>
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Materiales</p>
+              <h4 className="text-4xl font-black text-indigo-500 tracking-tighter italic">{materiales.length}</h4>
+            </div>
+            <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform"><Package className="w-8 h-8" /></div>
+          </div>
+
+          <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between group">
+            <div>
+              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Labor / MO</p>
+              <h4 className="text-4xl font-black text-emerald-500 tracking-tighter italic">{manoDeObra.length}</h4>
+            </div>
+            <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform"><Users className="w-8 h-8" /></div>
+          </div>
+        </div>
+
+        {/* Detailed List */}
+        <section className="bg-white dark:bg-apple-gray-50 rounded-[48px] shadow-apple-lg border border-apple-gray-100 dark:border-white/[0.05] overflow-hidden">
+          <div className="p-10 border-b border-apple-gray-50 dark:border-white/[0.05] flex items-center justify-between bg-apple-gray-50/50 dark:bg-white/[0.01]">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-apple-blue rounded-xl flex items-center justify-center shadow-lg text-white"><LayoutGrid className="w-6 h-6" /></div>
+              <div>
+                <h3 className="text-xl font-black text-foreground tracking-tight">Estructura del Rubro</h3>
+                <p className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Precarga Automática de Insumos</p>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center gap-3 px-6 py-3 bg-white dark:bg-apple-gray-50 rounded-2xl border border-apple-gray-100 dark:border-white/10 shadow-sm">
+              <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Acción de Alta Velocidad</span>
+            </div>
+          </div>
+
+          <div className="p-10 space-y-12">
+            {(!plantilla.insumos || plantilla.insumos.length === 0) ? (
+              <div className="py-20 text-center space-y-4">
+                <Boxes className="w-16 h-16 text-apple-gray-100 mx-auto" strokeWidth={1} />
+                <p className="text-apple-gray-300 font-bold uppercase tracking-widest text-sm">Esta plantilla no define insumos base</p>
+              </div>
+            ) : (
+              <div className="space-y-16">
+                {/* Materials */}
+                {materiales.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                      <h4 className="text-xs font-black text-apple-gray-300 uppercase tracking-[0.2em]">Materiales de Base ({materiales.length})</h4>
+                    </div>
+                    <div className="grid gap-4">
+                      {materiales.map((insumo) => (
+                        <div key={insumo.id} className="flex items-center justify-between p-6 bg-apple-gray-50/50 dark:bg-black/10 rounded-3xl border border-apple-gray-100 dark:border-white/5 hover:border-apple-blue/20 transition-all duration-300 group">
+                          <div className="flex items-center gap-6">
+                            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center text-indigo-500 shadow-sm group-hover:scale-110 transition-transform">
+                              <Package className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <p className="text-[15px] font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase italic">{insumo.nombre}</p>
+                              <div className="flex items-center gap-2 mt-0.5 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
+                                <span>Referencia:</span>
+                                <span className="px-1.5 py-0.5 bg-white dark:bg-white/5 rounded border border-current/10">{insumo.unidad}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] mb-1 leading-none">Precio Estimado</p>
+                            <p className="text-xl font-black text-foreground tracking-tighter">{insumo.precio_referencia ? formatPesos(insumo.precio_referencia) : '-'}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Labor */}
+                {manoDeObra.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                      <h4 className="text-xs font-black text-apple-gray-300 uppercase tracking-[0.2em]">Mano de Obra Especializada ({manoDeObra.length})</h4>
+                    </div>
+                    <div className="grid gap-4">
+                      {manoDeObra.map((insumo) => (
+                        <div key={insumo.id} className="flex items-center justify-between p-6 bg-apple-gray-50/50 dark:bg-black/10 rounded-3xl border border-apple-gray-100 dark:border-white/5 hover:border-apple-blue/20 transition-all duration-300 group">
+                          <div className="flex items-center gap-6">
+                            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center text-emerald-500 shadow-sm group-hover:scale-110 transition-transform">
+                              <Users className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <p className="text-[15px] font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase italic">{insumo.nombre}</p>
+                              <div className="flex items-center gap-2 mt-0.5 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
+                                <span>Calculado por:</span>
+                                <span className="px-1.5 py-0.5 bg-white dark:bg-white/5 rounded border border-current/10">{insumo.unidad}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] mb-1 leading-none">Tarifa REF</p>
+                            <p className="text-xl font-black text-foreground tracking-tighter">{insumo.precio_referencia ? formatPesos(insumo.precio_referencia) : '-'}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
-      </div>
 
-      {/* Back Button */}
-      <div className="mt-6">
-        <Link
-          href="/admin/plantillas"
-          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
-        >
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Volver a Plantillas
+          <div className="p-8 bg-apple-gray-50/30 dark:bg-white/[0.01] border-t border-apple-gray-50 dark:border-white/[0.05] text-center">
+            <p className="text-[10px] font-black text-apple-gray-200 uppercase tracking-[0.4em]">Ficha Técnica Codificada • Chelabs EDO v2.0</p>
+          </div>
+        </section>
+      </main>
+
+      {/* Action Footer */}
+      <footer className="mt-12 flex justify-center">
+        <Link href="/admin/plantillas" className="flex items-center gap-3 px-10 py-5 glass dark:glass-dark rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300 hover:text-apple-blue transition-all active:scale-95 group">
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          Volver a la Biblioteca
         </Link>
-      </div>
+      </footer>
     </div>
   )
 }

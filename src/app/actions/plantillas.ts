@@ -420,3 +420,137 @@ export async function updatePlantilla(
 
   return { success: true, data: updated as PlantillaRubro }
 }
+
+/**
+ * Create a new plantilla from scratch
+ */
+export async function createPlantilla(
+  data: {
+    nombre: string;
+    descripcion?: string;
+    unidad: string;
+    es_sistema?: boolean;
+    insumos?: { nombre: string; unidad: string; tipo: InsumoTipo; precio_referencia: number }[]
+  }
+): Promise<PlantillaResult<{ id: string }>> {
+  const currentUser = await getCurrentUser()
+
+  if (!currentUser?.profile) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  // Only DO and admin can create plantillas
+  if (!['admin', 'director_obra'].includes(currentUser.profile.rol)) {
+    return { success: false, error: 'No tenés permisos para crear plantillas' }
+  }
+
+  const supabase = await createClient()
+
+  // 1. Create plantilla
+  const { data: plantilla, error: plantillaError } = await supabase
+    .from('plantilla_rubros')
+    .insert({
+      nombre: data.nombre,
+      descripcion: data.descripcion || null,
+      unidad: data.unidad,
+      es_sistema: data.es_sistema || (currentUser.profile.rol === 'admin'),
+      created_by: currentUser.profile.id
+    })
+    .select()
+    .single()
+
+  if (plantillaError || !plantilla) {
+    console.error('Error creating plantilla:', plantillaError)
+    return { success: false, error: 'Error al crear la plantilla' }
+  }
+
+  // 2. Create insumos if provided
+  if (data.insumos && data.insumos.length > 0) {
+    const insumosToInsert = data.insumos.map(insumo => ({
+      plantilla_rubro_id: plantilla.id,
+      nombre: insumo.nombre,
+      unidad: insumo.unidad,
+      tipo: insumo.tipo,
+      precio_referencia: insumo.precio_referencia
+    }))
+
+    const { error: piError } = await supabase
+      .from('plantilla_insumos')
+      .insert(insumosToInsert)
+
+    if (piError) {
+      console.error('Error creating plantilla insumos:', piError)
+    }
+  }
+
+  return {
+    success: true,
+    data: { id: plantilla.id }
+  }
+}
+
+/**
+ * Update a plantilla's insumos (sync)
+ * Replaces all existing insumos with the new list
+ */
+export async function updatePlantillaInsumos(
+  plantillaId: string,
+  insumos: { nombre: string; unidad: string; tipo: InsumoTipo; precio_referencia: number }[]
+): Promise<PlantillaResult> {
+  const currentUser = await getCurrentUser()
+
+  if (!currentUser?.profile) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  const supabase = await createClient()
+
+  // Check permissions (same as updatePlantilla)
+  const { data: plantilla } = await supabase
+    .from('plantilla_rubros')
+    .select('created_by, es_sistema')
+    .eq('id', plantillaId)
+    .single()
+
+  if (!plantilla) return { success: false, error: 'Plantilla no encontrada' }
+
+  if (plantilla.es_sistema && currentUser.profile.rol !== 'admin') {
+    return { success: false, error: 'Solo admin puede editar plantillas del sistema' }
+  }
+  if (!plantilla.es_sistema && plantilla.created_by !== currentUser.profile.id && currentUser.profile.rol !== 'admin') {
+    return { success: false, error: 'Solo podés editar tus propias plantillas' }
+  }
+
+  // 1. Delete existing insumos
+  const { error: deleteError } = await supabase
+    .from('plantilla_insumos')
+    .delete()
+    .eq('plantilla_rubro_id', plantillaId)
+
+  if (deleteError) {
+    console.error('Error deleting old insumos:', deleteError)
+    return { success: false, error: 'Error al actualizar composición' }
+  }
+
+  // 2. Insert new insumos
+  if (insumos.length > 0) {
+    const insumosToInsert = insumos.map(i => ({
+      plantilla_rubro_id: plantillaId,
+      nombre: i.nombre,
+      unidad: i.unidad,
+      tipo: i.tipo,
+      precio_referencia: i.precio_referencia
+    }))
+
+    const { error: insertError } = await supabase
+      .from('plantilla_insumos')
+      .insert(insumosToInsert)
+
+    if (insertError) {
+      console.error('Error inserting new insumos:', insertError)
+      return { success: false, error: 'Error al guardar nuevos insumos' }
+    }
+  }
+
+  return { success: true }
+}

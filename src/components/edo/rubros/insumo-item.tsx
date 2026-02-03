@@ -1,6 +1,9 @@
 'use client'
 
 import type { Insumo } from '@/types/database'
+import { Package, Users, Edit3, X, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { formatPesos } from '@/lib/utils/currency'
 
 interface InsumoItemProps {
   insumo: Insumo
@@ -13,83 +16,44 @@ interface InsumoItemProps {
 export function InsumoItem({ insumo, canEdit, onEdit, onRemove, isRemoving }: InsumoItemProps) {
   const isMaterial = insumo.tipo === 'material'
 
-  const formatPrice = (price: number | null) => {
-    if (!price) return '-'
-    return new Intl.NumberFormat('es-UY', {
-      style: 'currency',
-      currency: 'UYU',
-      maximumFractionDigits: 0
-    }).format(price)
-  }
-
   return (
-    <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between p-4 bg-white dark:bg-white/[0.03] border border-apple-gray-100 dark:border-white/5 rounded-2xl hover:border-apple-blue/20 hover:shadow-apple-sm transition-all duration-300 group">
+      <div className="flex items-center gap-4">
         {/* Tipo Icon */}
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-            isMaterial ? 'bg-blue-100' : 'bg-green-100'
-          }`}
-        >
-          {isMaterial ? (
-            <svg
-              className="w-4 h-4 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="w-4 h-4 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
+          className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500",
+            isMaterial ? "bg-apple-blue/10 text-apple-blue" : "bg-indigo-500/10 text-indigo-500"
           )}
+        >
+          {isMaterial ? <Package className="w-5 h-5" /> : <Users className="w-5 h-5" />}
         </div>
 
         {/* Insumo Info */}
         <div>
-          <p className="text-sm font-medium text-gray-900">{insumo.nombre}</p>
-          <p className="text-xs text-gray-500">
-            {insumo.unidad} | {formatPrice(insumo.precio_unitario || insumo.precio_referencia)}
-          </p>
+          <p className="text-sm font-bold text-foreground group-hover:text-apple-blue transition-colors outline-none">{insumo.nombre}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[9px] font-black uppercase tracking-widest text-apple-gray-300 bg-apple-gray-50 dark:bg-white/5 px-2 py-0.5 rounded-md border border-current/5">{insumo.unidad}</span>
+            <span className="w-1 h-1 rounded-full bg-apple-gray-100" />
+            <span className="text-xs font-medium text-apple-gray-400">
+              {formatPesos(insumo.precio_unitario || insumo.precio_referencia)}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Actions */}
       {canEdit && (
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 sm:opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={(e) => {
               e.stopPropagation()
               onEdit()
             }}
-            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+            className="w-9 h-9 flex items-center justify-center text-apple-gray-300 hover:text-apple-blue hover:bg-apple-blue/10 rounded-xl transition-all"
             title="Editar insumo"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
+            <Edit3 className="w-4.5 h-4.5" />
           </button>
           <button
             onClick={(e) => {
@@ -97,18 +61,13 @@ export function InsumoItem({ insumo, canEdit, onEdit, onRemove, isRemoving }: In
               onRemove()
             }}
             disabled={isRemoving}
-            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+            className="w-9 h-9 flex items-center justify-center text-apple-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all disabled:opacity-50"
             title="Quitar del rubro"
           >
             {isRemoving ? (
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
+              <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-4.5 h-4.5" />
             )}
           </button>
         </div>

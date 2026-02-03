@@ -2,14 +2,24 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { createOT, getRubroBudgetStatus } from '@/app/actions/ordenes-trabajo'
+import { createOT, updateOT, getRubroBudgetStatus } from '@/app/actions/ordenes-trabajo'
 import { formatPesos } from '@/lib/utils/currency'
 import { InsumoSelector, type InsumoSeleccionado } from './insumo-selector'
 import {
   AlertTriangle, CheckCircle2, Calculator, TrendingUp, Wallet,
-  Tag, AlignLeft, ChevronDown, Check, Info, ArrowRight, Loader2
+  Tag, AlignLeft, AlertCircle,
+  ChevronDown,
+  Layers,
+  Sparkles,
+  ArrowRight,
+  Filter,
+  Info,
+  Loader2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { AppleSelector } from '@/components/ui/apple-selector'
+import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 
 interface Rubro {
   id: string
@@ -31,17 +41,38 @@ interface OTCreateFormProps {
   obraId: string
   rubros: Rubro[]
   insumosObra: InsumoObra[]
+  initialData?: {
+    id: string
+    rubro_id: string
+    descripcion: string
+    insumos_estimados: Array<{
+      insumo_id: string
+      cantidad_estimada: number
+      insumo: {
+        precio_referencia: number | null
+      }
+    }>
+  }
 }
 
-export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps) {
+export function OTCreateForm({ obraId, rubros, insumosObra, initialData }: OTCreateFormProps) {
   const router = useRouter()
+  const isEditing = !!initialData
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [selectedRubroId, setSelectedRubroId] = useState('')
-  const [descripcion, setDescripcion] = useState('')
+  const [selectedRubroId, setSelectedRubroId] = useState(initialData?.rubro_id || '')
+  const [descripcion, setDescripcion] = useState(initialData?.descripcion || '')
 
-  const [insumosSeleccionados, setInsumosSeleccionados] = useState<InsumoSeleccionado[]>([])
+  const [insumosSeleccionados, setInsumosSeleccionados] = useState<InsumoSeleccionado[]>(
+    initialData?.insumos_estimados.map(ie => ({
+      insumo_id: ie.insumo_id,
+      nombre: (ie as any).insumos?.nombre || (ie as any).insumo?.nombre || 'Insumo',
+      unidad: (ie as any).insumos?.unidad || (ie as any).insumo?.unidad || '',
+      cantidad: ie.cantidad_estimada,
+      precio_unitario: ie.insumo.precio_referencia || 0
+    })) || []
+  )
   const [costoEstimado, setCostoEstimado] = useState(0)
   const [budgetStatus, setBudgetStatus] = useState<{
     presupuesto: number
@@ -84,8 +115,16 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
     setCostoEstimado(total)
   }, [])
 
+  // Initial cost calculation
+  useEffect(() => {
+    const total = insumosSeleccionados.reduce((sum, i) => sum + i.cantidad * i.precio_unitario, 0)
+    setCostoEstimado(total)
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!selectedRubroId || !descripcion) return
+
     setError(null)
     setIsSubmitting(true)
 
@@ -95,216 +134,341 @@ export function OTCreateForm({ obraId, rubros, insumosObra }: OTCreateFormProps)
         cantidad_estimada: i.cantidad,
       }))
 
-      const result = await createOT({
-        obra_id: obraId,
-        rubro_id: selectedRubroId,
-        descripcion,
-        cantidad: 1,
-        insumos_seleccionados: insumosParaEnviar.length > 0 ? insumosParaEnviar : undefined,
-      })
+      const result = isEditing
+        ? await updateOT({
+          id: initialData!.id,
+          rubro_id: selectedRubroId,
+          descripcion,
+          insumos_seleccionados: insumosParaEnviar,
+        })
+        : await createOT({
+          obra_id: obraId,
+          rubro_id: selectedRubroId,
+          descripcion,
+          cantidad: 1,
+          insumos_seleccionados: insumosParaEnviar.length > 0 ? insumosParaEnviar : undefined,
+        })
 
       if (result.success) {
         router.push(`/obras/${obraId}/ordenes-trabajo/${result.data.id}`)
+        router.refresh()
       } else {
         setError(result.error)
       }
     } catch {
-      setError('Error al crear la orden de trabajo')
+      setError(`Error al ${isEditing ? 'actualizar' : 'crear'} la orden de trabajo`)
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const excedesPresupuesto = budgetStatus && costoEstimado > budgetStatus.disponible
+  const formattedRubros = rubros.map(r => ({
+    id: r.id,
+    nombre: r.nombre,
+    unidad: r.unidad,
+    subtitle: `Presupuesto Base: ${formatPesos(r.presupuesto)}`
+  }))
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-12 relative z-10">
-      {error && (
-        <div className="p-6 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-3xl flex items-center gap-4 text-red-600 dark:text-red-400 animate-apple-slide-up">
-          <AlertTriangle className="w-6 h-6 shrink-0" />
-          <p className="text-sm font-bold uppercase tracking-tight">{error}</p>
-        </div>
-      )}
-
-      {/* Section: Rubro Selection */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 px-2">
-          <Tag className="w-4 h-4 text-apple-blue" />
-          <label htmlFor="rubro" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Selección de Rubro Presupuestal</label>
-        </div>
-        <div className="relative group">
-          <select
-            id="rubro"
-            value={selectedRubroId}
-            onChange={(e) => setSelectedRubroId(e.target.value)}
-            required
-            className="w-full h-20 pl-8 pr-16 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-200 dark:border-white/10 rounded-[28px] text-xl font-black text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all appearance-none"
+    <form onSubmit={handleSubmit} className="space-y-16 relative z-10 pb-32">
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="p-8 bg-red-500/10 border border-red-500/20 rounded-[32px] flex items-center gap-6 text-red-500 shadow-2xl shadow-red-500/5 antialiased"
           >
-            <option value="" className="font-sans text-base">Elegir rubro de la obra...</option>
-            {rubros.map((rubro) => (
-              <option key={rubro.id} value={rubro.id} className="font-sans text-base">
-                {rubro.nombre} {rubro.unidad ? `(${rubro.unidad})` : ''}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-apple-gray-300">
-            <ChevronDown className="w-6 h-6 group-focus-within:rotate-180 transition-transform" />
+            <div className="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center text-white shrink-0">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1 opacity-60">Error de Validación</p>
+              <p className="text-lg font-black tracking-tight">{error}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* STEP 1: Identification */}
+      <section className="space-y-10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-apple-blue rounded-[18px] flex items-center justify-center text-white shadow-lg shadow-apple-blue/30">
+            <Layers className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">
+              {isEditing ? '1. Modificación de Datos' : '1. Identificación'}
+            </h3>
+            <p className="text-sm font-medium text-apple-gray-400">
+              {isEditing ? 'Ajusta los detalles generales de la orden.' : 'Selecciona el rubro presupuestal y define la tarea.'}
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* Section: Budget Monitor (Bento Style) */}
-      {budgetStatus && (
-        <div className="bg-apple-gray-50/50 dark:bg-black/40 rounded-[40px] border border-apple-gray-100 dark:border-white/5 p-10 space-y-8 animate-apple-slide-up relative overflow-hidden">
-          {isLoadingBudget && (
-            <div className="absolute inset-0 backdrop-blur-sm bg-white/20 dark:bg-black/20 flex items-center justify-center z-20">
-              <Loader2 className="w-10 h-10 text-apple-blue animate-spin" />
-            </div>
-          )}
+        <div className="grid grid-cols-1 gap-12 pl-4">
+          <AppleSelector
+            options={formattedRubros}
+            value={selectedRubroId}
+            onSelect={setSelectedRubroId}
+            label="Rubro Presupuestal de la Obra"
+            icon={<Tag className="w-4 h-4 text-apple-blue" />}
+            placeholder="Elegir rubro para esta orden..."
+            searchPlaceholder="Buscar por nombre de rubro..."
+          />
 
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
-              <Wallet className="w-5 h-5 text-apple-blue" />
-              <h4 className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.3em]">Estado de Inversión</h4>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 px-2">
+              <AlignLeft className="w-4 h-4 text-apple-blue" />
+              <label htmlFor="descripcion" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Descripción Técnica del Trabajo</label>
             </div>
-            <span className={cn(
-              "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
-              budgetStatus.porcentaje_usado > 100 ? "bg-red-500/10 text-red-600 border-red-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-            )}>
-              {budgetStatus.porcentaje_usado.toFixed(1)}% Comprometido
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Base del Rubro</p>
-              <p className="text-2xl font-black text-foreground tracking-tighter">{formatPesos(budgetStatus.presupuesto)}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Comprometido</p>
-              <p className="text-2xl font-black text-foreground tracking-tighter">{formatPesos(budgetStatus.gastado)}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Capital Disponible</p>
-              <p className={cn(
-                "text-2xl font-black tracking-tighter",
-                budgetStatus.disponible < 0 ? 'text-red-500' : 'text-emerald-500'
-              )}>
-                {formatPesos(budgetStatus.disponible)}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative pt-4">
-            <div className="h-4 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden shadow-inner flex">
-              <div
-                className={cn(
-                  "h-full transition-all duration-1000 ease-out flex items-center justify-center",
-                  budgetStatus.porcentaje_usado > 100 ? 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]' :
-                    budgetStatus.porcentaje_usado > 80 ? 'bg-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.4)]' :
-                      'bg-apple-blue shadow-[0_0_20px_rgba(0,122,255,0.4)]'
-                )}
-                style={{ width: `${Math.min(budgetStatus.porcentaje_usado, 100)}%` }}
-              >
-                {budgetStatus.porcentaje_usado > 30 && <div className="h-0.5 w-[80%] bg-white/20 rounded-full" />}
+            <div className="relative group">
+              <textarea
+                id="descripcion"
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                required
+                rows={4}
+                maxLength={500}
+                placeholder="Describe técnicamente lo que se debe ejecutar en esta etapa..."
+                className="w-full p-10 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/10 rounded-[40px] text-lg font-bold text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all resize-none shadow-inner tracking-tight leading-relaxed placeholder:text-apple-gray-400/50"
+              />
+              <div className="absolute bottom-10 right-10 text-[10px] font-black text-apple-gray-200 uppercase tracking-widest bg-white/50 dark:bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
+                {descripcion.length} / 500
               </div>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Section: Description */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 px-2">
-          <AlignLeft className="w-4 h-4 text-apple-blue" />
-          <label htmlFor="descripcion" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Definición del Trabajo</label>
-        </div>
-        <div className="relative group">
-          <textarea
-            id="descripcion"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            required
-            rows={4}
-            maxLength={500}
-            placeholder="Describe técnicamente lo que se debe ejecutar en esta etapa..."
-            className="w-full p-8 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-200 dark:border-white/10 rounded-[32px] text-lg font-medium text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all resize-none shadow-inner"
-          />
-          <div className="absolute bottom-6 right-8 text-[10px] font-black text-apple-gray-200 uppercase tracking-widest">
-            {descripcion.length}/500
-          </div>
-        </div>
-      </div>
-
-      {/* Section: Insumos Inventory Selector */}
+      {/* STEP 2: Budget Control */}
       {selectedRubroId && (
-        <div className="space-y-8 py-4">
-          <div className="flex items-center gap-3 px-2 border-b border-apple-gray-100 dark:border-white/5 pb-4">
-            <Calculator className="w-5 h-5 text-apple-blue" />
-            <h4 className="text-xl font-black text-foreground tracking-tighter">Planificación de Recursos</h4>
-          </div>
-          <InsumoSelector
-            obraId={obraId}
-            insumosObra={insumosObra}
-            onChange={handleInsumosChange}
-            isLoading={isLoadingBudget}
-          />
-        </div>
-      )}
-
-      {/* High-Impact Summary Bar */}
-      <div className={cn(
-        "sticky bottom-0 z-40 -mx-10 -mb-10 p-10 backdrop-blur-xl border-t transition-all duration-500",
-        excedesPresupuesto
-          ? "bg-amber-500/10 border-amber-500/20"
-          : "bg-white/80 dark:bg-black/60 border-apple-gray-100 dark:border-white/5 shadow-[0_-20px_50px_rgba(0,0,0,0.05)]"
-      )}>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10 max-w-5xl mx-auto">
-          <div className="flex items-center gap-8">
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Costo Estimado</p>
-              <p className={cn(
-                "text-4xl font-black tracking-tighter leading-none transition-colors",
-                excedesPresupuesto ? 'text-amber-500' : 'text-apple-blue'
-              )}>
-                {formatPesos(costoEstimado)}
-              </p>
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-10"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-emerald-500 rounded-[18px] flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+              <Wallet className="w-6 h-6" />
             </div>
-            {excedesPresupuesto && (
-              <div className="flex items-center gap-3 p-4 bg-amber-500 text-white rounded-2xl animate-apple-fade-in shadow-lg">
-                <AlertTriangle className="w-5 h-5 shrink-0" />
-                <div className="text-[10px] font-black uppercase leading-tight tracking-wider">
-                  Requiere Aprobación<br />del Director
+            <div>
+              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">2. Control de Inversión</h3>
+              <p className="text-sm font-medium text-apple-gray-400">Verifica la disponibilidad financiera antes de proceder.</p>
+            </div>
+          </div>
+
+          <div className="pl-4">
+            {budgetStatus ? (
+              <div className="bg-white dark:bg-apple-gray-50/50 rounded-[48px] border border-apple-gray-100 dark:border-white/5 p-12 space-y-10 relative overflow-hidden shadow-apple-float">
+                {isLoadingBudget && (
+                  <div className="absolute inset-0 backdrop-blur-xl bg-white/40 dark:bg-black/40 flex flex-col items-center justify-center z-20 gap-4">
+                    <Loader2 className="w-12 h-12 text-apple-blue animate-spin" />
+                    <p className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Sincronizando Libro Diario...</p>
+                  </div>
+                )}
+
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                  <div className="flex items-center gap-4 group">
+                    <div className="w-14 h-14 bg-apple-blue/10 rounded-2xl flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform">
+                      <TrendingUp className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-apple-gray-400 uppercase tracking-widest mb-1">Ratio de Consumo</h4>
+                      <p className="text-3xl font-black text-foreground tracking-tighter italic selection:bg-apple-blue/20">
+                        {budgetStatus.porcentaje_usado.toFixed(1)}% <span className="text-apple-gray-200 dark:text-apple-gray-400/30 text-xl font-medium tracking-tight">ejecutado</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={cn(
+                    "px-8 py-3.5 rounded-[20px] text-[11px] font-black uppercase tracking-[0.2em] border flex items-center gap-3",
+                    budgetStatus.porcentaje_usado > 100
+                      ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+                      : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                  )}>
+                    {budgetStatus.porcentaje_usado > 100 ? <AlertTriangle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                    {budgetStatus.porcentaje_usado > 100 ? "Presupuesto Agotado" : "Presupuesto Saludable"}
+                  </div>
                 </div>
+
+                {budgetStatus.presupuesto === 0 && (
+                  <div className="p-6 bg-amber-500/10 border border-amber-500/20 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-6 animate-apple-fade-in">
+                    <div className="flex items-center gap-4 text-amber-600 dark:text-amber-500">
+                      <AlertTriangle className="w-6 h-6 shrink-0" />
+                      <p className="text-sm font-bold tracking-tight">
+                        Este rubro no cuenta con presupuesto asignado.
+                      </p>
+                    </div>
+                    <Link
+                      href={`/obras/${obraId}/rubros/${selectedRubroId}/editar`}
+                      className="px-6 py-2 bg-amber-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all"
+                    >
+                      Configurar Presupuesto
+                    </Link>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
+                  <div className="space-y-2 p-6 bg-apple-gray-50/50 dark:bg-black/20 rounded-[32px] border border-apple-gray-100 dark:border-white/5">
+                    <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Base Asignada</p>
+                    <p className="text-3xl font-black text-foreground tracking-tighter">{formatPesos(budgetStatus.presupuesto)}</p>
+                  </div>
+                  <div className="space-y-2 p-6 bg-apple-gray-50/50 dark:bg-black/20 rounded-[32px] border border-apple-gray-100 dark:border-white/5">
+                    <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Ejecución Real</p>
+                    <p className="text-3xl font-black text-foreground tracking-tighter text-apple-blue">{formatPesos(budgetStatus.gastado)}</p>
+                  </div>
+                  <div className="space-y-2 p-6 bg-apple-gray-50/50 dark:bg-black/20 rounded-[32px] border border-apple-gray-100 dark:border-white/5">
+                    <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Saldo Restante</p>
+                    <p className={cn(
+                      "text-3xl font-black tracking-tighter",
+                      budgetStatus.disponible < 0 ? 'text-red-500' : 'text-emerald-500'
+                    )}>
+                      {formatPesos(budgetStatus.disponible)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative pt-6">
+                  <div className="h-4 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden shadow-inner flex border border-apple-gray-100 dark:border-white/5">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(budgetStatus.porcentaje_usado, 100)}%` }}
+                      transition={{ duration: 1.5, ease: "circOut" }}
+                      className={cn(
+                        "h-full relative transition-colors duration-500",
+                        budgetStatus.porcentaje_usado > 100 ? 'bg-red-500' :
+                          budgetStatus.porcentaje_usado > 80 ? 'bg-amber-500' :
+                            'bg-apple-blue'
+                      )}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent" />
+                    </motion.div>
+                  </div>
+                  {budgetStatus.porcentaje_usado > 100 && (
+                    <div className="mt-4 flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-[0.2em] animate-pulse">
+                      <AlertTriangle className="w-4 h-4" />
+                      Atención: Has superado el presupuesto inicial del rubro.
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="p-20 text-center bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-[48px] border border-dashed border-apple-gray-100 dark:border-white/10">
+                <Loader2 className="w-10 h-10 text-apple-blue animate-spin mx-auto mb-6 opacity-30" />
+                <p className="text-apple-gray-300 font-bold tracking-tight uppercase tracking-widest">Evaluando factibilidad técnica...</p>
               </div>
             )}
           </div>
+        </motion.section>
+      )}
 
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="flex-1 md:flex-none px-10 h-16 rounded-full text-xs font-black uppercase tracking-widest text-apple-gray-400 hover:text-foreground transition-all"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || !selectedRubroId || !descripcion}
-              className="flex-[2] md:flex-none h-20 px-14 rounded-[28px] bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-apple-blue-dark active:scale-95 transition-all shadow-apple-float disabled:opacity-30 flex items-center justify-center gap-4 group"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-                  Sincronizando...
-                </>
-              ) : (
-                <>
-                  Lanzar como Borrador
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </>
+      {/* STEP 3: Resources */}
+      {selectedRubroId && budgetStatus && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-10"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-amber-500 rounded-[18px] flex items-center justify-center text-white shadow-lg shadow-amber-500/30">
+              <Calculator className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">3. Planificación de Recursos</h3>
+              <p className="text-sm font-medium text-apple-gray-400">Vincula materiales y mano de obra a esta orden.</p>
+            </div>
+          </div>
+
+          <div className="pl-4">
+            <InsumoSelector
+              obraId={obraId}
+              insumosObra={insumosObra}
+              onChange={handleInsumosChange}
+              isLoading={isLoadingBudget}
+              initialSelection={insumosSeleccionados}
+            />
+          </div>
+        </motion.section>
+      )}
+
+      {/* Final Summary Overlay - Always visible to guide the user */}
+      <div className={cn(
+        "fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-48px)] max-w-7xl transition-all duration-700",
+        selectedRubroId ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0 pointer-events-none"
+      )}>
+        <div className={cn(
+          "p-3 rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.3)] backdrop-blur-3xl transition-all duration-500 border",
+          excedesPresupuesto
+            ? "bg-amber-500/10 border-amber-500/20"
+            : "bg-white/80 dark:bg-black/70 border-white/20 dark:border-white/10"
+        )}>
+          <div className="bg-white/40 dark:bg-white/5 rounded-[34px] px-10 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="flex items-center gap-10">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-apple-blue" />
+                  Costo Estimado
+                </p>
+                <p className={cn(
+                  "text-5xl font-black tracking-tighter leading-none transition-all",
+                  excedesPresupuesto ? 'text-amber-500 scale-105' : 'text-foreground'
+                )}>
+                  {formatPesos(costoEstimado)}
+                </p>
+              </div>
+
+              {excedesPresupuesto && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-3 p-4 bg-amber-500 text-white rounded-2xl shadow-xl shadow-amber-500/20"
+                >
+                  <AlertTriangle className="w-5 h-5 shrink-0" />
+                  <div className="text-[9px] font-black uppercase leading-[1.2] tracking-widest">
+                    Alerta de Desvío<br />Requiere Validación
+                  </div>
+                </motion.div>
               )}
-            </button>
+            </div>
+
+            <div className="flex items-center gap-5 w-full md:w-auto">
+              {!descripcion && (
+                <p className="text-[10px] font-black text-red-500 uppercase tracking-widest animate-pulse hidden md:block">
+                  Complete la descripción técnica
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="flex-1 md:flex-none px-8 h-12 rounded-full text-[10px] font-black uppercase tracking-widest text-apple-gray-400 hover:text-foreground transition-all hover:bg-apple-gray-100 dark:hover:bg-white/5"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !selectedRubroId || !descripcion}
+                className={cn(
+                  "flex-1 md:flex-none h-20 px-14 rounded-[28px] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl flex items-center justify-center gap-4 group active:scale-95 disabled:grayscale disabled:opacity-30 disabled:cursor-not-allowed",
+                  excedesPresupuesto
+                    ? "bg-amber-500 text-white hover:bg-amber-600 shadow-amber-500/30"
+                    : "bg-apple-blue text-white hover:bg-apple-blue-dark shadow-apple-blue/30"
+                )}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    {isEditing ? 'Guardar Cambios' : 'Lanzar Orden'}
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

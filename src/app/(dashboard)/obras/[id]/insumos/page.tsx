@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import { InsumosClient } from './insumos-client'
-import { Toaster } from '@/components/ui/sonner'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -46,7 +45,6 @@ export default async function InsumosPage({ params }: Props) {
         obraNombre={obra.nombre}
         initialInsumos={insumos || []}
       />
-      <Toaster />
     </>
   )
 }

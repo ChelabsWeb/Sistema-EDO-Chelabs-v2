@@ -135,21 +135,24 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
 
       {/* User & Sign Out */}
       <div className="p-6 mt-auto">
-        <div className="p-4 bg-apple-gray-50/50 dark:bg-white/[0.03] border border-apple-gray-50 dark:border-white/5 rounded-[24px] mb-4 flex items-center gap-4 transition-all hover:border-apple-blue/20">
-          <div className="w-12 h-12 bg-white dark:bg-apple-gray-100 rounded-[14px] flex items-center justify-center border border-apple-gray-100 dark:border-white/10 shadow-sm">
+        <Link
+          href="/perfil"
+          className="p-4 bg-apple-gray-50/50 dark:bg-white/[0.03] border border-apple-gray-50 dark:border-white/5 rounded-[24px] mb-4 flex items-center gap-4 transition-all hover:border-apple-blue/20 group/user shadow-sm hover:shadow-apple-sm group"
+        >
+          <div className="w-12 h-12 bg-white dark:bg-apple-gray-100 rounded-[14px] flex items-center justify-center border border-apple-gray-100 dark:border-white/10 shadow-sm group-hover/user:scale-105 transition-transform">
             <span className="text-[12px] font-black text-apple-blue uppercase tracking-tighter">
               {userName?.substring(0, 2) || userEmail?.substring(0, 2) || 'AD'}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-black text-foreground truncate tracking-tight lowercase first-letter:uppercase">
+            <p className="text-xs font-black text-foreground truncate tracking-tight lowercase first-letter:uppercase group-hover/user:text-apple-blue transition-colors">
               {userName || userEmail}
             </p>
             <p className="text-[10px] uppercase font-bold text-apple-gray-400 tracking-[0.1em] mt-0.5 opacity-70">
               {getRoleDisplayName(userRole)}
             </p>
           </div>
-        </div>
+        </Link>
 
         <form action="/api/auth/signout" method="post">
           <button

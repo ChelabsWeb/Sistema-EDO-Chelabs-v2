@@ -270,6 +270,39 @@ export async function deactivateUsuario(id: string): Promise<ActionResult> {
 }
 
 /**
+ * Update current user profile
+ */
+export async function updateUsuarioProfile(data: { nombre: string }): Promise<ActionResult> {
+  const supabase = await createClient()
+
+  // Verify current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  // Update profile
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from('usuarios') as any)
+    .update({
+      nombre: data.nombre,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('auth_user_id', user.id)
+
+  if (error) {
+    console.error('Error updating profile:', error)
+    return { success: false, error: 'Error al actualizar el perfil' }
+  }
+
+  revalidatePath('/perfil')
+  return { success: true }
+}
+
+/**
  * Generate a temporary password
  */
 function generateTempPassword(): string {

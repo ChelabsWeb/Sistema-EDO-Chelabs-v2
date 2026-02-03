@@ -3,6 +3,19 @@
 import { useState } from 'react'
 import type { Insumo } from '@/types/database'
 import { updateInsumo } from '@/app/actions/rubro-insumos'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Package, Users, Tag, DollarSign, X, Loader2, Save, AlertCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { formatPesos } from '@/lib/utils/currency'
 
 interface EditInsumoModalProps {
   insumo: Insumo
@@ -35,7 +48,7 @@ export function EditInsumoModal({ insumo, onClose, onSaved }: EditInsumoModalPro
 
     const precio = parseFloat(precioUnitario)
     if (isNaN(precio) || precio < 0) {
-      setError('El precio debe ser un numero positivo')
+      setError('El precio debe ser un número positivo')
       return
     }
 
@@ -57,129 +70,107 @@ export function EditInsumoModal({ insumo, onClose, onSaved }: EditInsumoModalPro
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-        onClick={onClose}
-      />
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-xl p-0 overflow-hidden rounded-[40px] border-apple-gray-100 dark:border-white/10 shadow-apple-lg">
+        {/* Header Decor */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-apple-blue/5 to-transparent pointer-events-none" />
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
-          {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Editar Insumo</h3>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="p-10 relative z-10">
+          <header className="flex items-center gap-6 mb-10">
+            <div className={cn(
+              "w-16 h-16 rounded-[24px] flex items-center justify-center shadow-lg transition-transform",
+              insumo.tipo === 'material' ? "bg-apple-blue text-white" : "bg-indigo-500 text-white"
+            )}>
+              {insumo.tipo === 'material' ? <Package className="w-8 h-8" /> : <Users className="w-8 h-8" />}
             </div>
-          </div>
+            <div>
+              <DialogTitle className="text-3xl font-black text-foreground tracking-tight leading-none">Ajustar Insumo</DialogTitle>
+              <DialogDescription className="text-xs font-black text-apple-gray-300 uppercase tracking-widest mt-2 flex items-center gap-2">
+                Identificador: <span className="text-apple-blue">{insumo.id.substring(0, 8)}...</span>
+              </DialogDescription>
+            </div>
+          </header>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-sm font-bold animate-in fade-in slide-in-from-top-2">
+                <AlertCircle className="w-5 h-5 shrink-0" />
                 {error}
               </div>
             )}
 
-            {/* Nombre */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nombre
-              </label>
-              <input
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] ml-2">Asignar Nombre</label>
+                <div className="relative group">
+                  <Input
+                    type="text"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="h-16 pl-6 pr-12 rounded-2xl bg-apple-gray-50 dark:bg-black/40 border-apple-gray-100 dark:border-white/10 text-lg font-bold focus:ring-8 focus:ring-apple-blue/10 transition-all"
+                  />
+                  <Tag className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-apple-gray-200 group-focus-within:text-apple-blue transition-colors" />
+                </div>
+              </div>
 
-            {/* Unidad */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Unidad
-              </label>
-              <input
-                type="text"
-                value={unidad}
-                onChange={(e) => setUnidad(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="ej: kg, m2, unidad, hora"
-              />
-            </div>
-
-            {/* Precio */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Precio Unitario ($)
-              </label>
-              <input
-                type="number"
-                value={precioUnitario}
-                onChange={(e) => setPrecioUnitario(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                min="0"
-                step="0.01"
-              />
-            </div>
-
-            {/* Tipo (read-only) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tipo
-              </label>
-              <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
-                {insumo.tipo === 'material' ? (
-                  <>
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                    </div>
-                    <span className="text-sm text-gray-700">Material</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                    <span className="text-sm text-gray-700">Mano de Obra</span>
-                  </>
-                )}
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] ml-2">Medida</label>
+                  <Input
+                    type="text"
+                    value={unidad}
+                    onChange={(e) => setUnidad(e.target.value)}
+                    className="h-14 px-6 rounded-2xl bg-apple-gray-50 dark:bg-black/40 border-apple-gray-100 dark:border-white/10 font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] ml-2">Costo UYU</label>
+                  <div className="relative group">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-apple-blue font-black">$</span>
+                    <Input
+                      type="number"
+                      value={precioUnitario}
+                      onChange={(e) => setPrecioUnitario(e.target.value)}
+                      className="h-14 pl-12 pr-6 rounded-2xl bg-apple-gray-50 dark:bg-black/40 border-apple-gray-100 dark:border-white/10 font-black text-lg"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </form>
 
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-800"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={saving}
-              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {saving ? 'Guardando...' : 'Guardar'}
-            </button>
-          </div>
+            <DialogFooter className="pt-6 flex flex-col sm:flex-row gap-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onClose}
+                className="h-14 flex-1 rounded-2xl text-[10px] font-black uppercase tracking-widest text-apple-gray-400 hover:text-foreground transition-all order-2 sm:order-1"
+                disabled={saving}
+              >
+                Descartar
+              </Button>
+              <Button
+                type="submit"
+                className="h-14 flex-[2] rounded-2xl bg-apple-blue text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-apple-float hover:bg-apple-blue-dark active:scale-[0.98] transition-all order-1 sm:order-2"
+                disabled={saving}
+              >
+                {saving ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Sincronizando...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Save className="w-4 h-4" />
+                    <span>Guardar Cambios</span>
+                  </div>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
