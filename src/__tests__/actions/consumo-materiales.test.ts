@@ -29,6 +29,7 @@ describe('consumo-materiales.ts - Material Consumption', () => {
                 auth: { user: { id: user.auth_user_id } as any, session: null, error: null },
             })
 
+            let consumoCallCount = 0
             mockClient.from = vi.fn().mockImplementation((table: string) => {
                 if (table === 'usuarios') {
                     return {
@@ -38,14 +39,21 @@ describe('consumo-materiales.ts - Material Consumption', () => {
                     }
                 }
                 if (table === 'consumo_materiales') {
-                    return {
-                        select: vi.fn().mockReturnThis(),
-                        eq: vi.fn().mockReturnThis(),
-                        insert: vi.fn().mockReturnThis(),
-                        // First call checks for existing, second call inserts
-                        single: vi.fn()
-                            .mockResolvedValueOnce({ data: null, error: null }) // No existing record
-                            .mockResolvedValueOnce({ data: { id: 'new-id' }, error: null }) // Insert returns id
+                    consumoCallCount++
+                    if (consumoCallCount === 1) {
+                        // First call: check for existing record
+                        return {
+                            select: vi.fn().mockReturnThis(),
+                            eq: vi.fn().mockReturnThis(),
+                            single: vi.fn().mockResolvedValue({ data: null, error: null }) // No existing
+                        }
+                    } else {
+                        // Second call: insert new record
+                        return {
+                            insert: vi.fn().mockReturnThis(),
+                            select: vi.fn().mockReturnThis(),
+                            single: vi.fn().mockResolvedValue({ data: { id: 'new-id' }, error: null })
+                        }
                     }
                 }
                 return mockClient

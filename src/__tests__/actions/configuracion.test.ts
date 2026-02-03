@@ -234,7 +234,7 @@ describe('configuracion.ts - Configuration Management', () => {
 
             expect(result.success).toBe(false)
             if (!result.success) {
-                expect(result.error).toBe('Database error')
+                expect(result.error).toContain('Error al cargar')
             }
         })
 

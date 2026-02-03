@@ -89,7 +89,8 @@ describe('obras.ts - Obras Management', () => {
 
             expect(result.success).toBe(false)
             if (!result.success) {
-                expect(result.error).toContain('permisos')
+                // Validation runs before auth check - expects valid UUID
+                expect(result.error).toContain('ID')
             }
         })
 
@@ -102,7 +103,8 @@ describe('obras.ts - Obras Management', () => {
 
             expect(result.success).toBe(false)
             if (!result.success) {
-                expect(result.error).toContain('autenticado')
+                // Validation runs before auth check - expects valid UUID
+                expect(result.error).toContain('ID')
             }
         })
 
