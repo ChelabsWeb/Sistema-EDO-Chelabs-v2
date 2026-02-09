@@ -9,6 +9,8 @@
   --color-foreground: var(--foreground);
 
   /* Primary Brand */
+  --color-primary: #2b4bee;
+  --color-primary-glow: #4d6bfe;
   --color-apple-blue: #0071e3;
   --color-apple-blue-dark: #0077ed;
   --color-apple-blue-light: #47a1ff;
@@ -71,6 +73,19 @@
   }
 }
 
+/* Hide scrollbar utility */
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
 :root {
   --background: #fbfbfd;
   --foreground: #1d1d1f;
@@ -84,10 +99,14 @@
   --apple-gray-500: #424245;
   --apple-gray-600: #1d1d1f;
 
+  /* Chart colors */
+  --chart-grid: rgba(0, 0, 0, 0.05);
+
   /* Shadcn-like mapping for components */
   --border: rgba(0, 0, 0, 0.08);
   --input: rgba(0, 0, 0, 0.05);
   --ring: #007aff;
+  --selection: rgba(43, 75, 238, 0.15);
 }
 
 .dark {
@@ -103,6 +122,8 @@
   --apple-gray-500: #c7c7cc;
   --apple-gray-600: #f5f5f7;
 
+  --chart-grid: rgba(255, 255, 255, 0.05);
+
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.05);
   --ring: #0a84ff;
@@ -117,13 +138,13 @@
   }
 
   * {
-    @apply border-white/5;
+    @apply border-black/5 dark:border-white/5;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 dark:bg-black/60 dark:border-white/10;
+    @apply bg-white/70 backdrop-blur-xl border border-black/10 dark:bg-black/60 dark:border-white/10;
   }
 
   .text-balance {
@@ -137,13 +158,34 @@
   }
 
   .premium-glass {
-    @apply bg-white/3 backdrop-blur-2xl border border-white/10 shadow-2xl;
+    @apply transition-all duration-300;
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xl);
+    border-radius: 24px;
+  }
+
+  .dark .premium-glass {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-2xl);
   }
 
   .glass-card {
-    background-color: rgb(255 255 255 / 0.03);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgb(255 255 255 / 0.1);
+    @apply transition-all duration-300;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    background-color: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-xl);
+    border-radius: 24px;
+  }
+
+  .dark .glass-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 

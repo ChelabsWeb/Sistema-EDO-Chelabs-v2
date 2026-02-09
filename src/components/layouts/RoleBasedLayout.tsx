@@ -26,7 +26,7 @@ export function RoleBasedLayout({
   const { showSidebar, showBottomNav } = useRoleBasedLayout({ role: userRole })
 
   return (
-    <div className="min-h-screen bg-[#101622] relative overflow-hidden selection:bg-blue-500/30">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden selection:bg-blue-500/30 transition-colors duration-500">
       {/* Background Abstract Blobs */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -36,7 +36,7 @@ export function RoleBasedLayout({
             scale: [1, 1.15, 0.85, 1],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-15%] left-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px]"
+          className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-primary/20 dark:bg-primary/10 rounded-full blur-[120px]"
         />
         <motion.div
           animate={{
@@ -45,20 +45,11 @@ export function RoleBasedLayout({
             scale: [1, 1.2, 0.9, 1],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{
-            x: [30, -30, 0, 30],
-            y: [30, 30, -50, 30],
-            scale: [1, 0.8, 1.1, 1],
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-20%] left-[10%] w-[700px] h-[700px] bg-indigo-700/10 rounded-full blur-[140px]"
+          className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-purple-500/10 dark:bg-purple-900/10 rounded-full blur-[120px]"
         />
         {/* Noise Overlay */}
         <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay"
           style={{
             backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')`,
             backgroundSize: '128px 128px'
@@ -88,12 +79,12 @@ export function RoleBasedLayout({
         {/* Main Content */}
         <main
           className={cn(
-            'transition-all duration-500 ease-in-out',
-            showSidebar && 'md:pl-[300px]', // Adjusted for better spacing with sidebar
+            'transition-all duration-500 ease-in-out min-h-screen',
+            showSidebar && 'md:pl-64', // Exactly 256px for the sidebar
             showBottomNav && 'pt-16 pb-24'
           )}
         >
-          <div className="animate-apple-fade-in p-4 lg:p-8">
+          <div className="animate-apple-fade-in">
             {children}
           </div>
         </main>

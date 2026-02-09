@@ -7,15 +7,38 @@ import type { UserRole } from '@/types/database'
 import { getRoleDisplayName } from '@/lib/roles'
 import { motion } from 'framer-motion'
 import {
-  BarChart3,
-  Building2,
-  Users,
-  Trash2,
-  LogOut,
-  ShoppingCart,
   LayoutDashboard,
-  ChevronRight
+  Building2,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Settings,
+  LogOut,
+  Trash2,
+  ShoppingCart,
+  Database,
+  ClipboardList
 } from 'lucide-react'
+
+// Material Symbols replacements using Lucide
+const icons = {
+  dashboard: LayoutDashboard,
+  obras: Building2,
+  tareas: ClipboardList, // Using ClipboardList instead of missing Assignment
+  analitica: BarChart3,
+  costos: TrendingUp,
+  usuarios: Users,
+  ajustes: Settings,
+  logout: LogOut,
+  papelera: Trash2,
+  compras: ShoppingCart
+}
+
+
+interface NavSection {
+  title: string
+  items: NavItem[]
+}
 
 interface NavItem {
   href: string
@@ -24,41 +47,29 @@ interface NavItem {
   roles?: UserRole[]
 }
 
-const navItems: NavItem[] = [
+const navSections: NavSection[] = [
   {
-    href: '/dashboard',
-    label: 'Resumen',
-    icon: LayoutDashboard,
+    title: 'Gestión',
+    items: [
+      { href: '/dashboard', label: 'Resumen', icon: LayoutDashboard },
+      { href: '/obras', label: 'Obras', icon: Building2 },
+      { href: '/compras/ordenes-compra', label: 'Compras', icon: ShoppingCart, roles: ['admin', 'director_obra', 'jefe_obra', 'compras'] },
+    ]
   },
   {
-    href: '/obras',
-    label: 'Obras',
-    icon: Building2,
+    title: 'Análisis',
+    items: [
+      { href: '/reportes', label: 'Analítica', icon: BarChart3, roles: ['admin', 'director_obra'] },
+      { href: '/papelera', label: 'Papelera', icon: Trash2, roles: ['admin', 'director_obra'] },
+    ]
   },
   {
-    href: '/compras/ordenes-compra',
-    label: 'Compras',
-    icon: ShoppingCart,
-    roles: ['admin', 'director_obra', 'jefe_obra', 'compras'],
-  },
-  {
-    href: '/reportes',
-    label: 'Analítica',
-    icon: BarChart3,
-    roles: ['admin', 'director_obra'],
-  },
-  {
-    href: '/admin/usuarios',
-    label: 'Usuarios',
-    icon: Users,
-    roles: ['admin', 'director_obra'],
-  },
-  {
-    href: '/papelera',
-    label: 'Papelera',
-    icon: Trash2,
-    roles: ['admin', 'director_obra'],
-  },
+    title: 'Configuración',
+    items: [
+      { href: '/admin/usuarios', label: 'Usuarios', icon: Users, roles: ['admin', 'director_obra'] },
+      { href: '/perfil', label: 'Ajustes', icon: Settings },
+    ]
+  }
 ]
 
 interface DesktopSidebarProps {
@@ -70,96 +81,82 @@ interface DesktopSidebarProps {
 export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebarProps) {
   const pathname = usePathname()
 
-  const visibleNavItems = navItems.filter((item) => {
-    if (!item.roles) return true
-    if (!userRole) return false
-    return item.roles.includes(userRole)
-  })
+  const filterItems = (items: NavItem[]) => {
+    return items.filter((item) => {
+      if (!item.roles) return true
+      if (!userRole) return false
+      return item.roles.includes(userRole)
+    })
+  }
 
   return (
-    <aside className="fixed left-6 top-6 bottom-6 w-64 z-40 bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-2xl rounded-[32px] flex flex-col overflow-hidden transition-all duration-500">
+    <aside className="fixed left-0 top-0 bottom-0 z-40 w-64 flex flex-col py-8 border-r border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 backdrop-blur-3xl shrink-0 transition-all duration-500">
       {/* Brand Header */}
-      <div className="p-8">
-        <Link href="/dashboard" className="flex items-center gap-4 group">
-          <div className="w-12 h-12 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-500/20 transform transition-all group-hover:scale-110">
-            <Building2 className="w-7 h-7 text-white" strokeWidth={1.5} />
-          </div>
-          <div>
-            <h1 className="font-extrabold text-white tracking-tight text-lg leading-tight">Sistema EDO</h1>
-            <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mt-0.5">Premium V2</p>
-          </div>
-        </Link>
+      <div className="px-8 mb-10 flex items-center gap-4 group cursor-default">
+        <div className="size-11 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 group-hover:scale-105 transition-transform">
+          <Database className="text-white w-6 h-6" strokeWidth={2.5} />
+        </div>
+        <div>
+          <h1 className="text-slate-900 dark:text-white text-[19px] font-black leading-none tracking-tight">
+            Sistema EDO
+          </h1>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.25em] mt-1.5 opacity-80">
+            Premium V2
+          </p>
+        </div>
       </div>
 
-      {/* Navigation Space */}
-      <nav className="flex-1 px-4 py-2 space-y-2">
-        {visibleNavItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-          const Icon = item.icon
+      {/* Navigation Sections */}
+      <nav className="flex-1 px-4 space-y-8 overflow-y-auto custom-scrollbar-hide">
+        {navSections.map((section) => {
+          const visibleItems = filterItems(section.items)
+          if (visibleItems.length === 0) return null
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'group flex items-center justify-between px-5 py-3.5 rounded-2xl text-[14px] font-bold transition-all duration-300 relative overflow-hidden',
-                isActive
-                  ? 'text-white'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
-              )}
-            >
-              <div className="flex items-center gap-3.5 relative z-10 transition-transform group-hover:translate-x-1">
-                <Icon
-                  className={cn(
-                    'w-5 h-5 transition-all duration-300',
-                    isActive ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'
-                  )}
-                  strokeWidth={2}
-                />
-                <span className="tracking-tight">{item.label}</span>
+            <div key={section.title}>
+              <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">
+                {section.title}
+              </p>
+              <div className="space-y-1">
+                {visibleItems.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                  const Icon = item.icon
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'group flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13.5px] font-bold transition-all duration-300 relative overflow-hidden',
+                        isActive
+                          ? 'bg-primary/10 text-primary dark:text-white border-l-4 border-primary rounded-l-none pl-3'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-primary/5 dark:hover:bg-white/5 hover:translate-x-1'
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          'w-[22px] h-[22px] transition-all duration-300',
+                          isActive ? 'text-primary' : 'text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors'
+                        )}
+                        strokeWidth={isActive ? 2.5 : 2}
+                      />
+                      <span className="tracking-tight">{item.label}</span>
+                    </Link>
+                  )
+                })}
               </div>
-
-              {isActive && (
-                <motion.div
-                  layoutId="active-pill"
-                  className="absolute inset-0 bg-blue-600 shadow-lg shadow-blue-600/20"
-                  initial={false}
-                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                />
-              )}
-
-              {isActive && <ChevronRight className="w-4 h-4 text-white/60 relative z-10" strokeWidth={2.5} />}
-            </Link>
+            </div>
           )
         })}
       </nav>
 
-      {/* User & Sign Out */}
-      <div className="p-6 mt-auto">
-        <Link
-          href="/perfil"
-          className="p-4 bg-white/[0.03] border border-white/5 rounded-[24px] mb-4 flex items-center gap-4 transition-all hover:bg-white/[0.05] hover:border-blue-500/30 group/user"
-        >
-          <div className="w-12 h-12 bg-white/10 rounded-[14px] flex items-center justify-center border border-white/10 group-hover/user:scale-105 transition-transform">
-            <span className="text-[12px] font-black text-blue-400 uppercase">
-              {userName?.substring(0, 2) || userEmail?.substring(0, 2) || 'AD'}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-black text-white truncate tracking-tight lowercase first-letter:uppercase group-hover/user:text-blue-400 transition-colors">
-              {userName || userEmail}
-            </p>
-            <p className="text-[10px] uppercase font-bold text-slate-500 tracking-[0.1em] mt-0.5">
-              {getRoleDisplayName(userRole)}
-            </p>
-          </div>
-        </Link>
-
+      {/* Sign Out Only */}
+      <div className="px-4 mt-auto">
         <form action="/api/auth/signout" method="post">
           <button
             type="submit"
-            className="w-full h-12 flex items-center justify-center gap-2 text-[13px] font-bold text-red-500 hover:bg-red-500/10 rounded-2xl transition-all duration-300 active:scale-95 group border border-transparent"
+            className="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-slate-500 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 transition-all font-bold text-[11px] uppercase tracking-widest group"
           >
-            <LogOut className="w-4 h-4 transition-all group-hover:-translate-x-1" strokeWidth={2.5} />
+            <LogOut className="w-[18px] h-[18px] transition-transform group-hover:-translate-x-1" strokeWidth={2.5} />
             Cerrar sesión
           </button>
         </form>
