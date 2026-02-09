@@ -1,0 +1,14 @@
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+        "name": "generate_screen_from_text",
+        "arguments": {
+            "projectId": "9525006360162235589",
+            "prompt": "Create a premium, modern login page for 'Sistema EDO'. Aesthetics: Apple-inspired, glassmorphism, with sleek typography and subtle animations. Functional Requirements: Logo with 'Sistema EDO' text, Email and Password fields, 'Forgot password?' link, Primary action button 'Ingresar al Sistema', Error state message design, Footer with 'Chelabs Engineering' branding. Current implementation context: Background with soft animated blobs (blue/purple), glass container with rounded corners (48px), Lucide icons.",
+            "deviceType": "DESKTOP",
+            "modelId": "GEMINI_3_PRO"
+        }
+    }
+}

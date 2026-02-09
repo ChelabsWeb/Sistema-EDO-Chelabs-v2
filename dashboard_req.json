@@ -1,0 +1,14 @@
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+        "name": "generate_screen_from_text",
+        "arguments": {
+            "projectId": "9525006360162235589",
+            "prompt": "Create a premium, modern Dashboard for 'Sistema EDO'. Aesthetics: Apple-inspired, glassmorphism, dark mode, consistent with the new login page. Layout: Sidebar navigation with icons (Home, Obras, OT, Compras, Admin), Top bar with user profile and notifications. Content: 4 Key metric cards (Execution Progress, Active Obras, Pending OTs, Cost Deviation), a 'Project Execution' area chart, a 'Recent Activity' list with status indicators (Success, Warning, Info). Components: Glass cards with subtle glows, sleek typography (Manrope), Lucide-style icons. Detail: Show a 'Critical Deviation' alert if budget is exceeded.",
+            "deviceType": "DESKTOP",
+            "modelId": "GEMINI_3_PRO"
+        }
+    }
+}

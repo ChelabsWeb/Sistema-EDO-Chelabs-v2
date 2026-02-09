@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sistema EDO Dashboard V2 Refined</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2b4bee",
+                        "primary-glow": "#4d6bfe",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                        "glass-bg": "rgba(17, 25, 40, 0.75)",
+                        "background-dark": "#0f111a",
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"],
+                        body: ["Manrope", "sans-serif"],
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --primary-color: #2b4bee;
+            --sidebar-active-bg: rgba(43, 75, 238, 0.1);
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #0f111a;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(15, 17, 26, 0.7);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar-item-active {
+            background: var(--sidebar-active-bg);
+            border-left: 4px solid var(--primary-color);
+            color: white;
+        }
+        .nav-item-hover:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 15s infinite alternate ease-in-out;
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 40px) scale(1.1); }
+        }
+        .chart-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2.5s ease-out forwards;
+        }
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-200 antialiased selection:bg-primary/30">
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="blob w-[500px] h-[500px] bg-primary -top-20 -left-20"></div>
+<div class="blob w-[600px] h-[600px] bg-purple-900 -bottom-20 -right-20" style="animation-delay: -5s;"></div>
+</div>
+<div class="flex h-screen w-full overflow-hidden">
+<aside class="w-64 flex flex-col py-8 border-r border-white/5 bg-black/20 backdrop-blur-xl shrink-0">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="size-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[24px]">dataset</span>
+</div>
+<div>
+<h1 class="text-white text-lg font-bold leading-none">Sistema EDO</h1>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Premium V2</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-8 overflow-y-auto">
+<div>
+<p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Gestión</p>
+<div class="space-y-1">
+<a class="sidebar-item-active flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-sm font-semibold">Resumen</span>
+</a>
+<a class="nav-item-hover flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">apartment</span>
+<span class="text-sm font-medium">Obras</span>
+</a>
+<a class="nav-item-hover flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">assignment</span>
+<span class="text-sm font-medium">Tareas (OT)</span>
+</a>
+</div>
+</div>
+<div>
+<p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Análisis</p>
+<div class="space-y-1">
+<a class="nav-item-hover flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">analytics</span>
+<span class="text-sm font-medium">Estadísticas</span>
+</a>
+<a class="nav-item-hover flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">monitoring</span>
+<span class="text-sm font-medium">Costos</span>
+</a>
+</div>
+</div>
+<div>
+<p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Configuración</p>
+<div class="space-y-1">
+<a class="nav-item-hover flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="text-sm font-medium">Usuarios</span>
+</a>
+<a class="nav-item-hover flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Ajustes</span>
+</a>
+</div>
+</div>
+</nav>
+<div class="px-4 mt-auto">
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all" href="#">
+<span class="material-symbols-outlined text-[22px]">logout</span>
+<span class="text-sm font-medium">Cerrar sesión</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<header class="h-24 px-8 flex items-center justify-between shrink-0">
+<div>
+<h2 class="text-4xl font-extrabold text-white tracking-tight">Hola, Administrador.</h2>
+<p class="text-slate-400 text-sm mt-1">Todo parece estar bajo control hoy.</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 border-r border-white/10 pr-6">
+<button class="relative p-2.5 rounded-full bg-white/5 text-slate-300 hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-[#0f111a]"></span>
+</button>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<p class="text-sm font-bold text-white leading-none">Alex Morgan</p>
+<p class="text-[11px] text-slate-500 font-medium mt-1">Director de Proyectos</p>
+</div>
+<div class="size-11 rounded-full p-[2px] bg-gradient-to-tr from-primary to-purple-500">
+<img alt="Profile" class="rounded-full size-full object-cover border-2 border-[#0f111a]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3_yckb3E7dHYHQ_z2BWAIylQvxyLIx1sUPzwwpDKOOpmw8KemOouNc_AhBwlzs9egu68SO5XCEYbnawZnwD4PHoBsykFOoMEKI4ASej18c2NXN7l5KhbK3EMIkaD4xAgKePUkehiIU3LV9ZOPbdVrdpMfi0NnzXTyuKh29nB5XZI3wX8ePG5XPlAYgHhMqXfq4WcshypfeCuuTG0Y3KhMxGfiZMr5XbzTIv_7NupQb4gBszK4UbiXG0l7x1MV0I6cCSJ5Tn9rHoA"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto px-8 pb-12 space-y-8">
+<div class="grid grid-cols-4 gap-6">
+<div class="glass-card p-6">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+</div>
+<div class="size-10">
+<svg class="size-full -rotate-90" viewBox="0 0 36 36">
+<path class="text-white/5" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="72, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Ejecución</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">72%</h3>
+<div class="mt-4 text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                        +4.2% este mes
+                    </div>
+</div>
+<div class="glass-card p-6">
+<div class="size-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-4">
+<span class="material-symbols-outlined text-[20px]">domain</span>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Obras Activas</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">12</h3>
+<p class="mt-4 text-[11px] text-slate-500 font-medium">8 en cronograma</p>
+</div>
+<div class="glass-card p-6">
+<div class="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-4">
+<span class="material-symbols-outlined text-[20px]">pending_actions</span>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">OTs Pendientes</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">45</h3>
+<p class="mt-4 text-[11px] text-amber-500/80 font-medium flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        5 críticas requieren atención
+                    </p>
+</div>
+<div class="glass-card p-6 bg-red-500/5 border-red-500/20">
+<div class="size-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 mb-4">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+</div>
+<p class="text-red-300 text-xs font-bold uppercase tracking-wider mb-1">Desvío Costos</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">-8.4%</h3>
+<p class="mt-4 text-[11px] text-red-400/80 font-medium">Sobre el presupuesto base</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div class="glass-card p-8 col-span-2">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-lg font-bold text-white">Proyección semanal de avance</h3>
+<p class="text-xs text-slate-500 mt-1">Basado en el rendimiento de los últimos 7 días</p>
+</div>
+<div class="flex bg-white/5 rounded-lg p-1 border border-white/10">
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-primary rounded-md shadow-lg shadow-primary/20">Semana</button>
+<button class="px-4 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition-colors">Mes</button>
+</div>
+</div>
+<div class="h-64 w-full relative">
+<svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 800 240">
+<defs>
+<linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#2b4bee" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#2b4bee" stop-opacity="0"></stop>
+</linearGradient>
+<filter height="200%" id="lineGlow" width="200%" x="-50%" y="-50%">
+<feGaussianBlur result="blur" stdDeviation="3"></feGaussianBlur>
+<feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+</filter>
+</defs>
+<line stroke="rgba(255,255,255,0.12)" stroke-width="1" x1="0" x2="800" y1="0" y2="0"></line>
+<line stroke="rgba(255,255,255,0.12)" stroke-width="1" x1="0" x2="800" y1="80" y2="80"></line>
+<line stroke="rgba(255,255,255,0.12)" stroke-width="1" x1="0" x2="800" y1="160" y2="160"></line>
+<line stroke="rgba(255,255,255,0.12)" stroke-width="1" x1="0" x2="800" y1="240" y2="240"></line>
+<path d="M0,180 Q100,160 200,200 T400,120 T600,60 T800,90 L800,240 L0,240 Z" fill="url(#areaFill)"></path>
+<path class="chart-path" d="M0,180 Q100,160 200,200 T400,120 T600,60 T800,90" fill="none" filter="url(#lineGlow)" stroke="#2b4bee" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="600" cy="60" fill="#0f111a" r="5" stroke="#fff" stroke-width="2"></circle>
+</svg>
+<div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-6 px-2">
+<span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+</div>
+</div>
+</div>
+<div class="glass-card p-8">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-lg font-bold text-white">Historial reciente</h3>
+<button class="text-primary text-xs font-bold hover:underline">Ver todo</button>
+</div>
+<div class="space-y-6 overflow-y-auto max-h-72 pr-2">
+<div class="flex gap-4 group cursor-pointer">
+<div class="size-9 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+</div>
+<div class="border-b border-white/5 pb-4 flex-1">
+<h4 class="text-sm font-bold text-white group-hover:text-primary transition-colors">Compra #402 Aprobada</h4>
+<p class="text-xs text-slate-500 mt-1 leading-relaxed">Suministro de acero para Sector A.</p>
+<p class="text-[10px] text-slate-600 font-bold mt-2">Hace 2 horas</p>
+</div>
+</div>
+<div class="flex gap-4 group cursor-pointer">
+<div class="size-9 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+<span class="material-symbols-outlined text-[18px]">report_problem</span>
+</div>
+<div class="border-b border-white/5 pb-4 flex-1">
+<h4 class="text-sm font-bold text-white group-hover:text-primary transition-colors">Alerta de Plazo</h4>
+<p class="text-xs text-slate-500 mt-1 leading-relaxed">Retraso en hormigonado por clima.</p>
+<p class="text-[10px] text-slate-600 font-bold mt-2">Hace 5 horas</p>
+</div>
+</div>
+<div class="flex gap-4 group cursor-pointer">
+<div class="size-9 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+</div>
+<div class="pb-2 flex-1">
+<h4 class="text-sm font-bold text-white group-hover:text-primary transition-colors">Nuevo Operario</h4>
+<p class="text-xs text-slate-500 mt-1 leading-relaxed">Asignado a cuadrilla eléctrica.</p>
+<p class="text-[10px] text-slate-600 font-bold mt-2">Ayer</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-4">
+<p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-6">Accesos Rápidos</p>
+<div class="grid grid-cols-4 gap-6">
+<div class="glass-card p-6 flex items-center gap-5 cursor-pointer hover:bg-white/10 transition-all">
+<div class="size-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[24px]">add_business</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white leading-tight">Gestión Obras</h4>
+<p class="text-[11px] text-slate-500 mt-1">Proyectos activos</p>
+</div>
+</div>
+<div class="p-6 rounded-[24px] bg-primary flex items-center gap-5 cursor-pointer hover:bg-primary-glow transition-all shadow-xl shadow-primary/20">
+<div class="size-10 rounded-lg bg-white/20 flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white leading-tight">Nueva Obra</h4>
+<p class="text-[11px] text-white/80 mt-0.5">Alta de nuevo proyecto</p>
+</div>
+</div>
+<div class="glass-card p-6 flex items-center gap-5 cursor-pointer hover:bg-white/10 transition-all">
+<div class="size-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[24px]">inventory_2</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white leading-tight">Suministros</h4>
+<p class="text-[11px] text-slate-500 mt-1">Control material</p>
+</div>
+</div>
+<div class="glass-card p-6 flex items-center gap-5 cursor-pointer hover:bg-white/10 transition-all">
+<div class="size-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[24px]">tune</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white leading-tight">Configuración</h4>
+<p class="text-[11px] text-slate-500 mt-1">Ajustes plataforma</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

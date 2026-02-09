@@ -1,0 +1,4 @@
+Checking MCP server health...
+
+supabase: https://mcp.supabase.com/mcp?project_ref=okywobvelfvyhnzvjycm (HTTP) - ??? Connected
+stitch: https://stitch.googleapis.com/mcp (HTTP) - ??? Connected

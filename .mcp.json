@@ -3,6 +3,13 @@
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=okywobvelfvyhnzvjycm"
+    },
+    "stitch": {
+      "type": "http",
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "AQ.Ab8RN6JT6mNGFlOL6NP2mkQohRGLFOvzpHTbwANTY2223st9qQ"
+      }
     }
   }
 }

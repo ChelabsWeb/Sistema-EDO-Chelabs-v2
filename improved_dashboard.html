@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sistema EDO Premium Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2b4bee",
+                        "primary-glow": "#4d6bfe",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                        "glass-bg": "rgba(17, 25, 40, 0.75)",
+                        "glass-bg-hover": "rgba(30, 41, 59, 0.7)",
+                        "background-dark": "#0f1014",
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"],
+                        body: ["Manrope", "sans-serif"],
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #0f1014;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px -2px rgba(0, 0, 0, 0.3), 0 0 15px rgba(43, 75, 238, 0.15);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-sidebar {
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Animated Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: -1;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+        
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: #2b4bee;
+            animation-delay: 0s;
+        }
+        
+        .blob-2 {
+            bottom: -10%;
+            right: -5%;
+            width: 600px;
+            height: 600px;
+            background: #5b21b6; /* Purple */
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            top: 40%;
+            left: 30%;
+            width: 300px;
+            height: 300px;
+            background: #0e7490; /* Cyan-ish */
+            opacity: 0.3;
+            animation-duration: 15s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Chart Animations */
+        .chart-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2s ease-out forwards;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-200 antialiased selection:bg-primary/30 selection:text-white">
+<!-- Background Blobs -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+</div>
+<div class="flex h-screen w-full overflow-hidden">
+<!-- Sidebar -->
+<aside class="glass-sidebar w-20 lg:w-64 flex flex-col justify-between py-6 transition-all duration-300 z-20 shrink-0">
+<div class="flex flex-col gap-8 px-4">
+<!-- Logo Area -->
+<div class="flex items-center gap-3 justify-center lg:justify-start pl-2">
+<div class="relative flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 shadow-lg shadow-primary/20 shrink-0">
+<span class="material-symbols-outlined text-white text-[24px]">dataset</span>
+</div>
+<div class="hidden lg:flex flex-col">
+<h1 class="text-white text-lg font-bold tracking-tight leading-none">Sistema EDO</h1>
+<p class="text-slate-400 text-xs font-medium tracking-wide mt-0.5">Premium Mgmt</p>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex flex-col gap-2 mt-4">
+<a class="group flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/10 border border-primary/20 text-white relative overflow-hidden transition-all" href="#">
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">home</span>
+<span class="hidden lg:block text-sm font-semibold">Home</span>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-l-full"></div>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">apartment</span>
+<span class="hidden lg:block text-sm font-medium">Obras</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">assignment</span>
+<span class="hidden lg:block text-sm font-medium">OT</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">shopping_cart</span>
+<span class="hidden lg:block text-sm font-medium">Compras</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">admin_panel_settings</span>
+<span class="hidden lg:block text-sm font-medium">Admin</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Action -->
+<div class="px-4">
+<a class="group flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="hidden lg:block text-sm font-medium">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative z-10">
+<!-- Header -->
+<header class="h-20 px-8 flex items-center justify-between shrink-0 glass-panel border-b border-glass-border/50 lg:border-none lg:bg-transparent lg:backdrop-blur-none lg:shadow-none">
+<div class="flex items-center gap-4">
+<h2 class="text-2xl font-bold text-white tracking-tight hidden md:block">Dashboard Overview</h2>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search Bar -->
+<div class="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 w-64 focus-within:w-80 focus-within:bg-white/10 focus-within:border-primary/50 transition-all duration-300 group">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary text-[20px]">search</span>
+<input class="bg-transparent border-none text-sm text-white placeholder-slate-500 focus:ring-0 w-full ml-2 h-full py-1" placeholder="Search projects..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="relative p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-[#0f1014]"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-white/10">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-semibold text-white">Alex Morgan</p>
+<p class="text-xs text-slate-400">Project Lead</p>
+</div>
+<div class="size-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-500 p-[1px]">
+<img alt="Profile of user Alex Morgan" class="rounded-full size-full object-cover border-2 border-[#0f1014]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3_yckb3E7dHYHQ_z2BWAIylQvxyLIx1sUPzwwpDKOOpmw8KemOouNc_AhBwlzs9egu68SO5XCEYbnawZnwD4PHoBsykFOoMEKI4ASej18c2NXN7l5KhbK3EMIkaD4xAgKePUkehiIU3LV9ZOPbdVrdpMfi0NnzXTyuKh29nB5XZI3wX8ePG5XPlAYgHhMqXfq4WcshypfeCuuTG0Y3KhMxGfiZMr5XbzTIv_7NupQb4gBszK4UbiXG0l7x1MV0I6cCSJ5Tn9rHoA"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-4 md:p-8 pt-2">
+<!-- KPI Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<!-- Card 1: Progreso -->
+<div class="glass-card rounded-[24px] p-6 relative overflow-hidden group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-slate-400 text-sm font-medium mb-1">Progreso de Ejecución</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">72%</h3>
+</div>
+<div class="relative size-12 flex items-center justify-center">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-white/10" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary drop-shadow-[0_0_6px_rgba(43,75,238,0.8)]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="72, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+</div>
+<div class="flex items-center gap-2 text-emerald-400 text-xs font-semibold bg-emerald-400/10 w-fit px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+12% vs Last Month</span>
+</div>
+</div>
+<!-- Card 2: Obras Activas -->
+<div class="glass-card rounded-[24px] p-6 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 bg-primary/20 blur-2xl size-24 rounded-full group-hover:bg-primary/30 transition-colors"></div>
+<div class="flex flex-col gap-4 relative z-10">
+<div class="size-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<p class="text-slate-400 text-sm font-medium mb-1">Obras Activas</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">12</h3>
+</div>
+</div>
+<div class="mt-4 text-xs text-slate-500 font-medium">All systems operational</div>
+</div>
+<!-- Card 3: OTs Pendientes -->
+<div class="glass-card rounded-[24px] p-6 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 bg-amber-500/10 blur-2xl size-24 rounded-full group-hover:bg-amber-500/20 transition-colors"></div>
+<div class="flex flex-col gap-4 relative z-10">
+<div class="size-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 shadow-inner">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<div>
+<p class="text-slate-400 text-sm font-medium mb-1">OTs Pendientes</p>
+<h3 class="text-3xl font-bold text-white tracking-tight">45</h3>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-1 text-xs text-amber-400 font-medium">
+<span class="size-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+<span>5 Urgent Requests</span>
+</div>
+</div>
+<!-- Card 4: Alert -->
+<div class="glass-card rounded-[24px] p-6 relative overflow-hidden border-red-500/30 group">
+<div class="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-50"></div>
+<div class="flex justify-between items-start mb-2 relative z-10">
+<div>
+<p class="text-red-200 text-sm font-medium mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+                                    Desvío de Costos
+                                </p>
+<h3 class="text-2xl font-bold text-white tracking-tight mt-2">Critical</h3>
+</div>
+</div>
+<div class="relative z-10 mt-2">
+<p class="text-white font-medium text-lg">-8%</p>
+<p class="text-xs text-red-200/70 mt-1">Project Alpha Overbudget</p>
+</div>
+<button class="mt-4 w-full py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-100 text-xs font-bold rounded-lg transition-colors">
+                            Review Report
+                        </button>
+</div>
+</div>
+<!-- Main Section Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<!-- Chart Section -->
+<div class="glass-card rounded-[24px] p-6 lg:col-span-2 flex flex-col min-h-[400px]">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="text-lg font-bold text-white">Project Execution</h3>
+<p class="text-sm text-slate-400">Monthly progress across all active sites</p>
+</div>
+<div class="flex bg-white/5 rounded-lg p-1 border border-white/10">
+<button class="px-3 py-1 text-xs font-medium text-white bg-white/10 rounded shadow-sm">6M</button>
+<button class="px-3 py-1 text-xs font-medium text-slate-400 hover:text-white transition-colors">1Y</button>
+<button class="px-3 py-1 text-xs font-medium text-slate-400 hover:text-white transition-colors">ALL</button>
+</div>
+</div>
+<div class="flex-1 w-full relative">
+<!-- SVG Chart -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 300">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#2b4bee" stop-opacity="0.5"></stop>
+<stop offset="100%" stop-color="#2b4bee" stop-opacity="0"></stop>
+</lineargradient>
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="4"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Grid Lines -->
+<line stroke="rgba(255,255,255,0.05)" stroke-width="1" x1="0" x2="800" y1="250" y2="250"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-width="1" x1="0" x2="800" y1="190" y2="190"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-width="1" x1="0" x2="800" y1="130" y2="130"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-width="1" x1="0" x2="800" y1="70" y2="70"></line>
+<!-- Area Fill -->
+<path d="M0,250 L0,150 Q100,100 200,180 T400,140 T600,80 T800,40 L800,250 Z" fill="url(#chartGradient)"></path>
+<!-- Line Stroke -->
+<path class="chart-path" d="M0,150 Q100,100 200,180 T400,140 T600,80 T800,40" fill="none" filter="url(#glow)" stroke="#2b4bee" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="200" cy="180" fill="#0f1014" r="4" stroke="#fff" stroke-width="2"></circle>
+<circle cx="400" cy="140" fill="#0f1014" r="4" stroke="#fff" stroke-width="2"></circle>
+<circle cx="600" cy="80" fill="#0f1014" r="4" stroke="#fff" stroke-width="2"></circle>
+<!-- Tooltip (Static) -->
+<g transform="translate(600, 50)">
+<rect fill="#1e293b" height="30" rx="6" stroke="#334155" width="80" x="-40" y="-35"></rect>
+<text fill="white" font-size="12" font-weight="bold" text-anchor="middle" x="0" y="-16">82% Exec</text>
+<path d="M-5,-5 L0,0 L5,-5" fill="#1e293b" transform="translate(0, 0)"></path>
+</g>
+</svg>
+</div>
+<div class="flex justify-between text-xs text-slate-500 mt-2 px-2 font-medium">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+<span>Jun</span>
+</div>
+</div>
+<!-- Recent Activity -->
+<div class="glass-card rounded-[24px] p-6 flex flex-col h-full">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold text-white">Recent Activity</h3>
+<button class="text-primary text-xs font-bold hover:text-white transition-colors">View All</button>
+</div>
+<div class="flex flex-col gap-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+<!-- Item 1 -->
+<div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5">
+<div class="mt-1 size-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white group-hover:text-primary transition-colors">Material Purchase #402</h4>
+<p class="text-xs text-slate-400 mt-0.5">Cement &amp; Steel for Sector 4 approved.</p>
+<span class="text-[10px] text-slate-500 mt-1 block">2 hours ago</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5">
+<div class="mt-1 size-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 border border-amber-500/20">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white group-hover:text-primary transition-colors">Delay Reported</h4>
+<p class="text-xs text-slate-400 mt-0.5">Weather conditions affecting Sector 2.</p>
+<span class="text-[10px] text-slate-500 mt-1 block">5 hours ago</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5">
+<div class="mt-1 size-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 border border-blue-500/20">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white group-hover:text-primary transition-colors">New OT Assigned</h4>
+<p class="text-xs text-slate-400 mt-0.5">Juan P. added to Electrical Maintenance.</p>
+<span class="text-[10px] text-slate-500 mt-1 block">1 day ago</span>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/5">
+<div class="mt-1 size-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 border border-purple-500/20">
+<span class="material-symbols-outlined text-[18px]">description</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white group-hover:text-primary transition-colors">Contract Updated</h4>
+<p class="text-xs text-slate-400 mt-0.5">New terms for Supplier X finalized.</p>
+<span class="text-[10px] text-slate-500 mt-1 block">2 days ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
