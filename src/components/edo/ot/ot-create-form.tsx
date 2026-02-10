@@ -198,7 +198,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra, initialData }: OTCre
             <Layers className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">
+            <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">
               {isEditing ? '1. Modificación de Datos' : '1. Identificación'}
             </h3>
             <p className="text-sm font-medium text-apple-gray-400">
@@ -254,7 +254,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra, initialData }: OTCre
               <Wallet className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">2. Control de Inversión</h3>
+              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">2. Control de Inversión</h3>
               <p className="text-sm font-medium text-apple-gray-400">Verifica la disponibilidad financiera antes de proceder.</p>
             </div>
           </div>
@@ -276,7 +276,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra, initialData }: OTCre
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-apple-gray-400 uppercase tracking-widest mb-1">Ratio de Consumo</h4>
-                      <p className="text-3xl font-black text-foreground tracking-tighter italic selection:bg-apple-blue/20">
+                      <p className="text-3xl font-black text-foreground tracking-tighter selection:bg-apple-blue/20">
                         {budgetStatus.porcentaje_usado.toFixed(1)}% <span className="text-apple-gray-200 dark:text-apple-gray-400/30 text-xl font-medium tracking-tight">ejecutado</span>
                       </p>
                     </div>
@@ -376,7 +376,7 @@ export function OTCreateForm({ obraId, rubros, insumosObra, initialData }: OTCre
               <Calculator className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">3. Planificación de Recursos</h3>
+              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">3. Planificación de Recursos</h3>
               <p className="text-sm font-medium text-apple-gray-400">Vincula materiales y mano de obra a esta orden.</p>
             </div>
           </div>

@@ -73,7 +73,7 @@ export function OTInsumosEstimados({ insumos, cantidad }: OTInsumosEstimadosProp
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-black text-foreground">{formatPesos(item.precio_estimado)}</p>
-                    <p className="text-[10px] font-medium text-apple-gray-300 italic">{item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad}</p>
+                    <p className="text-[10px] font-medium text-apple-gray-300">{item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad}</p>
                   </div>
                 </div>
               ))}
@@ -101,7 +101,7 @@ export function OTInsumosEstimados({ insumos, cantidad }: OTInsumosEstimadosProp
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-black text-foreground">{formatPesos(item.precio_estimado)}</p>
-                    <p className="text-[10px] font-medium text-apple-gray-300 italic">{item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad}</p>
+                    <p className="text-[10px] font-medium text-apple-gray-300">{item.cantidad_estimada.toFixed(2)} {item.insumos?.unidad}</p>
                   </div>
                 </div>
               ))}

@@ -7,8 +7,8 @@ import type { Rubro } from '@/types/database'
 import { DEFAULT_COTIZACION_UR } from '@/lib/constants/app'
 
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+  | { success: true; data: T; error?: never }
+  | { success: false; error: string; data?: never }
 
 /**
  * Create a new rubro for an obra
@@ -117,7 +117,7 @@ export async function updateRubro(input: UpdateRubroInput): Promise<ActionResult
       .single()
 
     const cotizacion = config ? parseFloat(config.valor) : DEFAULT_COTIZACION_UR
-    ;(updateData as Record<string, unknown>).presupuesto = updateData.presupuesto_ur * cotizacion
+      ; (updateData as Record<string, unknown>).presupuesto = updateData.presupuesto_ur * cotizacion
   }
 
   // Update the rubro

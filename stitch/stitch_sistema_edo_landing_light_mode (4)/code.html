@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sistema EDO - Analítica Premium</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#007AFF",
+                        secondary: "#6366F1",
+                        emerald: "#10b981",
+                        orange: "#f97316",
+                        "background-light": "#F8FAFC",
+                        "card-light": "#FFFFFF",
+                        "text-main": "#0F172A",
+                        "text-muted": "#64748B",
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        display: ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                        '3xl': '2rem',
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        @layer components {
+            .glass-card {
+                @apply bg-white/80 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.04)] transition-all duration-300;
+            }
+            .bg-grid-pattern {
+                background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+                background-size: 32px 32px;
+            }
+            .nav-item {
+                @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200;
+            }
+            .nav-item-active {
+                @apply bg-primary/10 text-primary;
+            }
+            .nav-item-inactive {
+                @apply text-text-muted hover:bg-gray-100 hover:text-text-main;
+            }
+            .stat-card {
+                @apply p-8 rounded-[2rem] flex flex-col justify-between min-h-[220px] transition-transform hover:scale-[1.02];
+            }
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+            .fill-icon {
+                font-variation-settings: 'FILL' 1;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-background-light text-text-main min-h-screen flex">
+<aside class="w-64 border-r border-gray-200 bg-white flex flex-col fixed h-full z-30">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary font-bold">domain</span>
+</div>
+<div>
+<span class="text-lg font-extrabold tracking-tight block">Sistema EDO</span>
+<span class="text-[10px] font-bold text-text-muted uppercase tracking-widest">Premium V2</span>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-8 mt-4">
+<div>
+<p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Gestión</p>
+<div class="space-y-1">
+<a class="nav-item nav-item-inactive" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+                        Resumen
+                    </a>
+<a class="nav-item nav-item-inactive" href="#">
+<span class="material-symbols-outlined text-xl">apartment</span>
+                        Obras
+                    </a>
+<a class="nav-item nav-item-inactive" href="#">
+<span class="material-symbols-outlined text-xl">shopping_cart</span>
+                        Compras
+                    </a>
+</div>
+</div>
+<div>
+<p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Análisis</p>
+<div class="space-y-1">
+<a class="nav-item nav-item-active" href="#">
+<span class="material-symbols-outlined text-xl fill-icon">analytics</span>
+                        Analítica
+                    </a>
+<a class="nav-item nav-item-inactive" href="#">
+<span class="material-symbols-outlined text-xl">delete_sweep</span>
+                        Papelera
+                    </a>
+</div>
+</div>
+<div>
+<p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">Configuración</p>
+<div class="space-y-1">
+<a class="nav-item nav-item-inactive" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+                        Usuarios
+                    </a>
+<a class="nav-item nav-item-inactive" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+                        Ajustes
+                    </a>
+</div>
+</div>
+</nav>
+<div class="p-4 border-t border-gray-100">
+<button class="nav-item nav-item-inactive w-full">
+<span class="material-symbols-outlined text-xl">logout</span>
+                Cerrar Sesión
+            </button>
+</div>
+</aside>
+<main class="flex-1 ml-64 bg-grid-pattern min-h-screen">
+<div class="max-w-7xl mx-auto px-8 py-10">
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<div class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary fill-icon">bolt</span>
+<span class="text-[10px] font-bold text-primary uppercase tracking-wider">Inteligencia de Obra</span>
+</div>
+<div class="px-3 py-1 rounded-full bg-gray-100 border border-gray-200 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-gray-500">calendar_month</span>
+<span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Febrero de 2026</span>
+</div>
+</div>
+<h1 class="text-6xl font-black font-display tracking-tight text-slate-900">Analítica<span class="text-primary">.</span></h1>
+<p class="text-text-muted mt-4 max-w-xl font-medium">Métricas de rendimiento, eficiencia de materiales y salud presupuestaria en tiempo real.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex bg-white p-1 rounded-full border border-gray-200 shadow-sm mr-4">
+<button class="px-4 py-1.5 rounded-full text-xs font-bold text-text-muted hover:text-text-main transition-colors">3M</button>
+<button class="px-4 py-1.5 rounded-full text-xs font-bold bg-primary text-white shadow-md">6M</button>
+<button class="px-4 py-1.5 rounded-full text-xs font-bold text-text-muted hover:text-text-main transition-colors">1A</button>
+<button class="px-4 py-1.5 rounded-full text-xs font-bold text-text-muted hover:text-text-main transition-colors">TODO</button>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-200 text-sm font-bold shadow-sm hover:bg-gray-50 transition-all">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                        FILTROS
+                    </button>
+<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-blue-600 transition-all">
+<span class="material-symbols-outlined text-lg">download</span>
+                        EXPORTAR
+                    </button>
+</div>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="stat-card bg-emerald-500 text-white shadow-xl shadow-emerald-500/20">
+<div class="flex justify-between items-start">
+<div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl font-bold">query_stats</span>
+</div>
+</div>
+<div>
+<p class="text-[11px] font-bold uppercase tracking-[0.2em] opacity-80 mb-2">Eficiencia Global</p>
+<div class="flex items-baseline gap-2">
+<span class="text-6xl font-black font-display">+4.1%</span>
+</div>
+<div class="mt-4 w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-white h-full w-[85%]"></div>
+</div>
+</div>
+</div>
+<div class="stat-card bg-white border border-gray-100 shadow-xl shadow-slate-200/50">
+<div class="flex justify-between items-start">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl fill-icon">account_balance_wallet</span>
+</div>
+</div>
+<div>
+<p class="text-[11px] font-bold text-text-muted uppercase tracking-[0.2em] mb-2">Salud Presupuestaria</p>
+<div class="flex items-baseline gap-2">
+<span class="text-6xl font-black font-display text-slate-900">98%</span>
+</div>
+<div class="mt-4 flex flex-col gap-2">
+<div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+<div class="bg-red-500 h-full w-[92%]"></div>
+</div>
+<p class="text-[10px] font-bold text-text-muted">$3.280.000 de $3.350.000</p>
+</div>
+</div>
+</div>
+<div class="stat-card bg-orange-500 text-white shadow-xl shadow-orange-500/20">
+<div class="flex justify-between items-start">
+<div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl font-bold">warning</span>
+</div>
+</div>
+<div>
+<p class="text-[11px] font-bold uppercase tracking-[0.2em] opacity-80 mb-2">Desvíos Críticos</p>
+<div class="flex items-baseline gap-2">
+<span class="text-6xl font-black font-display">1</span>
+</div>
+<p class="mt-4 text-[10px] font-bold flex items-center gap-1.5 bg-white/20 w-fit px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                            Requiere atención inmediata
+                        </p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+<div class="glass-card p-10 rounded-[2.5rem]">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary font-bold">inventory_2</span>
+</div>
+<div>
+<h3 class="text-xl font-extrabold text-slate-900">Eficiencia de Materiales</h3>
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">ESTIMADO VS. REAL CONSUMIDO</p>
+</div>
+</div>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-text-muted px-1">
+<span>Piedra Partida</span>
+<span class="text-emerald-500">OPTIMIZADO</span>
+</div>
+<div class="h-3 w-full bg-gray-100 rounded-full flex overflow-hidden">
+<div class="h-full bg-primary/20 w-[60%]"></div>
+<div class="h-full bg-primary w-[35%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-text-muted px-1">
+<span>Ladrillo Campo</span>
+<span class="text-slate-400">EN RANGO</span>
+</div>
+<div class="h-3 w-full bg-gray-100 rounded-full flex overflow-hidden">
+<div class="h-full bg-primary/20 w-[70%]"></div>
+<div class="h-full bg-primary w-[70%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-text-muted px-1">
+<span>Hierro 8mm</span>
+<span class="text-orange-500">+12% EXCESO</span>
+</div>
+<div class="h-3 w-full bg-gray-100 rounded-full flex overflow-hidden relative">
+<div class="h-full bg-primary/20 w-[65%]"></div>
+<div class="h-full bg-primary w-[65%]"></div>
+<div class="h-full bg-orange-500 w-[15%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-text-muted px-1">
+<span>Arena Fina</span>
+<span class="text-slate-400">EN RANGO</span>
+</div>
+<div class="h-3 w-full bg-gray-100 rounded-full flex overflow-hidden">
+<div class="h-full bg-primary/20 w-[55%]"></div>
+<div class="h-full bg-primary w-[55%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-10 flex gap-6 text-[10px] font-bold text-text-muted justify-center border-t border-gray-50 pt-6">
+<div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-primary/20"></div> ESTIMADO</div>
+<div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-primary"></div> REAL</div>
+<div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div> EXCESO</div>
+</div>
+</div>
+<div class="glass-card p-10 rounded-[2.5rem]">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-xl bg-blue-500/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-500 font-bold">trending_up</span>
+</div>
+<div>
+<h3 class="text-xl font-extrabold text-slate-900">Inversión Mensual</h3>
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">TENDENCIA DE GASTOS VS. PRESUPUESTO</p>
+</div>
+</div>
+<div class="h-[200px] relative flex items-end justify-between gap-4 px-2">
+<div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
+<div class="w-full border-t border-gray-100"></div>
+<div class="w-full border-t border-gray-100"></div>
+<div class="w-full border-t border-gray-100"></div>
+<div class="w-full border-t border-gray-100"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 items-center group">
+<div class="w-full h-[60%] bg-gray-100/50 rounded-t-lg"></div>
+<div class="w-full h-[55%] bg-primary rounded-t-lg -mt-10 group-hover:scale-y-105 transition-transform"></div>
+<span class="text-[10px] font-bold text-text-muted mt-2">Feb</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 items-center group">
+<div class="w-full h-[75%] bg-gray-100/50 rounded-t-lg"></div>
+<div class="w-full h-[80%] bg-primary rounded-t-lg -mt-10 group-hover:scale-y-105 transition-transform"></div>
+<span class="text-[10px] font-bold text-text-muted mt-2">Mar</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 items-center group">
+<div class="w-full h-[70%] bg-gray-100/50 rounded-t-lg"></div>
+<div class="w-full h-[65%] bg-primary rounded-t-lg -mt-10 group-hover:scale-y-105 transition-transform"></div>
+<span class="text-[10px] font-bold text-text-muted mt-2">Abr</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 items-center group">
+<div class="w-full h-[85%] bg-gray-100/50 rounded-t-lg"></div>
+<div class="w-full h-[90%] bg-primary rounded-t-lg -mt-10 group-hover:scale-y-105 transition-transform"></div>
+<span class="text-[10px] font-bold text-text-muted mt-2">May</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 items-center group">
+<div class="w-full h-[65%] bg-gray-100/50 rounded-t-lg"></div>
+<div class="w-full h-[60%] bg-primary rounded-t-lg -mt-10 group-hover:scale-y-105 transition-transform"></div>
+<span class="text-[10px] font-bold text-text-muted mt-2">Jun</span>
+</div>
+</div>
+<div class="mt-10 flex gap-6 text-[10px] font-bold text-text-muted justify-center border-t border-gray-50 pt-6">
+<div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div> PRESUPUESTO</div>
+<div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-primary"></div> INVERSIÓN REAL</div>
+</div>
+</div>
+</div>
+<div class="glass-card p-10 rounded-[2.5rem] mb-12">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-10 h-10 rounded-xl bg-slate-900/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-900 font-bold">format_list_bulleted</span>
+</div>
+<div>
+<h3 class="text-xl font-extrabold text-slate-900">Desvíos Principales</h3>
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">ITEMS CON MAYOR VARIACIÓN PRESUPUESTARIA</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-6 rounded-3xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-red-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-red-500 font-bold">north_east</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Mano de Obra - Cimientos</h4>
+<p class="text-[11px] font-medium text-text-muted mt-1">Costo Real: $125.000</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">DESVÍO</p>
+<span class="text-2xl font-black font-display text-red-500">+15.4%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-6 rounded-3xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-orange-500 font-bold">north_east</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Hierro de Armadura</h4>
+<p class="text-[11px] font-medium text-text-muted mt-1">Costo Real: $85.000</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">DESVÍO</p>
+<span class="text-2xl font-black font-display text-orange-500">+8.2%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-6 rounded-3xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group">
+<div class="flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-emerald-500 font-bold">south_east</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900">Arena y Gravilla</h4>
+<p class="text-[11px] font-medium text-text-muted mt-1">Costo Real: $42.000</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">DESVÍO</p>
+<span class="text-2xl font-black font-display text-emerald-500">-2.1%</span>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-card p-8 rounded-[2.5rem] bg-gradient-to-r from-white/90 to-primary/5 border-primary/10 flex items-center gap-8 group">
+<div class="w-20 h-20 rounded-3xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 relative overflow-hidden flex-shrink-0">
+<span class="material-symbols-outlined text-white text-4xl font-bold relative z-10 fill-icon">auto_awesome</span>
+<div class="absolute inset-0 bg-white/20 blur-xl opacity-50 group-hover:scale-150 transition-transform duration-1000"></div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-2">
+<h3 class="text-xl font-extrabold text-slate-900">Insight Automático</h3>
+<span class="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest">AI</span>
+</div>
+<p class="text-slate-600 font-medium leading-relaxed">El consumo de materiales está por encima del estimado en un 4.1%. Hay 1 desvío crítico que requiere atención inmediata para mantener la rentabilidad proyectada del trimestre.</p>
+</div>
+</div>
+</div>
+</main>
+<button class="fixed bottom-6 right-6 w-12 h-12 bg-slate-900 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50">
+<span class="material-symbols-outlined text-xl">dark_mode</span>
+</button>
+
+</body></html>

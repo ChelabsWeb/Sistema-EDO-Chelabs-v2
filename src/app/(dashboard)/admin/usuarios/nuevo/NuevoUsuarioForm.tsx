@@ -65,7 +65,7 @@ export function NuevoUsuarioForm({ obras }: NuevoUsuarioFormProps) {
           <Send className="w-12 h-12" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase italic">Invitación Enviada</h3>
+          <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">Invitación Enviada</h3>
           <p className="text-xl text-apple-gray-400 font-medium max-w-sm mx-auto leading-relaxed">
             Hemos enviado un correo de configuración a la casilla de correo provista.
           </p>

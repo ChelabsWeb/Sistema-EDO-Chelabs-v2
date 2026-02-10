@@ -35,7 +35,7 @@ describe('auth.ts - Authentication', () => {
             formData.append('password', 'password123')
 
             // Mock rate limit
-            vi.mocked(checkRateLimit).mockResolvedValue({ success: true, limit: 5, remaining: 4, reset: 0 })
+            vi.mocked(checkRateLimit).mockResolvedValue({ success: true, remaining: 4, resetIn: 60 })
 
             // Mock Supabase
             const mockClient = createMockSupabaseClient()
@@ -76,9 +76,8 @@ describe('auth.ts - Authentication', () => {
             vi.mocked(checkRateLimit).mockResolvedValue({
                 success: false,
                 error: 'Too many requests',
-                limit: 5,
                 remaining: 0,
-                reset: 100
+                resetIn: 100
             })
 
             const result = await signIn(formData)
@@ -93,7 +92,7 @@ describe('auth.ts - Authentication', () => {
             formData.append('email', 'test@example.com')
             formData.append('password', 'wrong')
 
-            vi.mocked(checkRateLimit).mockResolvedValue({ success: true, limit: 5, remaining: 4, reset: 0 })
+            vi.mocked(checkRateLimit).mockResolvedValue({ success: true, remaining: 4, resetIn: 60 })
 
             const mockClient = createMockSupabaseClient({
                 auth: {

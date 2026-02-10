@@ -82,9 +82,9 @@ describe('rubro-insumos.ts - Formula Management', () => {
 
             expect(result.success).toBe(true)
             if (result.success) {
-                expect(result.data.insumos).toHaveLength(1)
-                expect(result.data.presupuesto_status.gastado).toBe(2000)
-                expect(result.data.presupuesto_status.disponible).toBe(8000)
+                expect(result.data!.insumos).toHaveLength(1)
+                expect(result.data!.presupuesto_status!.gastado).toBe(2000)
+                expect(result.data!.presupuesto_status!.disponible).toBe(8000)
             }
         })
     })
@@ -343,7 +343,7 @@ describe('rubro-insumos.ts - Formula Management', () => {
 
             expect(result.success).toBe(true)
             if (result.success) {
-                expect(result.data.nombre).toBe('Updated Insumo')
+                expect(result.data!.nombre).toBe('Updated Insumo')
             }
         })
     })

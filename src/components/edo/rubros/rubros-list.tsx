@@ -40,8 +40,8 @@ export function RubrosList({ obraId, userRole, valorUr }: RubrosListProps) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-6" />
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Sincronizando Estructura...</p>
+        <Loader2 className="w-12 h-12 text-apple-blue animate-spin mb-6" />
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-400">Sincronizando Estructura...</p>
       </div>
     )
   }
@@ -51,13 +51,13 @@ export function RubrosList({ obraId, userRole, valorUr }: RubrosListProps) {
       {/* Header Info (Subtle) */}
       <div className="flex items-center justify-between px-2">
         <div>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-            {predefinidos.length} PREDEFINIDOS <span className="mx-2 text-white/5">•</span> {personalizados.length} PERSONALIZADOS
+          <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-[0.2em]">
+            {predefinidos.length} PREDEFINIDOS <span className="mx-2 text-apple-gray-100 dark:text-white/5">•</span> {personalizados.length} PERSONALIZADOS
           </p>
         </div>
         <Link
           href={`/obras/${obraId}/rubros/nuevo`}
-          className="flex items-center gap-2 text-[10px] font-black text-blue-500 uppercase tracking-widest hover:text-white transition-all group"
+          className="flex items-center gap-2 text-[10px] font-black text-apple-blue uppercase tracking-widest hover:underline transition-all group"
         >
           <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
           Nuevo Rubro

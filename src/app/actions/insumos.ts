@@ -12,8 +12,8 @@ import {
 } from '@/lib/constants/insumos-predefinidos'
 
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+  | { success: true; data: T; error?: never }
+  | { success: false; error: string; data?: never }
 
 /**
  * Create a new insumo for an obra

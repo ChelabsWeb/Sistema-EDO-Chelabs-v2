@@ -115,7 +115,7 @@ export function InsumoSelector({
 
   if (isLoading) {
     return (
-      <div className="p-12 glass dark:glass-dark rounded-[40px] border border-apple-gray-100 dark:border-white/5 flex flex-col items-center justify-center gap-4 animate-apple-fade-in">
+      <div className="p-12 glass rounded-[40px] border border-apple-gray-100 dark:border-white/5 flex flex-col items-center justify-center gap-4 animate-apple-fade-in">
         <div className="w-12 h-12 border-4 border-apple-blue/20 border-t-apple-blue rounded-full animate-spin" />
         <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Consultando Inventario Maestro...</p>
       </div>
@@ -137,7 +137,7 @@ export function InsumoSelector({
               <div className="w-24 h-24 bg-apple-gray-50 dark:bg-apple-gray-50/5 rounded-[40px] flex items-center justify-center mx-auto mb-10 group-hover:scale-110 transition-transform duration-500 shadow-inner">
                 <Box className="w-12 h-12 text-apple-gray-200" />
               </div>
-              <p className="text-2xl font-black text-foreground tracking-tighter uppercase italic">Carga de Operaciones Vacía</p>
+              <p className="text-2xl font-black text-foreground tracking-tighter uppercase">Carga de Operaciones Vacía</p>
               <p className="text-sm font-bold text-apple-gray-400 mt-3 uppercase tracking-widest leading-loose max-w-sm mx-auto">
                 No has vinculado materiales ni mano de obra.<br />Agrega recursos para calcular el costo.
               </p>
@@ -167,7 +167,7 @@ export function InsumoSelector({
                         {isManoDeObra ? <Users className="w-8 h-8 relative z-10" /> : <Package className="w-8 h-8 relative z-10" />}
                       </div>
                       <div>
-                        <h5 className="text-xl font-black text-foreground tracking-tight italic uppercase">{insumo.nombre}</h5>
+                        <h5 className="text-xl font-black text-foreground tracking-tight uppercase">{insumo.nombre}</h5>
                         <div className="flex items-center gap-2 mt-1">
                           <Tag size={12} className="text-apple-gray-300" />
                           <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
@@ -198,7 +198,7 @@ export function InsumoSelector({
                       {/* Subtotal Display */}
                       <div className="min-w-[160px] text-right">
                         <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] mb-1">Subtotal Estimado</p>
-                        <p className="text-3xl font-black text-foreground tracking-tighter italic">
+                        <p className="text-3xl font-black text-foreground tracking-tighter">
                           {formatPesos(insumo.cantidad * insumo.precio_unitario)}
                         </p>
                       </div>
@@ -262,7 +262,7 @@ export function InsumoSelector({
                   <div className="w-20 h-20 bg-apple-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto opacity-30">
                     <Search className="w-10 h-10" />
                   </div>
-                  <p className="text-xl font-bold text-apple-gray-300 italic tracking-tight">No se encontraron suministros con esos criterios.</p>
+                  <p className="text-xl font-bold text-apple-gray-300 tracking-tight">No se encontraron suministros con esos criterios.</p>
                 </div>
               ) : (
                 insumosDisponibles.slice(0, 15).map((insumo, idx) => (
@@ -354,9 +354,9 @@ export function InsumoSelector({
               <div className="text-center lg:text-right space-y-4">
                 <div className="flex items-center justify-center lg:justify-end gap-3 text-apple-blue">
                   <ShoppingCart className="w-8 h-8" />
-                  <p className="text-[12px] font-black uppercase tracking-[0.4em] italic mb-1">Impacto de Ejecución</p>
+                  <p className="text-[12px] font-black uppercase tracking-[0.4em] mb-1">Impacto de Ejecución</p>
                 </div>
-                <h4 className="text-6xl font-black text-foreground tracking-tighter italic selection:bg-apple-blue/20">{formatPesos(totales.total)}</h4>
+                <h4 className="text-6xl font-black text-foreground tracking-tighter selection:bg-apple-blue/20">{formatPesos(totales.total)}</h4>
                 <div className="flex items-center justify-center lg:justify-end gap-2 text-[10px] font-black text-apple-gray-400 uppercase tracking-widest bg-apple-gray-100 dark:bg-white/5 py-2 px-6 rounded-full inline-flex">
                   <Layers size={14} className="text-apple-blue" />
                   {totales.cantidadSeleccionados} recursos en despliegue

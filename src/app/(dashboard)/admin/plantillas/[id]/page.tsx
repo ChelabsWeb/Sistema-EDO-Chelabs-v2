@@ -125,7 +125,7 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
               </div>
 
               {plantilla.descripcion && (
-                <p className="text-lg font-medium text-apple-gray-400 max-w-2xl leading-relaxed italic">
+                <p className="text-lg font-medium text-apple-gray-400 max-w-2xl leading-relaxed">
                   "{plantilla.descripcion}"
                 </p>
               )}
@@ -138,7 +138,7 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
           <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between group">
             <div>
               <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Insumos Totales</p>
-              <h4 className="text-4xl font-black text-foreground tracking-tighter italic">{plantilla.insumos?.length || 0}</h4>
+              <h4 className="text-4xl font-black text-foreground tracking-tighter">{plantilla.insumos?.length || 0}</h4>
             </div>
             <div className="w-14 h-14 bg-apple-blue/10 rounded-2xl flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform"><Boxes className="w-8 h-8" /></div>
           </div>
@@ -146,7 +146,7 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
           <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between group">
             <div>
               <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Materiales</p>
-              <h4 className="text-4xl font-black text-indigo-500 tracking-tighter italic">{materiales.length}</h4>
+              <h4 className="text-4xl font-black text-indigo-500 tracking-tighter">{materiales.length}</h4>
             </div>
             <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform"><Package className="w-8 h-8" /></div>
           </div>
@@ -154,7 +154,7 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
           <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/5 shadow-apple-sm flex items-center justify-between group">
             <div>
               <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Labor / MO</p>
-              <h4 className="text-4xl font-black text-emerald-500 tracking-tighter italic">{manoDeObra.length}</h4>
+              <h4 className="text-4xl font-black text-emerald-500 tracking-tighter">{manoDeObra.length}</h4>
             </div>
             <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform"><Users className="w-8 h-8" /></div>
           </div>
@@ -199,7 +199,7 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
                               <Package className="w-6 h-6" />
                             </div>
                             <div>
-                              <p className="text-[15px] font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase italic">{insumo.nombre}</p>
+                              <p className="text-[15px] font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase">{insumo.nombre}</p>
                               <div className="flex items-center gap-2 mt-0.5 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
                                 <span>Referencia:</span>
                                 <span className="px-1.5 py-0.5 bg-white dark:bg-white/5 rounded border border-current/10">{insumo.unidad}</span>
@@ -231,7 +231,7 @@ export default async function PlantillaDetailPage({ params }: PageProps) {
                               <Users className="w-6 h-6" />
                             </div>
                             <div>
-                              <p className="text-[15px] font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase italic">{insumo.nombre}</p>
+                              <p className="text-[15px] font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase">{insumo.nombre}</p>
                               <div className="flex items-center gap-2 mt-0.5 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">
                                 <span>Calculado por:</span>
                                 <span className="px-1.5 py-0.5 bg-white dark:bg-white/5 rounded border border-current/10">{insumo.unidad}</span>

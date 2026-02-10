@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Building2, ArrowRight, AlertCircle, Loader2, Mail, Lock, ChevronLeft, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
+import { Logo } from '@/components/shared/Logo'
 
 function translateError(errorMessage: string): string {
   const errorTranslations: Record<string, string> = {
@@ -68,11 +69,9 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c26] via-transparent to-black/20" />
 
           {/* Logo Top Left */}
-          <div className="absolute top-8 left-8 flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-white font-black tracking-tighter text-lg">EDO</span>
+          <div className="absolute top-8 left-8 flex items-center gap-3">
+            <Logo size={36} />
+            <span className="text-white font-extrabold tracking-tighter text-lg">EDO</span>
           </div>
 
           {/* Back Link Top Right */}
@@ -174,8 +173,8 @@ export default function LoginPage() {
                 Google
               </button>
               <button className="flex items-center justify-center gap-3 py-3 px-4 bg-transparent hover:bg-white/5 rounded-xl transition-all text-xs font-bold border border-white/10 text-white shadow-sm font-sans group">
-                <svg className="w-4 h-4 fill-white transition-opacity group-hover:opacity-90" viewBox="0 0 384 512" style={{ marginTop: '-2px' }}>
-                  <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 21.8-88.5 21.8-11.4 0-51.1-20.8-83.6-20.8-54.3 0-101.4 35.7-124.9 87.7-22.9 50.4-16.7 124.7 11.2 181.8 12.8 26.2 29.3 54.1 52.4 54.1 21.8 0 28.5-13.8 55.4-13.8 26.8 0 33.7 13.8 56.4 13.8 23.9 0 38-25.1 51.5-52.5 16.4-32.9 22.1-61.9 22.3-63.5-.6-.2-43.2-16.1-43.2-64.1zM290.3 83.4c15.1-18.3 25.4-43.7 22.6-69.1-22.1 1-48.4 14.8-64.2 33.2-13.8 15.9-26 42.1-22.8 67.1 24.6 1.9 49.3-12.9 64.4-31.2z" />
+                <svg className="w-4 h-4 fill-white transition-opacity group-hover:opacity-90" viewBox="0 0 24 24" style={{ marginTop: '-2px' }}>
+                  <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.51 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z" />
                 </svg>
                 Apple
               </button>

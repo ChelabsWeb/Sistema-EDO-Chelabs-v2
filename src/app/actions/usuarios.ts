@@ -5,11 +5,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import type { Usuario, UserRole } from '@/types/database'
 
-export type ActionResult<T = void> = {
-  success: boolean
-  data?: T
-  error?: string
-}
+export type ActionResult<T = void> =
+  | { success: true; data: T; error?: never }
+  | { success: false; error: string; data?: never }
 
 /**
  * Get all users (requires admin or director_obra role)
@@ -226,7 +224,7 @@ export async function updateUsuario(
   }
 
   revalidatePath('/admin/usuarios')
-  return { success: true }
+  return { success: true, data: undefined }
 }
 
 /**
@@ -266,7 +264,7 @@ export async function deactivateUsuario(id: string): Promise<ActionResult> {
   }
 
   revalidatePath('/admin/usuarios')
-  return { success: true }
+  return { success: true, data: undefined }
 }
 
 /**
@@ -299,7 +297,7 @@ export async function updateUsuarioProfile(data: { nombre: string }): Promise<Ac
   }
 
   revalidatePath('/perfil')
-  return { success: true }
+  return { success: true, data: undefined }
 }
 
 /**

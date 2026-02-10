@@ -179,7 +179,7 @@ export function InsumosPredefinidosDialog({
           <div className="w-20 h-20 rounded-[32px] bg-apple-gray-50 dark:bg-apple-gray-50/5 flex items-center justify-center mb-6 shadow-inner">
             <Package className="w-10 h-10 text-apple-gray-200" />
           </div>
-          <p className="text-lg font-black text-apple-gray-300 italic uppercase">Sin resultados en esta categoría</p>
+          <p className="text-lg font-black text-apple-gray-300 uppercase">Sin resultados en esta categoría</p>
         </motion.div>
       )
     }
@@ -275,7 +275,7 @@ export function InsumosPredefinidosDialog({
               <Layers className="w-8 h-8 relative z-10" />
             </div>
             <div>
-              <DialogTitle className="text-3xl font-black tracking-tighter italic uppercase">Repositorio Maestro</DialogTitle>
+              <DialogTitle className="text-3xl font-black tracking-tighter uppercase">Repositorio Maestro</DialogTitle>
               <DialogDescription className="text-sm font-medium text-apple-gray-400 mt-1">
                 Importa suministros estandarizados filtrados por rubro maestro.
               </DialogDescription>

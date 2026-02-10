@@ -206,7 +206,7 @@ export default function AnimationsDemo() {
                             />
                         )}
                     </div>
-                    <p className="text-sm text-apple-gray-400 italic">
+                    <p className="text-sm text-apple-gray-400">
                         Nota: Para que funcione completamente, necesitas agregar archivos .riv en public/animations/
                     </p>
                 </section>

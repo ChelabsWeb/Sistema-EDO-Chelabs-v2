@@ -168,7 +168,7 @@ export function OTActions({
                     {showConfirmModal === 'close' && <Archive className="w-10 h-10" />}
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">
+                    <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">
                       {showConfirmModal === 'approve' ? 'Confirmar Aprobación' :
                         showConfirmModal === 'start' ? 'Iniciar Operación' :
                           showConfirmModal === 'close' ? 'Certificar Finalización' :
@@ -197,7 +197,7 @@ export function OTActions({
                       <div className="flex items-center justify-between text-red-500">
                         <div className="flex items-center gap-2">
                           <AlertCircle className="w-4 h-4" />
-                          <span className="text-[11px] font-black uppercase tracking-wider italic">Alerta de Desvío</span>
+                          <span className="text-[11px] font-black uppercase tracking-wider">Alerta de Desvío</span>
                         </div>
                         <span className="text-lg font-black tracking-tighter">+{desvioPercent.toFixed(1)}%</span>
                       </div>

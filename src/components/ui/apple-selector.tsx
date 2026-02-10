@@ -85,7 +85,7 @@ export function AppleSelector({
                             </>
                         ) : (
                             <span className={cn(
-                                "font-black text-apple-gray-200 dark:text-apple-gray-400/30 italic group-hover:text-apple-gray-400 transition-colors",
+                                "font-black text-apple-gray-200 dark:text-apple-gray-400/30 group-hover:text-apple-gray-400 transition-colors",
                                 size === 'sm' ? 'text-sm' : 'text-xl'
                             )}>
                                 {placeholder}
@@ -138,7 +138,7 @@ export function AppleSelector({
                         {/* Options List */}
                         <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
                             {filteredOptions.length === 0 ? (
-                                <div className="py-16 text-center text-apple-gray-300 font-bold italic">
+                                <div className="py-16 text-center text-apple-gray-300 font-bold">
                                     No se encontraron resultados
                                 </div>
                             ) : (

@@ -95,7 +95,7 @@ function Calendar({
   ...props
 }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState<Date>(
-    props.defaultMonth || (props.selected as Date) || new Date()
+    props.defaultMonth || (props as any).selected || new Date()
   )
 
   const years = React.useMemo(() => {

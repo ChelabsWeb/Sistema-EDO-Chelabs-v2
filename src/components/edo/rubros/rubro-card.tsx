@@ -73,8 +73,8 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
 
   return (
     <div className={cn(
-      "bg-white/[0.03] backdrop-blur-xl rounded-[32px] border border-white/10 transition-all duration-500 overflow-hidden",
-      expanded ? "shadow-2xl border-blue-500/20" : "hover:border-blue-500/20"
+      "bg-white dark:bg-white/[0.03] backdrop-blur-xl rounded-[32px] border border-apple-gray-100 dark:border-white/10 transition-all duration-500 overflow-hidden",
+      expanded ? "shadow-2xl border-apple-blue/20" : "hover:border-apple-blue/20"
     )}>
       {/* Header */}
       <button
@@ -83,24 +83,24 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
       >
         <div className="flex items-center gap-5">
           <div className={cn(
-            "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border border-white/5",
-            expanded ? "bg-blue-600 text-white rotate-90" : "bg-white/5 text-slate-500 group-hover:bg-blue-600/10 group-hover:text-blue-500"
+            "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border border-apple-gray-100 dark:border-white/5",
+            expanded ? "bg-apple-blue text-white rotate-90" : "bg-apple-gray-50 dark:bg-white/5 text-apple-gray-400 group-hover:bg-apple-blue/10 group-hover:text-apple-blue"
           )}>
             <ChevronRight className="w-6 h-6" />
           </div>
           <div className="text-left">
-            <h3 className="font-bold text-lg text-white group-hover:text-blue-400 transition-colors">{rubro.nombre}</h3>
+            <h3 className="font-bold text-lg text-foreground group-hover:text-apple-blue transition-colors font-display uppercase tracking-tight">{rubro.nombre}</h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{rubro.unidad || 'unidad'}</span>
-              <span className="w-1 h-1 rounded-full bg-white/10" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{rubro.insumos.length} insumos</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-apple-gray-400">{rubro.unidad || 'unidad'}</span>
+              <span className="w-1 h-1 rounded-full bg-apple-gray-200 dark:bg-white/10" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-apple-gray-400">{rubro.insumos.length} insumos</span>
             </div>
           </div>
         </div>
 
         <div className="text-right">
-          <p className="text-xl font-black text-white">{rubro.presupuesto_ur?.toLocaleString('es-UY')} <span className="text-sm font-medium text-slate-500">UR</span></p>
-          <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">{formatPesos(rubro.presupuesto || 0)}</p>
+          <p className="text-xl font-black text-foreground">{rubro.presupuesto_ur?.toLocaleString('es-UY')} <span className="text-sm font-medium text-apple-gray-400">UR</span></p>
+          <p className="text-[11px] font-bold text-apple-gray-500 mt-1 uppercase tracking-tighter">{formatPesos(rubro.presupuesto || 0)}</p>
         </div>
       </button>
 
@@ -109,17 +109,17 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
         <div className="px-8 pb-8 animate-apple-slide-up space-y-8">
           {/* Progress Section */}
           {status && (
-            <div className="p-6 bg-white/[0.02] rounded-[24px] border border-white/5">
+            <div className="p-6 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-[24px] border border-apple-gray-100 dark:border-white/5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-slate-500" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Control Ejecución</span>
+                  <Target className="w-4 h-4 text-apple-gray-400" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-apple-gray-400">Control Ejecución</span>
                 </div>
                 <span className={cn("text-[10px] font-black uppercase tracking-widest", getTextColor(porcentajeUsado))}>
                   {porcentajeUsado.toFixed(1)}% utilizado
                 </span>
               </div>
-              <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+              <div className="w-full bg-apple-gray-100 dark:bg-white/5 rounded-full h-2 overflow-hidden shadow-inner">
                 <div
                   className={cn("h-full rounded-full transition-all duration-1000", getProgressColor(porcentajeUsado))}
                   style={{ width: `${Math.min(porcentajeUsado, 100)}%` }}
@@ -127,12 +127,12 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
               </div>
               <div className="grid grid-cols-2 gap-4 mt-6">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Gastado Real</p>
-                  <p className="text-sm font-black text-white">{formatPesos(status.gastado)}</p>
+                  <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-[0.2em]">Gastado Real</p>
+                  <p className="text-sm font-black text-foreground">{formatPesos(status.gastado)}</p>
                 </div>
                 <div className="space-y-1 text-right">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Disponible</p>
-                  <p className={cn("text-sm font-black", status.disponible < 0 ? "text-red-400" : "text-emerald-400")}>
+                  <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-[0.2em]">Disponible</p>
+                  <p className={cn("text-sm font-black text-foreground", status.disponible < 0 && "text-red-500", status.disponible > 0 && "text-emerald-600")}>
                     {formatPesos(status.disponible)}
                   </p>
                 </div>
@@ -142,14 +142,14 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
 
           {/* Budget Editing */}
           {canEdit && (
-            <div className="flex items-center justify-between py-6 border-y border-white/5">
+            <div className="flex items-center justify-between py-6 border-y border-apple-gray-100 dark:border-white/5">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+                <div className="w-12 h-12 rounded-2xl bg-apple-blue/10 border border-apple-blue/20 flex items-center justify-center text-apple-blue">
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">Ajustar Presupuesto</p>
-                  <p className="text-[10px] text-slate-500 font-medium tracking-tight">Modifica la asignación en UR</p>
+                  <p className="text-sm font-bold text-foreground font-display uppercase tracking-tight">Ajustar Presupuesto</p>
+                  <p className="text-[10px] text-apple-gray-400 font-medium tracking-tight">Modifica la asignación en UR</p>
                 </div>
               </div>
 
@@ -160,10 +160,10 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
                       type="number"
                       value={presupuestoValue}
                       onChange={(e) => setPresupuestoValue(e.target.value)}
-                      className="w-32 h-12 bg-black/40 border border-white/10 rounded-xl px-4 pr-10 text-sm font-black text-white outline-none focus:border-blue-500/50 transition-all"
+                      className="w-32 h-12 bg-apple-gray-50 dark:bg-black/40 border border-apple-gray-100 dark:border-white/10 rounded-xl px-4 pr-10 text-sm font-black text-foreground outline-none focus:border-apple-blue/50 transition-all shadow-inner"
                       autoFocus
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-500">UR</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-apple-gray-400">UR</span>
                   </div>
                   <button
                     onClick={handleSavePresupuesto}
@@ -194,8 +194,8 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
           {/* Insumos List */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Insumos del Rubro</h4>
-              <span className="text-[10px] font-black text-slate-400 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+              <h4 className="text-[10px] font-black text-apple-gray-500 uppercase tracking-[0.2em] ml-1">Insumos del Rubro</h4>
+              <span className="text-[10px] font-black text-apple-blue px-3 py-1 bg-apple-blue/5 rounded-full border border-apple-blue/10">
                 Total: {rubro.insumos.length}
               </span>
             </div>
@@ -204,7 +204,7 @@ export function RubroCard({ rubro, userRole, valorUr, onRefresh }: RubroCardProp
               {rubro.insumos.length === 0 ? (
                 <div className="p-12 border-2 border-dashed border-white/5 rounded-[32px] text-center">
                   <Package className="w-10 h-10 text-slate-800 mx-auto mb-4" />
-                  <p className="text-xs font-medium text-slate-500 italic">No hay insumos vinculados</p>
+                  <p className="text-xs font-medium text-slate-500">No hay insumos vinculados</p>
                 </div>
               ) : (
                 rubro.insumos.map((insumo) => (

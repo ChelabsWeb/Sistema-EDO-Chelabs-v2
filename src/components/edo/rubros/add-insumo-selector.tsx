@@ -114,7 +114,7 @@ export function AddInsumoSelector({ rubroId, onClose, onAdded }: AddInsumoSelect
           ) : filteredInsumos.length === 0 ? (
             <div className="py-20 text-center space-y-4 bg-apple-gray-50/50 dark:bg-white/[0.01] rounded-[32px] border border-dashed border-apple-gray-100 dark:border-white/5">
               <Package className="w-12 h-12 text-apple-gray-100 mx-auto" />
-              <p className="text-sm font-medium text-apple-gray-400 italic">
+              <p className="text-sm font-medium text-apple-gray-400">
                 {search ? 'No se encontraron coincidencias' : 'Todos los ítems están vinculados'}
               </p>
             </div>

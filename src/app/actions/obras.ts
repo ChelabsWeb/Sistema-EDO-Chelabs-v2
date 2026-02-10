@@ -9,8 +9,8 @@ import { type PaginationParams, type PaginatedResponse, normalizePagination, cre
 
 // Result type for consistent error handling
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+  | { success: true; data: T; error?: never }
+  | { success: false; error: string; data?: never }
 
 /**
  * Create a new obra

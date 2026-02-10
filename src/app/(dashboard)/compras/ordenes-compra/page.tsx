@@ -231,261 +231,340 @@ export default function OrdenesCompraPage() {
   }, [ordenes])
 
   return (
-    <div className="p-8 md:p-14 max-w-7xl mx-auto space-y-12 animate-apple-fade-in antialiased">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-apple-gray-100 dark:border-white/5">
-        <div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-foreground tracking-tighter leading-[1.1]">
-            Órdenes de Compra
-          </h1>
-          <p className="text-xl text-apple-gray-400 mt-4 font-medium tracking-tight">
-            Gestión logística y control de recepciones de materiales.
-          </p>
-        </div>
-      </header>
-
-      {/* Summary Widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="rounded-[32px] border-none shadow-apple-lg overflow-hidden group">
-          <CardContent className="p-8 bg-apple-gray-50 dark:bg-white/5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-apple-gray-400 uppercase tracking-widest">Total Órdenes</p>
-              <h2 className="text-4xl font-extrabold text-foreground">{stats.total}</h2>
+    <div className="min-h-screen bg-transparent text-foreground selection:bg-apple-blue/30 bg-grid-pattern transition-colors duration-500">
+      <div className="max-w-[1600px] mx-auto px-10 pb-20 relative z-10 space-y-16">
+        {/* Header Section */}
+        <header className="pt-16 pb-2 flex flex-col lg:flex-row lg:items-end justify-between gap-10 border-b border-apple-gray-100 dark:border-white/5">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/20 flex items-center gap-1.5">
+                <ShoppingBag className="w-3.5 h-3.5 text-apple-blue fill-apple-blue" />
+                <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Suministros & Logística</span>
+              </div>
+              <div className="px-3 py-1 rounded-full bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/5 flex items-center gap-1.5">
+                <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">
+                  Control de Órdenes
+                </span>
+              </div>
             </div>
-            <div className="w-14 h-14 bg-apple-blue/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <ShoppingBag className="w-7 h-7 text-apple-blue" />
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-6xl font-black font-display tracking-tight text-foreground leading-[0.9]">
+                Compras<span className="text-apple-blue">.</span>
+              </h1>
+              <p className="text-lg text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed">
+                Gestión inteligente de suministros y control de compromisos financieros con proveedores.
+              </p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-[32px] border-none shadow-apple-lg overflow-hidden group">
-          <CardContent className="p-8 bg-apple-gray-50 dark:bg-white/5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-apple-gray-400 uppercase tracking-widest">Pendientes</p>
-              <h2 className="text-4xl font-extrabold text-amber-500">{stats.pendiente}</h2>
-            </div>
-            <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <Clock className="w-7 h-7 text-amber-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-[32px] border-none shadow-apple-lg overflow-hidden group">
-          <CardContent className="p-8 bg-apple-gray-50 dark:bg-white/5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-apple-gray-400 uppercase tracking-widest">En Camino</p>
-              <h2 className="text-4xl font-extrabold text-blue-500">{stats.enviada}</h2>
-            </div>
-            <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <Truck className="w-7 h-7 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="rounded-[32px] border-none shadow-apple-lg overflow-hidden group">
-          <CardContent className="p-8 bg-apple-gray-50 dark:bg-white/5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-apple-gray-400 uppercase tracking-widest">Inversión Logística</p>
-              <h2 className="text-3xl font-extrabold text-emerald-500">{formatPesos(stats.valor)}</h2>
-            </div>
-            <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <DollarSign className="w-7 h-7 text-emerald-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters Bar */}
-      <div className="flex flex-wrap items-center gap-4 bg-apple-gray-50/50 dark:bg-white/5 p-6 rounded-[32px] border border-apple-gray-100 dark:border-white/5">
-        <div className="flex-1 min-w-[200px] relative group">
-          <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-apple-gray-300 group-hover:text-apple-blue transition-colors" />
-          <select
-            value={obraId} onChange={e => setObraId(e.target.value)}
-            className="w-full pl-12 pr-6 py-3 bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-apple-blue/30 outline-none transition-all appearance-none"
-          >
-            <option value="">Todas las obras</option>
-            {obras.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-          </select>
-        </div>
-        <div className="flex-1 min-width-[180px] relative group">
-          <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-apple-gray-300 group-hover:text-apple-blue transition-colors" />
-          <select
-            value={estado} onChange={e => setEstado(e.target.value)}
-            className="w-full pl-12 pr-6 py-3 bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-apple-blue/30 outline-none transition-all appearance-none"
-          >
-            <option value="">Todos los estados</option>
-            {Object.entries(estadoConfig).map(([val, { label }]) => <option key={val} value={val}>{label}</option>)}
-          </select>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={handleFilter} className="px-8 py-3 bg-foreground text-background dark:bg-white dark:text-black rounded-full font-bold text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-black/5">
-            Aplicar
-          </button>
-          <button onClick={handleClearFilters} className="p-3 bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-full text-apple-gray-400 hover:text-foreground transition-all active:scale-90">
-            <RotateCcw className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content: Table */}
-      <main>
-        {loading ? (
-          <div className="text-center py-32">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-apple-blue mx-auto"></div>
-            <p className="mt-6 text-apple-gray-400 font-medium">Sincronizando órdenes...</p>
           </div>
-        ) : ordenes.length === 0 ? (
-          <div className="text-center py-32 glass rounded-[48px] border border-apple-gray-100 dark:border-white/5 shadow-apple">
-            <div className="w-24 h-24 bg-apple-gray-50 dark:bg-white/5 rounded-[32px] flex items-center justify-center mx-auto mb-8">
-              <ShoppingBag className="w-12 h-12 text-apple-gray-200" />
+        </header>
+
+        {/* Summary Widgets */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="glass p-8 rounded-[2.5rem] border border-apple-gray-100 dark:border-white/5 group hover:bg-white dark:hover:bg-white/5 transition-all duration-500 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Total Órdenes</p>
+                <h2 className="text-4xl font-black font-display text-foreground"> {stats.total}</h2>
+              </div>
+              <div className="size-12 rounded-2xl bg-apple-blue/10 flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform duration-500">
+                <ShoppingBag className="w-6 h-6" />
+              </div>
             </div>
-            <h3 className="text-3xl font-extrabold text-foreground tracking-tight mb-3">Sin Órdenes</h3>
-            <p className="text-xl text-apple-gray-400 font-medium max-w-md mx-auto">
-              Crea órdenes directamente desde las órdenes de trabajo disponibles.
-            </p>
+            <div className="h-1 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full mt-4 overflow-hidden">
+              <div className="h-full bg-apple-blue rounded-full" style={{ width: '100%' }} />
+            </div>
           </div>
-        ) : (
-          <Card className="rounded-[40px] overflow-hidden border border-apple-gray-100 dark:border-white/5 shadow-apple-float">
-            <CardContent className="p-0 overflow-x-auto">
-              <table className="min-w-full divide-y divide-apple-gray-100 dark:divide-white/5">
-                <thead className="bg-apple-gray-50/50 dark:bg-apple-gray-50/10">
-                  <tr>
-                    <th className="px-10 py-6 text-left text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest">Orden nº</th>
-                    <th className="px-10 py-6 text-left text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest">Obra / Destino</th>
-                    <th className="px-10 py-6 text-left text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest">Proveedor</th>
-                    <th className="px-10 py-6 text-left text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest text-right">Inversión</th>
-                    <th className="px-10 py-6 text-left text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest">Estado</th>
-                    <th className="px-10 py-6 text-right text-[11px] font-bold text-apple-gray-400 uppercase tracking-widest">Gestión</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-apple-gray-50 dark:divide-white/5">
-                  {ordenes.map(oc => {
-                    const config = estadoConfig[oc.estado as OCStatus] || estadoConfig.pendiente
-                    const StatusIcon = config.icon
-                    const isExpanded = expandedId === oc.id
-                    return (
-                      <React.Fragment key={oc.id}>
-                        <tr className={cn(
-                          "group transition-all duration-300",
-                          isExpanded ? "bg-apple-gray-50/50 dark:bg-white/[0.03]" : "hover:bg-apple-gray-50/30 dark:hover:bg-white/[0.01]"
-                        )}>
-                          <td className="px-10 py-8">
-                            <div className="flex items-center gap-4">
-                              <button onClick={() => setExpandedId(isExpanded ? null : oc.id)} className="w-8 h-8 rounded-full bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 flex items-center justify-center text-apple-gray-300 hover:text-apple-blue hover:border-apple-blue/50 transition-all">
-                                <ChevronRight className={cn("w-4 h-4 transition-transform duration-300", isExpanded && "rotate-90")} />
-                              </button>
-                              <div>
-                                <div className="text-lg font-black text-foreground">OC-{oc.numero}</div>
-                                <div className="text-xs font-bold text-apple-gray-300 flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
-                                  {oc.fecha_emision ? new Date(oc.fecha_emision).toLocaleDateString('es-UY') : '-'}
+
+          <div className="glass p-8 rounded-[2.5rem] border border-apple-gray-100 dark:border-white/5 group hover:bg-white dark:hover:bg-white/5 transition-all duration-500 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Pendientes</p>
+                <h2 className="text-4xl font-black font-display text-amber-500"> {stats.pendiente}</h2>
+              </div>
+              <div className="size-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform duration-500">
+                <Clock className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="h-1 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full mt-4 overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full" style={{ width: `${(stats.pendiente / stats.total) * 100 || 0}%` }} />
+            </div>
+          </div>
+
+          <div className="glass p-8 rounded-[2.5rem] border border-apple-gray-100 dark:border-white/5 group hover:bg-white dark:hover:bg-white/5 transition-all duration-500 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">En Tránsito</p>
+                <h2 className="text-4xl font-black font-display text-apple-blue"> {stats.enviada}</h2>
+              </div>
+              <div className="size-12 rounded-2xl bg-apple-blue/10 flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform duration-500">
+                <Truck className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="h-1 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full mt-4 overflow-hidden">
+              <div className="h-full bg-apple-blue rounded-full" style={{ width: `${(stats.enviada / stats.total) * 100 || 0}%` }} />
+            </div>
+          </div>
+
+          <div className="glass p-8 rounded-[2.5rem] border border-apple-gray-100 dark:border-white/5 group hover:bg-white dark:hover:bg-white/5 transition-all duration-500 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Presupuesto OC</p>
+                <h2 className="text-3xl font-black font-display text-emerald-500 uppercase">
+                  {new Intl.NumberFormat('es-UY', { style: 'currency', currency: 'UYU', maximumFractionDigits: 0 }).format(stats.valor)}
+                </h2>
+              </div>
+              <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform duration-500">
+                <DollarSign className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="h-1 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full mt-4 overflow-hidden">
+              <div className="h-full bg-emerald-500 rounded-full" style={{ width: '100%' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters Bar */}
+        <div className="flex flex-wrap items-center gap-6 bg-apple-gray-50/30 dark:bg-white/[0.02] p-8 rounded-[3rem] border border-apple-gray-100 dark:border-white/5 backdrop-blur-3xl animate-apple-fade-in shadow-sm">
+          <div className="flex-1 min-w-[280px] relative group">
+            <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-3">
+              <Building2 className="w-5 h-5 text-apple-gray-300 group-hover:text-apple-blue transition-colors" />
+              <div className="w-px h-4 bg-apple-gray-200 dark:bg-white/10" />
+            </div>
+            <select
+              value={obraId} onChange={e => setObraId(e.target.value)}
+              className="w-full pl-16 pr-8 py-4 bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/10 rounded-[1.5rem] text-sm font-black uppercase tracking-tight focus:ring-4 focus:ring-apple-blue/10 outline-none transition-all appearance-none"
+            >
+              <option value="">Todas las obras</option>
+              {obras.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+            </select>
+          </div>
+          <div className="flex-1 min-w-[240px] relative group">
+            <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-3">
+              <Filter className="w-5 h-5 text-apple-gray-300 group-hover:text-apple-blue transition-colors" />
+              <div className="w-px h-4 bg-apple-gray-200 dark:bg-white/10" />
+            </div>
+            <select
+              value={estado} onChange={e => setEstado(e.target.value)}
+              className="w-full pl-16 pr-8 py-4 bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/10 rounded-[1.5rem] text-sm font-black uppercase tracking-tight focus:ring-4 focus:ring-apple-blue/10 outline-none transition-all appearance-none"
+            >
+              <option value="">Todos los estados</option>
+              {Object.entries(estadoConfig).map(([val, { label }]) => <option key={val} value={val}>{label}</option>)}
+            </select>
+          </div>
+          <div className="flex gap-4">
+            <button onClick={handleFilter} className="px-10 py-4 bg-foreground text-background dark:bg-white dark:text-black rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-xl shadow-black/10">
+              Sincronizar
+            </button>
+            <button onClick={handleClearFilters} className="p-4 bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-2xl text-apple-gray-400 hover:text-foreground transition-all active:scale-90 hover:bg-apple-gray-50">
+              <RotateCcw className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content: List */}
+        <main className="animate-apple-slide-up">
+          {loading ? (
+            <div className="text-center py-40">
+              <div className="relative size-16 mx-auto mb-8">
+                <div className="absolute inset-0 rounded-full border-4 border-apple-blue/10" />
+                <div className="absolute inset-0 rounded-full border-4 border-t-apple-blue animate-spin" />
+              </div>
+              <p className="text-apple-gray-400 font-black uppercase tracking-[0.3em] text-[10px]">Actualizando Flujo Logístico...</p>
+            </div>
+          ) : ordenes.length === 0 ? (
+            <div className="text-center py-40 glass rounded-[4rem] border border-apple-gray-100 dark:border-white/5 overflow-hidden relative">
+              <div className="absolute inset-0 opacity-[0.02] bg-grid-pattern pointer-events-none" />
+              <div className="size-24 rounded-[2rem] bg-apple-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-10 relative">
+                <div className="absolute inset-0 bg-apple-blue/10 animate-pulse rounded-[2rem]" />
+                <ShoppingBag className="w-12 h-12 text-apple-gray-400 relative z-10" />
+              </div>
+              <h3 className="text-4xl font-black font-display text-foreground tracking-tight mb-4 uppercase">Sin Registros</h3>
+              <p className="text-apple-gray-400 font-medium max-w-sm mx-auto text-lg">
+                El sistema de abastecimiento no detecta órdenes activas para los parámetros seleccionados.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="px-10 flex items-center gap-10 opacity-30">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] w-32">Identificador</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] flex-1">Origen & Destino</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] w-48 text-right">Inversión Logística</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] w-40 text-center">Estado</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] w-32 text-right">Acción</span>
+              </div>
+
+              <div className="space-y-4">
+                {ordenes.map(oc => {
+                  const config = estadoConfig[oc.estado as OCStatus] || estadoConfig.pendiente
+                  const StatusIcon = config.icon
+                  const isExpanded = expandedId === oc.id
+                  return (
+                    <div key={oc.id} className="group animate-apple-slide-up">
+                      <div className={cn(
+                        "glass rounded-[2.5rem] p-8 border border-apple-gray-100 dark:border-white/5 transition-all duration-500 relative overflow-hidden flex items-center gap-10",
+                        isExpanded ? "bg-white dark:bg-white/5 shadow-2xl scale-[1.01] border-apple-blue/20" : "hover:bg-white/50 dark:hover:bg-white/[0.03] hover:shadow-xl"
+                      )}>
+                        <div className="absolute top-0 right-0 w-32 h-full bg-apple-blue/[0.01] -skew-x-12 translate-x-12 pointer-events-none" />
+
+                        {/* OC Identifier */}
+                        <div className="w-32 flex items-center gap-5">
+                          <button
+                            onClick={() => setExpandedId(isExpanded ? null : oc.id)}
+                            className={cn(
+                              "size-10 rounded-2xl flex items-center justify-center transition-all duration-500",
+                              isExpanded ? "bg-apple-blue text-white rotate-90" : "bg-apple-gray-100 dark:bg-white/10 text-apple-gray-400 hover:text-apple-blue"
+                            )}
+                          >
+                            <ChevronRight className="w-6 h-6" />
+                          </button>
+                          <div className="space-y-0.5">
+                            <span className="text-xl font-black font-display text-foreground tracking-tight">#{oc.numero}</span>
+                            <p className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">{oc.fecha_emision ? new Date(oc.fecha_emision).toLocaleDateString('es-UY') : '-'}</p>
+                          </div>
+                        </div>
+
+                        {/* Data Column */}
+                        <div className="flex-1 flex flex-col gap-1">
+                          <h4 className="text-lg font-black text-foreground uppercase tracking-tight group-hover:text-apple-blue transition-colors">
+                            {oc.obra?.nombre || 'General'}
+                          </h4>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-apple-gray-400">
+                              <Building2 className="w-3.5 h-3.5" />
+                              {oc.proveedor || 'Sin Proveedor'}
+                            </div>
+                            <div className="size-1 rounded-full bg-apple-gray-200" />
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-apple-gray-400 uppercase tracking-tighter">
+                              <Package className="w-3.5 h-3.5" />
+                              {oc.lineas?.length || 0} Partidas
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Investment */}
+                        <div className="w-48 text-right space-y-0.5">
+                          <p className="text-2xl font-black font-display text-foreground">
+                            {new Intl.NumberFormat('es-UY', { style: 'currency', currency: 'UYU', maximumFractionDigits: 0 }).format(oc.total || 0)}
+                          </p>
+                          <p className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Neto Certificado</p>
+                        </div>
+
+                        {/* Status */}
+                        <div className="w-40 flex justify-center">
+                          <div className={cn("inline-flex items-center gap-2 px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm transition-all", config.bg, config.color, config.border)}>
+                            <StatusIcon className="w-4 h-4" />
+                            {config.label}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="w-32 flex justify-end gap-3">
+                          <Link
+                            href={`/compras/ordenes-compra/${oc.id}`}
+                            className="size-12 rounded-2xl bg-apple-gray-100 dark:bg-white/10 text-apple-gray-400 flex items-center justify-center hover:bg-apple-blue hover:text-white transition-all shadow-sm"
+                          >
+                            <Search className="w-6 h-6" />
+                          </Link>
+                          {oc.estado === 'pendiente' && (
+                            <button
+                              onClick={() => handleUpdateEstado(oc.id, 'enviada')}
+                              disabled={updatingId === oc.id}
+                              className="size-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                            >
+                              <Truck className="w-6 h-6" />
+                            </button>
+                          )}
+                          {(oc.estado === 'enviada' || oc.estado === 'recibida_parcial') && (
+                            <button
+                              onClick={() => handleOpenReceptionModal(oc.id)}
+                              className="size-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-sm"
+                            >
+                              <Package className="w-6 h-6" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Detailed View */}
+                      {isExpanded && (
+                        <div className="mx-12 -mt-10 pt-16 pb-10 px-10 glass rounded-b-[3rem] border-x border-b border-apple-gray-100 dark:border-white/5 animate-apple-slide-down relative z-0">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+                            <div className="space-y-8">
+                              <div className="space-y-4">
+                                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.4em]">Auditado por</p>
+                                <div className="flex items-center gap-4 bg-white/50 dark:bg-white/5 p-4 rounded-3xl border border-apple-gray-100 dark:border-white/5">
+                                  <div className="size-12 rounded-2xl bg-apple-blue text-white flex items-center justify-center text-lg font-black">
+                                    {oc.creador?.nombre?.substring(0, 2).toUpperCase() || 'AD'}
+                                  </div>
+                                  <div>
+                                    <p className="font-black text-foreground uppercase">{oc.creador?.nombre || 'Administrador'}</p>
+                                    <p className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-widest">Responsable Logístico</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="space-y-4">
+                                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.4em]">Registros en Sistema</p>
+                                <div className="p-5 rounded-[2rem] border border-dashed border-apple-gray-200 dark:border-white/10 space-y-4">
+                                  <div className="flex justify-between items-center text-xs">
+                                    <span className="font-bold text-apple-gray-500 uppercase tracking-tight">Fecha Creación</span>
+                                    <span className="font-black text-foreground">{new Date(oc.created_at || '').toLocaleDateString('es-UY')}</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-xs">
+                                    <span className="font-bold text-apple-gray-500 uppercase tracking-tight">Última Pulsación</span>
+                                    <span className="font-black text-foreground">{new Date(oc.created_at || '').toLocaleDateString('es-UY')}</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </td>
-                          <td className="px-10 py-8">
-                            <div className="text-[15px] font-bold text-foreground">{oc.obra?.nombre || 'General'}</div>
-                            <div className="text-xs font-medium text-apple-gray-400">Montevideo, Uruguay</div>
-                          </td>
-                          <td className="px-10 py-8">
-                            <div className="text-[15px] font-bold text-foreground">{oc.proveedor || '-'}</div>
-                            <div className="text-xs font-medium text-apple-gray-400">Suministros Directos</div>
-                          </td>
-                          <td className="px-10 py-8 text-right">
-                            <div className="text-lg font-black text-foreground">{formatPesos(oc.total || 0)}</div>
-                            <div className="text-xs font-medium text-apple-gray-400 uppercase tracking-tighter">Neto</div>
-                          </td>
-                          <td className="px-10 py-8">
-                            <div className={cn("inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest", config.bg, config.color, config.border)}>
-                              <StatusIcon className="w-3.5 h-3.5" />
-                              {config.label}
-                            </div>
-                          </td>
-                          <td className="px-10 py-8 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Link
-                                href={`/compras/ordenes-compra/${oc.id}`}
-                                className="w-10 h-10 rounded-full bg-apple-gray-50 dark:bg-white/10 text-apple-gray-400 flex items-center justify-center hover:bg-apple-blue hover:text-white transition-all active:scale-90"
-                                title="Ver Detalle Digital"
-                              >
-                                <Search className="w-5 h-5" />
-                              </Link>
-                              {oc.estado === 'pendiente' && (
-                                <button onClick={() => handleUpdateEstado(oc.id, 'enviada')} disabled={updatingId === oc.id} className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-600 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all active:scale-90" title="Enviar">
-                                  <Truck className="w-5 h-5" />
-                                </button>
-                              )}
-                              {(oc.estado === 'enviada' || oc.estado === 'recibida_parcial') && (
-                                <button onClick={() => handleOpenReceptionModal(oc.id)} className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all active:scale-90" title="Recibir">
-                                  <Package className="w-5 h-5" />
-                                </button>
-                              )}
-                              {['pendiente', 'enviada'].includes(oc.estado || '') && (
-                                <button onClick={() => handleUpdateEstado(oc.id, 'cancelada')} disabled={updatingId === oc.id} className="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-90" title="Cancelar">
-                                  <Ban className="w-5 h-5" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                        {isExpanded && (
-                          <tr>
-                            <td colSpan={6} className="px-10 py-8 bg-apple-gray-50/40 dark:bg-white/[0.01]">
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                                <div className="space-y-4">
-                                  <h4 className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Detalle de Operación</h4>
-                                  <div className="space-y-3">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-white/10 flex items-center justify-center"><User className="w-4 h-4 text-apple-gray-300" /></div>
-                                      <div>
-                                        <p className="text-[10px] font-bold text-apple-gray-300 uppercase leading-none">Creado por</p>
-                                        <p className="text-sm font-bold text-foreground">{oc.creador?.nombre || 'Admin'}</p>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-white/10 flex items-center justify-center"><Calendar className="w-4 h-4 text-apple-gray-300" /></div>
-                                      <div>
-                                        <p className="text-[10px] font-bold text-apple-gray-300 uppercase leading-none">Fecha Sistema</p>
-                                        <p className="text-sm font-bold text-foreground">{new Date(oc.created_at || '').toLocaleDateString('es-UY')}</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-span-2">
-                                  <h4 className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em] mb-4">Líneas de Compra</h4>
-                                  <div className="bg-white dark:bg-apple-gray-50 rounded-3xl border border-apple-gray-100 dark:border-white/10 overflow-hidden shadow-sm">
-                                    <table className="min-w-full divide-y divide-apple-gray-50 dark:divide-white/5">
-                                      <thead className="bg-apple-gray-50/50">
-                                        <tr>
-                                          <th className="px-4 py-3 text-left text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">Insumo</th>
-                                          <th className="px-4 py-3 text-right text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">Pedido</th>
-                                          <th className="px-4 py-3 text-right text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">Recibido</th>
-                                          <th className="px-4 py-3 text-right text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">P. Unit</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody className="divide-y divide-apple-gray-50 dark:divide-white/5">
-                                        {oc.lineas?.map((l: any, i) => (
-                                          <tr key={i} className="hover:bg-apple-gray-50/50">
-                                            <td className="px-4 py-3 text-sm font-bold text-foreground">{l.insumo?.nombre}</td>
-                                            <td className="px-4 py-3 text-right text-sm font-medium text-apple-gray-400">{l.cantidad_solicitada} {l.insumo?.unidad}</td>
-                                            <td className="px-4 py-3 text-right text-sm font-bold text-emerald-500">{l.cantidad_recibida || 0}</td>
-                                            <td className="px-4 py-3 text-right text-sm font-bold text-foreground">{formatPesos(l.precio_unitario)}</td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                </div>
+
+                            <div className="md:col-span-2 space-y-6">
+                              <div className="flex items-center justify-between">
+                                <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.4em]">Inventario de Partida</p>
+                                <button className="text-apple-blue text-[10px] font-black uppercase tracking-[0.2em] hover:underline">Exportar Detalle (PDF)</button>
                               </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        )}
-      </main>
+                              <div className="glass rounded-[2rem] border border-apple-gray-100 dark:border-white/5 overflow-hidden">
+                                <table className="min-w-full divide-y divide-apple-gray-100 dark:divide-white/5">
+                                  <thead className="bg-apple-gray-50/50">
+                                    <tr>
+                                      <th className="px-6 py-4 text-left text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Item Descriptivo</th>
+                                      <th className="px-6 py-4 text-right text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Consignado</th>
+                                      <th className="px-6 py-4 text-right text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Validado</th>
+                                      <th className="px-6 py-4 text-right text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Valuación</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-apple-gray-50 dark:divide-white/5">
+                                    {oc.lineas?.map((l: any, i: number) => (
+                                      <tr key={i} className="hover:bg-apple-blue/[0.02] transition-colors">
+                                        <td className="px-6 py-5 text-sm font-black text-foreground uppercase tracking-tight">{l.insumo?.nombre}</td>
+                                        <td className="px-6 py-5 text-right text-xs font-bold text-apple-gray-400">{l.cantidad_solicitada} {l.insumo?.unidad}</td>
+                                        <td className="px-6 py-5 text-right font-black">
+                                          <span className={cn(
+                                            "px-3 py-1 rounded-full text-xs",
+                                            l.cantidad_recibida >= l.cantidad_solicitada ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                                          )}>
+                                            {l.cantidad_recibida || 0}
+                                          </span>
+                                        </td>
+                                        <td className="px-6 py-5 text-right text-sm font-black text-foreground uppercase">
+                                          {new Intl.NumberFormat('es-UY', { style: 'currency', currency: 'UYU' }).format(l.precio_unitario)}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
 
       {/* Reception Modal */}
       <ReceptionModal

@@ -85,7 +85,7 @@ export function EditarUsuarioForm({ usuario, obras }: Props) {
               </span>
             </div>
             <div className="flex-1 space-y-1">
-              <h2 className="text-4xl font-black text-foreground tracking-tighter uppercase italic">{usuario.nombre}</h2>
+              <h2 className="text-4xl font-black text-foreground tracking-tighter uppercase">{usuario.nombre}</h2>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-xs font-bold text-apple-gray-300 uppercase tracking-widest">
                   <Mail className="w-4 h-4 text-apple-blue" />
@@ -152,7 +152,7 @@ export function EditarUsuarioForm({ usuario, obras }: Props) {
                     <Building2 className="w-4 h-4 text-apple-blue" />
                     <label htmlFor="obra_id" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Obra Designada</label>
                   </div>
-                  <span className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest italic">(Opcional)</span>
+                  <span className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">(Opcional)</span>
                 </div>
                 <select
                   id="obra_id"
@@ -270,7 +270,7 @@ export function EditarUsuarioForm({ usuario, obras }: Props) {
                   <AlertCircle className="w-10 h-10" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-foreground tracking-tight uppercase italic mb-2">¿Confirmar Suspensión?</h3>
+                  <h3 className="text-2xl font-black text-foreground tracking-tight uppercase mb-2">¿Confirmar Suspensión?</h3>
                   <p className="text-sm font-medium text-apple-gray-400 leading-relaxed">
                     Estás a punto de desactivar a <span className="text-foreground font-black">{usuario.nombre}</span>. El acceso al sistema será revocado inmediatamente.
                   </p>

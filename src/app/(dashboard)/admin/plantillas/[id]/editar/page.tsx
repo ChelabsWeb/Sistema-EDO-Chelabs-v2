@@ -72,7 +72,7 @@ export default function EditarPlantillaPage({ params }: Props) {
                 unidad: p.unidad,
                 es_sistema: p.es_sistema
             })
-            setInsumos(p.insumos || [])
+            setInsumos((p.insumos as any) || [])
             setLoading(false)
         }
         loadPlantilla()
@@ -260,7 +260,7 @@ export default function EditarPlantillaPage({ params }: Props) {
                                         <p className="text-xs font-bold text-apple-gray-300 uppercase tracking-widest">Modificar estructura del rubro</p>
                                     </div>
                                 </div>
-                                <div className="font-black text-2xl text-apple-blue tracking-tighter italic">
+                                <div className="font-black text-2xl text-apple-blue tracking-tighter">
                                     {insumos.length} Items
                                 </div>
                             </div>
@@ -326,7 +326,7 @@ export default function EditarPlantillaPage({ params }: Props) {
                                                     {insumo.tipo === 'material' ? <Package className="w-6 h-6" /> : <Users className="w-6 h-6" />}
                                                 </div>
                                                 <div className="space-y-0.5">
-                                                    <h4 className="text-[17px] font-black text-foreground tracking-tight uppercase italic">{insumo.nombre}</h4>
+                                                    <h4 className="text-[17px] font-black text-foreground tracking-tight uppercase">{insumo.nombre}</h4>
                                                     <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">{insumo.unidad} • REF {insumo.precio_referencia.toLocaleString('es-UY', { style: 'currency', currency: 'UYU' })}</p>
                                                 </div>
                                             </div>

@@ -2,267 +2,293 @@
 
 import React, { useState, useEffect, useTransition } from 'react'
 import { getDeletedItems, restoreItem, permanentDelete, emptyTrash, type DeletedItem, type DeletedItemType } from '@/app/actions/papelera'
-import { Trash2, RotateCcw, Trash, AlertCircle, Building2, Package, Layers, ClipboardList, ChevronRight, XCircle, Info, CheckCircle2 } from 'lucide-react'
+import {
+  Trash2, RotateCcw, Trash, AlertCircle, Building2, Package,
+  Layers, ClipboardList, XCircle, Info,
+  Calendar, Inbox, Search, Sparkles
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const typeLabels: Record<DeletedItemType, string> = {
   obras: 'Obras',
   rubros: 'Rubros',
   insumos: 'Insumos',
-  ordenes_trabajo: 'Ordenes de Trabajo',
+  ordenes_trabajo: 'Órdenes de Trabajo'
 }
 
 const typeIcons: Record<DeletedItemType, any> = {
   obras: Building2,
   rubros: Layers,
   insumos: Package,
-  ordenes_trabajo: ClipboardList,
-}
-
-const typeColors: Record<DeletedItemType, string> = {
-  obras: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  rubros: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  insumos: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-  ordenes_trabajo: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+  ordenes_trabajo: ClipboardList
 }
 
 export function PapeleraClient() {
   const [items, setItems] = useState<DeletedItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<DeletedItemType | 'all'>('all')
   const [isPending, startTransition] = useTransition()
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [confirmEmpty, setConfirmEmpty] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterType, setFilterType] = useState<DeletedItemType | 'all'>('all')
 
-  const loadItems = async () => {
+  const fetchItems = async () => {
     setLoading(true)
-    setError(null)
-    const result = await getDeletedItems(filter === 'all' ? undefined : filter)
-    if (result.success) {
-      setItems(result.data)
-    } else {
-      setError(result.error)
+    try {
+      const result = await getDeletedItems()
+      if (result.success) {
+        setItems(result.data)
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      console.error('Error fetching deleted items:', error)
+      toast.error('Error al cargar la papelera')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   useEffect(() => {
-    loadItems()
-  }, [filter])
+    fetchItems()
+  }, [])
 
-  const handleRestore = (item: DeletedItem) => {
+  const handleRestore = (id: string, type: DeletedItemType) => {
     startTransition(async () => {
-      const result = await restoreItem(item.tipo, item.id)
-      if (result.success) {
-        setActionMessage({ type: 'success', text: `"${item.nombre}" restaurado` })
-        loadItems()
-      } else {
-        setActionMessage({ type: 'error', text: result.error })
+      try {
+        const result = await restoreItem(type, id) // Note: parameter order in action is (tipo, id)
+        if (result.success) {
+          toast.success('Elemento restaurado correctamente')
+          fetchItems()
+        } else {
+          toast.error('No se pudo restaurar el elemento')
+        }
+      } catch (error) {
+        toast.error('Error de conexión')
       }
-      setTimeout(() => setActionMessage(null), 3000)
     })
   }
 
-  const handlePermanentDelete = (item: DeletedItem) => {
-    if (!confirm(`¿Eliminar permanentemente "${item.nombre}"?`)) return
+  const handleDelete = (id: string, type: DeletedItemType) => {
+    if (!confirm('¿Estás seguro de que deseas eliminar permanentemente este elemento? Esta acción no se puede deshacer.')) return
+
     startTransition(async () => {
-      const result = await permanentDelete(item.tipo, item.id)
-      if (result.success) {
-        setActionMessage({ type: 'success', text: 'Eliminado permanentemente' })
-        loadItems()
-      } else {
-        setActionMessage({ type: 'error', text: result.error })
+      try {
+        const result = await permanentDelete(type, id) // Note: parameter order in action is (tipo, id)
+        if (result.success) {
+          toast.success('Elemento eliminado permanentemente')
+          fetchItems()
+        } else {
+          toast.error('No se pudo eliminar el elemento')
+        }
+      } catch (error) {
+        toast.error('Error de conexión')
       }
-      setTimeout(() => setActionMessage(null), 3000)
     })
   }
 
   const handleEmptyTrash = () => {
-    if (!confirmEmpty) {
-      setConfirmEmpty(true)
-      return
-    }
+    if (!confirm('¿Estás seguro de que deseas vaciar la papelera? Todos los elementos se perderán para siempre.')) return
+
     startTransition(async () => {
-      const result = await emptyTrash()
-      if (result.success) {
-        setActionMessage({ type: 'success', text: 'Papelera vaciada' })
-        setItems([])
-      } else {
-        setActionMessage({ type: 'error', text: result.error })
+      try {
+        const result = await emptyTrash()
+        if (result.success) {
+          toast.success('Papelera vaciada correctamente')
+          fetchItems()
+        } else {
+          toast.error('No se pudo vaciar la papelera')
+        }
+      } catch (error) {
+        toast.error('Error de conexión')
       }
-      setConfirmEmpty(false)
-      setTimeout(() => setActionMessage(null), 3000)
     })
   }
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('es-UY', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-  }
-
-  const filteredItems = filter === 'all' ? items : items.filter(item => item.tipo === filter)
+  const filteredItems = items.filter(item => {
+    const matchesSearch = item.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesType = filterType === 'all' || item.tipo === filterType
+    return matchesSearch && matchesType
+  })
 
   return (
-    <div className="min-h-screen bg-apple-gray-50/20 dark:bg-black/20 p-6 md:p-14 max-w-7xl mx-auto space-y-12 antialiased">
-      {/* Premium Glass Header */}
-      <header className="sticky top-0 z-40 -mx-4 md:-mx-8 px-8 md:px-12 py-10 backdrop-blur-xl bg-white/70 dark:bg-apple-gray-50/70 border-b border-apple-gray-100 dark:border-white/5 rounded-b-[48px] shadow-apple-sm transition-all duration-500 flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div className="space-y-4">
+    <div className="min-h-screen bg-transparent p-6 md:p-14 max-w-7xl mx-auto space-y-12 antialiased">
+      {/* Premium Header */}
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+        <div className="space-y-6">
           <div className="flex items-center gap-3">
-            <div className="px-4 py-1.5 bg-apple-blue text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-apple-sm">
-              Seguridad
+            <div className="px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/20 flex items-center gap-1.5">
+              <Trash2 className="w-3.5 h-3.5 text-apple-blue fill-apple-blue" />
+              <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Sistema de Recuperación</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/50 dark:bg-white/5 rounded-full border border-apple-gray-100 dark:border-white/10">
-              <Trash2 className="w-3.5 h-3.5 text-apple-gray-300" />
-              <span className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">{items.length} Elementos</span>
+            <div className="px-3 py-1 rounded-full bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/5 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-apple-gray-400" />
+              <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">
+                Retención de 30 días
+              </span>
             </div>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-black text-foreground tracking-[-0.04em] leading-[0.9]">
-            Papelera<span className="text-apple-blue">.</span>
-          </h1>
-          <p className="text-xl text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed">
-            Área de recuperación de datos eliminados recientemente.
-          </p>
-        </div>
-
-        {items.length > 0 && (
-          <button
-            onClick={handleEmptyTrash}
-            disabled={isPending}
-            className={cn(
-              "px-8 py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.15em] transition-all shadow-apple-float active:scale-[0.95] flex items-center justify-center gap-3 group",
-              confirmEmpty
-                ? "bg-red-600 text-white shadow-red-200"
-                : "bg-white dark:bg-apple-gray-50 text-foreground border border-apple-gray-100 dark:border-white/5 hover:text-red-600"
-            )}
-          >
-            {confirmEmpty ? <AlertCircle className="w-5 h-5 animate-pulse" /> : <Trash2 className="w-5 h-5 transition-transform group-hover:rotate-12" />}
-            {confirmEmpty ? '¿Vaciar ahora?' : 'Vaciar Papelera'}
-          </button>
-        )}
-      </header>
-
-      {/* Action Messages Floating View */}
-      {actionMessage && (
-        <div className={cn(
-          "fixed bottom-12 left-1/2 -translate-x-1/2 z-50 px-10 py-5 rounded-[32px] font-black text-xs uppercase tracking-widest flex items-center gap-4 animate-apple-slide-up shadow-2xl border backdrop-blur-xl",
-          actionMessage.type === 'success' ? "bg-emerald-500/90 text-white border-emerald-400/50" : "bg-red-600/90 text-white border-red-400/50"
-        )}>
-          {actionMessage.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
-          {actionMessage.text}
-        </div>
-      )}
-
-      {/* Main Stream Area */}
-      <main className="space-y-12">
-        {/* iOS style Segmented Control */}
-        <div className="flex justify-center">
-          <div className="p-1.5 bg-apple-gray-100/50 dark:bg-white/5 rounded-[24px] flex gap-1 border border-apple-gray-100/50 dark:border-white/5 shadow-inner">
-            <button
-              onClick={() => setFilter('all')}
-              className={cn(
-                "px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-[18px] transition-all",
-                filter === 'all'
-                  ? "bg-white dark:bg-apple-gray-50 text-foreground shadow-apple-sm"
-                  : "text-apple-gray-400 hover:text-foreground"
-              )}
-            >
-              Todos
-            </button>
-            {(Object.keys(typeLabels) as DeletedItemType[]).map((tipo) => (
-              <button
-                key={tipo}
-                onClick={() => setFilter(tipo)}
-                className={cn(
-                  "px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-[18px] transition-all whitespace-nowrap",
-                  filter === tipo
-                    ? "bg-white dark:bg-apple-gray-50 text-foreground shadow-apple-sm"
-                    : "text-apple-gray-400 hover:text-foreground"
-                )}
-              >
-                {typeLabels[tipo]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Content State Engine */}
-        {loading ? (
-          <div className="text-center py-40 animate-pulse">
-            <div className="w-16 h-16 bg-apple-blue/10 rounded-[24px] flex items-center justify-center mx-auto mb-6">
-              <RotateCcw className="w-8 h-8 text-apple-blue animate-spin-slow" />
-            </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Sincronizando Archivos...</p>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="text-center py-40 glass dark:glass-dark rounded-[64px] border border-apple-gray-100 dark:border-white/5 shadow-apple-float animate-apple-fade-in">
-            <div className="w-32 h-32 bg-apple-gray-50 dark:bg-white/5 rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner">
-              <Trash className="w-16 h-16 text-apple-gray-200" />
-            </div>
-            <h3 className="text-4xl font-black text-foreground tracking-tighter mb-4">Todo Limpio</h3>
-            <p className="text-xl text-apple-gray-400 font-medium max-w-md mx-auto">
-              No hay elementos eliminados para mostrar en esta categoría.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-4 animate-apple-slide-up">
-            {filteredItems.map((item) => {
-              const Icon = typeIcons[item.tipo]
-              return (
-                <div key={`${item.tipo}-${item.id}`} className="group relative bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/5 rounded-[32px] p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 transition-all duration-500 hover:shadow-apple-lg hover:border-apple-blue/20">
-                  <div className="flex items-center gap-6">
-                    <div className={cn("w-16 h-16 rounded-[24px] flex items-center justify-center transition-all duration-500 group-hover:scale-105", typeColors[item.tipo])}>
-                      <Icon className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border", typeColors[item.tipo])}>
-                          {typeLabels[item.tipo]}
-                        </span>
-                        <span className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Eliminado el {formatDate(item.deleted_at)}</span>
-                      </div>
-                      <h4 className="text-2xl font-black text-foreground tracking-[-0.04em] group-hover:text-apple-blue transition-colors">{item.nombre}</h4>
-                      {item.descripcion && (
-                        <p className="text-sm font-medium text-apple-gray-400 mt-1 line-clamp-1">{item.descripcion}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                    <button
-                      onClick={() => handleRestore(item)}
-                      className="px-6 py-3 bg-apple-blue/10 text-apple-blue rounded-[18px] text-[10px] font-black uppercase tracking-widest hover:bg-apple-blue hover:text-white transition-all active:scale-90 flex items-center gap-2"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                      Restaurar
-                    </button>
-                    <button
-                      onClick={() => handlePermanentDelete(item)}
-                      className="w-12 h-12 bg-red-500/10 text-red-600 rounded-[18px] flex items-center justify-center hover:bg-red-600 hover:text-white transition-all active:scale-90"
-                      title="Eliminar permanentemente"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Informative Footer Card */}
-        <div className="p-10 bg-apple-blue/[0.03] dark:bg-white/[0.02] rounded-[48px] border border-apple-blue/10 dark:border-white/5 flex items-start gap-8 shadow-apple-sm">
-          <div className="w-16 h-16 bg-apple-blue text-white rounded-[24px] flex items-center justify-center shrink-0 shadow-lg">
-            <Info className="w-8 h-8" />
           </div>
           <div className="space-y-4">
-            <h4 className="text-2xl font-black text-foreground tracking-tighter">Sobre la Restauración de Datos</h4>
-            <p className="text-lg text-apple-gray-400 font-medium leading-[1.4] max-w-3xl">
-              Al restaurar un elemento, el sistema reconstruirá automáticamente sus dependencias asociadas (como los rubros de una obra o insumos de un rubro) para asegurar que el balance contable y técnico se mantenga intacto.
+            <h1 className="text-5xl md:text-6xl font-black font-display tracking-tight text-foreground leading-[0.9]">
+              Papelera<span className="text-apple-blue">.</span>
+            </h1>
+            <p className="text-lg text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed">
+              Gestiona elementos eliminados recientemente y restaura el acceso a tus proyectos.
             </p>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-4">
+          {items.length > 0 && (
+            <button
+              onClick={handleEmptyTrash}
+              disabled={isPending}
+              className="flex items-center gap-2 px-8 py-3 rounded-full bg-red-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/25 hover:bg-red-600 active:scale-95 transition-all disabled:opacity-50"
+            >
+              <Trash className="w-4 h-4" />
+              Vaciar Papelera
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Filters & Tools Area */}
+      <div className="flex flex-col md:flex-row gap-6 items-center">
+        <div className="relative flex-1 group w-full">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-apple-gray-300 group-focus-within:text-apple-blue transition-colors" />
+          <input
+            type="text"
+            placeholder="Buscar en la papelera..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-16 pl-16 pr-8 rounded-[2rem] bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 text-lg font-bold focus:ring-8 focus:ring-apple-blue/5 outline-none transition-all"
+          />
+        </div>
+        <div className="flex bg-white dark:bg-white/5 p-1 rounded-full border border-apple-gray-200 dark:border-white/5 shadow-sm overflow-x-auto custom-scrollbar-hide max-w-full">
+          <button
+            onClick={() => setFilterType('all')}
+            className={cn(
+              "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0",
+              filterType === 'all' ? "bg-apple-blue text-white shadow-md" : "text-apple-gray-400 hover:text-foreground"
+            )}
+          >
+            Todo
+          </button>
+          {Object.entries(typeLabels).map(([type, label]) => (
+            <button
+              key={type}
+              onClick={() => setFilterType(type as DeletedItemType)}
+              className={cn(
+                "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0",
+                filterType === type ? "bg-apple-blue text-white shadow-md" : "text-apple-gray-400 hover:text-foreground"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <main>
+        {loading ? (
+          <div className="py-40 flex flex-col items-center gap-6">
+            <div className="w-16 h-16 border-4 border-apple-blue/20 border-t-apple-blue rounded-full animate-spin" />
+            <p className="text-xs font-black text-apple-gray-400 uppercase tracking-widest">Sincronizando Archivos...</p>
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="py-40 glass p-12 rounded-[3rem] text-center space-y-8 animate-apple-fade-in">
+            <div className="w-24 h-24 bg-apple-gray-50 dark:bg-white/5 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-inner">
+              <Inbox className="w-10 h-10 text-apple-gray-200" />
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-3xl font-black text-foreground tracking-tight uppercase font-display">Papelera Vacía</h3>
+              <p className="text-lg text-apple-gray-400 font-medium max-w-md mx-auto">No hay elementos que coincidan con tu búsqueda o la papelera ha sido vaciada.</p>
+            </div>
+            <button
+              onClick={() => { setSearchTerm(''); setFilterType('all'); }}
+              className="px-8 py-3 rounded-full border-2 border-apple-gray-100 dark:border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-apple-gray-50 dark:hover:bg-white/5 transition-all"
+            >
+              Limpiar Filtros
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 animate-apple-slide-up">
+            <AnimatePresence mode="popLayout">
+              {filteredItems.map((item) => {
+                const Icon = typeIcons[item.tipo]
+                return (
+                  <motion.div
+                    key={`${item.tipo}-${item.id}`}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="group p-8 glass border border-apple-gray-100 dark:border-white/10 rounded-[2.5rem] flex flex-col md:flex-row md:items-center justify-between gap-8 hover:bg-white dark:hover:bg-white/5 hover:shadow-2xl transition-all duration-300 overflow-hidden relative"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-full bg-apple-blue/[0.01] -skew-x-12 translate-x-10 pointer-events-none" />
+
+                    <div className="flex items-center gap-6 relative z-10">
+                      <div className="w-16 h-16 rounded-[22px] bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-400 group-hover:bg-apple-blue/10 group-hover:text-apple-blue transition-all duration-500 shadow-inner">
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <h4 className="text-xl font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors font-display">
+                            {item.nombre}
+                          </h4>
+                          <span className="px-3 py-1 rounded-lg bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/10 text-[9px] font-black uppercase tracking-widest text-apple-gray-400">
+                            {typeLabels[item.tipo]}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs font-bold text-apple-gray-400">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 opacity-50" />
+                            Eliminado el {item.deleted_at ? new Date(item.deleted_at).toLocaleDateString() : 'Fecha desconocida'}
+                          </div>
+                          <div className="w-1 h-1 rounded-full bg-apple-gray-200" />
+                          <div className="font-medium opacity-60">ID: {item.id.substring(0, 8)}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 relative z-10">
+                      <button
+                        onClick={() => handleRestore(item.id, item.tipo)}
+                        disabled={isPending}
+                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Restaurar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id, item.tipo)}
+                        disabled={isPending}
+                        className="flex items-center justify-center w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-95 disabled:opacity-50"
+                        title="Eliminar permanentemente"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </AnimatePresence>
+          </div>
+        )}
       </main>
+
+      {/* Security Banner */}
+      <div className="p-10 glass border border-apple-blue/10 rounded-[3rem] flex items-center gap-8 group">
+        <div className="w-16 h-16 rounded-[22px] bg-apple-blue flex items-center justify-center shadow-lg shadow-apple-blue/30 group-hover:scale-110 transition-transform">
+          <Sparkles className="w-7 h-7 text-white fill-current" />
+        </div>
+        <div>
+          <h4 className="text-lg font-black text-foreground tracking-tight uppercase font-display">Protección de Datos</h4>
+          <p className="text-sm font-medium text-apple-gray-400 leading-relaxed max-w-2xl">
+            Los elementos eliminados se conservan por un periodo de 30 días antes de ser purgados automáticamente. Puedes restaurarlos en cualquier momento para recuperar toda la información asociada.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

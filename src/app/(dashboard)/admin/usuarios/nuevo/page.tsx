@@ -38,25 +38,30 @@ export default async function NuevoUsuarioPage() {
   return (
     <div className="min-h-screen bg-apple-gray-50/20 dark:bg-black/20 p-6 md:p-14 antialiased">
       {/* Premium Header Container */}
-      <header className="max-w-4xl mx-auto flex items-center justify-between mb-16 animate-apple-fade-in text-left">
-        <div className="flex items-center gap-6">
+      <header className="max-w-4xl mx-auto pt-16 pb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-10 animate-apple-fade-in">
+        <div className="flex items-start gap-8">
           <Link
             href="/admin/usuarios"
-            className="w-12 h-12 glass dark:glass-dark rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-95 group shadow-apple-sm"
+            className="w-14 h-14 rounded-full bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/10 flex items-center justify-center text-apple-gray-400 hover:text-apple-blue hover:scale-110 active:scale-95 transition-all shadow-xl mt-2"
           >
-            <ArrowLeft className="w-5 h-5 text-apple-gray-400 group-hover:text-apple-blue transition-colors" />
+            <ArrowLeft className="w-6 h-6" />
           </Link>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <UserPlus className="w-3.5 h-3.5 text-apple-blue" />
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em]">Gestión de Personal</p>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/20 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-apple-blue fill-apple-blue" />
+                <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Seguridad de Acceso</span>
+              </div>
             </div>
-            <h1 className="text-4xl font-black text-foreground tracking-tight">Nuevo Acceso</h1>
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-6xl font-black font-display tracking-tight text-foreground leading-[0.9]">
+                Nuevo Acceso<span className="text-apple-blue">.</span>
+              </h1>
+              <p className="text-lg text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed">
+                Registra un nuevo colaborador y define sus niveles de autoridad dentro del ecosistema operativo.
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="hidden md:flex items-center gap-3 px-5 py-2.5 bg-white/50 dark:bg-white/5 rounded-full border border-apple-gray-100 dark:border-white/10 shadow-apple-sm">
-          <Sparkles className="w-4 h-4 text-apple-blue" />
-          <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest leading-none pt-0.5">Alta de Cuenta</span>
         </div>
       </header>
 

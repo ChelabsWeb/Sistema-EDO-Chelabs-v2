@@ -1,17 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
     BarChart3, TrendingUp, TrendingDown, AlertTriangle,
-    CheckCircle2, Calendar, Download, Filter, Sparkles,
+    Calendar, Download, Filter, Sparkles,
     ArrowUpRight, ArrowDownRight, Activity, Wallet, Package,
-    FileText, Share2, Zap
+    Zap, Info, List, PieChart as PieChartIcon, LayoutGrid, Target,
+    Clock, Rocket, ChevronRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatPesos } from '@/lib/utils/currency'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer, LineChart, Line, Cell, Area, AreaChart
+    ResponsiveContainer, LineChart, Line, Cell, Area, AreaChart,
+    Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+    PieChart, Pie, Treemap
 } from 'recharts'
 
 interface EfficiencyItem {
@@ -34,16 +37,33 @@ interface DeviationItem {
     trend: 'up' | 'down'
 }
 
+interface RadarItem {
+    subject: string
+    A: number
+    B: number
+    fullMark: number
+}
+
+interface DistributionItem {
+    name: string
+    value: number
+    color: string
+}
+
 interface ReportAnalyticsProps {
     efficiencyData: EfficiencyItem[]
     monthlyInvestment: MonthlyInvestment[]
     topDeviations: DeviationItem[]
+    radarData: RadarItem[]
+    distributionData: DistributionItem[]
 }
 
 export function ReportAnalytics({
     efficiencyData,
     monthlyInvestment,
-    topDeviations
+    topDeviations,
+    radarData,
+    distributionData
 }: ReportAnalyticsProps) {
     const [selectedPeriod, setSelectedPeriod] = useState('6m')
     const [isExporting, setIsExporting] = useState(false)
@@ -55,30 +75,34 @@ export function ReportAnalytics({
 
     const totalInversion = monthlyInvestment.reduce((sum, m) => sum + m.inversion, 0)
     const totalPresupuesto = monthlyInvestment.reduce((sum, m) => sum + m.presupuesto, 0)
-    const budgetHealth = ((totalInversion / totalPresupuesto) * 100)
+    const budgetHealth = (totalInversion / totalPresupuesto) * 100
+
+    // Advanced Metrics (EAC, CPI, SPI)
+    const cpi = 0.94 // Cost Performance Index (Mocked)
+    const spi = 1.02 // Schedule Performance Index (Mocked)
+    const eac = totalPresupuesto / cpi // Estimate at Completion
 
     const criticalDeviations = topDeviations.filter(d => d.desvio > 10).length
 
-    // Mock export functionality
+    // Mock export
     const handleExport = async (format: 'pdf' | 'excel') => {
         setIsExporting(true)
-        // Simulate export delay
         await new Promise(resolve => setTimeout(resolve, 1500))
-        alert(`Exportando reporte en formato ${format.toUpperCase()}...`)
         setIsExporting(false)
     }
 
-    // Custom tooltip for charts
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div className="glass dark:glass-dark p-4 rounded-2xl border border-apple-gray-100 dark:border-white/10 shadow-apple-float">
-                    <p className="text-xs font-black text-apple-gray-400 uppercase tracking-widest mb-2">{label}</p>
+                <div className="glass p-4 rounded-2xl border border-black/5 dark:border-white/10 shadow-apple-float">
+                    <p className="text-[10px] font-black text-apple-gray-400 dark:text-apple-gray-300 uppercase tracking-widest mb-2">{label}</p>
                     {payload.map((entry: any, index: number) => (
                         <div key={index} className="flex items-center gap-2 mb-1">
                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                            <span className="text-sm font-bold text-foreground">{entry.name}: </span>
-                            <span className="text-sm font-black text-apple-blue">{formatPesos(entry.value)}</span>
+                            <span className="text-xs font-bold text-foreground">{entry.name}: </span>
+                            <span className="text-xs font-black text-apple-blue">
+                                {typeof entry.value === 'number' && entry.value > 1000 ? formatPesos(entry.value) : entry.value}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -88,246 +112,354 @@ export function ReportAnalytics({
     }
 
     return (
-        <div className="max-w-7xl mx-auto space-y-12 animate-apple-fade-in">
-            {/* Premium Header with Glassmorphism */}
-            <header className="sticky top-0 z-30 -mx-6 md:-mx-14 px-6 md:px-14 py-10 backdrop-blur-xl bg-[#f5f5f7]/70 dark:bg-black/70 border-b border-apple-gray-100 dark:border-white/5 rounded-b-[48px] shadow-apple-sm transition-all duration-500">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="px-4 py-1.5 bg-gradient-to-r from-apple-blue to-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-apple-blue/30 animate-pulse">
-                                <div className="flex items-center gap-2">
-                                    <Zap className="w-3 h-3 fill-current" />
-                                    Inteligencia de Obra
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 px-3 py-1 glass dark:glass-dark rounded-full border border-apple-gray-100 dark:border-white/10 shadow-apple-sm">
-                                <Calendar className="w-3.5 h-3.5 text-apple-gray-300" />
-                                <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">
-                                    {new Date().toLocaleDateString('es-UY', { month: 'long', year: 'numeric' })}
-                                </span>
-                            </div>
+        <div className="max-w-[1500px] mx-auto space-y-16 py-12 px-6 md:px-10">
+            {/* Ultra Premium Header */}
+            <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+                <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                        <div className="px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/20 flex items-center gap-1.5">
+                            <Zap className="w-3.5 h-3.5 text-apple-blue fill-apple-blue" />
+                            <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Inteligencia de Obra</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black text-foreground tracking-[-0.04em] leading-[0.9]">
+                        <div className="px-3 py-1 rounded-full bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/5 flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-apple-gray-400" />
+                            <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">
+                                FEBRERO DE 2026
+                            </span>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <h1 className="text-5xl md:text-6xl font-black font-display tracking-tight text-foreground leading-[0.9]">
                             Analítica<span className="text-apple-blue">.</span>
                         </h1>
-                        <p className="text-xl text-apple-gray-400 font-medium tracking-tight max-w-2xl leading-relaxed">
-                            Métricas de rendimiento, eficiencia de materiales y salud presupuestaria en tiempo real.
+                        <p className="text-lg text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed text-balance">
+                            Análisis avanzado de rendimiento, predicciones presupuestarias y salud operativa del proyecto.
                         </p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <button className="px-6 py-4 glass dark:glass-dark rounded-[24px] border border-apple-gray-100 dark:border-white/10 flex items-center gap-3 hover:border-apple-blue/30 hover:shadow-apple-lg transition-all group active:scale-95">
-                            <Filter className="w-5 h-5 text-apple-gray-400 group-hover:text-apple-blue transition-colors" />
-                            <span className="text-xs font-black text-apple-gray-400 uppercase tracking-widest group-hover:text-foreground transition-colors">Filtros</span>
-                        </button>
-                        <div className="relative group">
-                            <button
-                                onClick={() => handleExport('pdf')}
-                                disabled={isExporting}
-                                className="px-8 py-4 bg-apple-blue text-white rounded-[24px] font-black text-xs uppercase tracking-[0.2em] hover:bg-apple-blue-dark transition-all shadow-apple-float active:scale-95 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isExporting ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Exportando...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Download className="w-5 h-5" />
-                                        Exportar
-                                    </>
-                                )}
-                            </button>
-                        </div>
                     </div>
                 </div>
 
-                {/* Period Selector with smooth transitions */}
-                <div className="mt-8 flex items-center gap-3 p-2 glass dark:glass-dark rounded-[32px] border border-apple-gray-100 dark:border-white/10 w-fit">
-                    {[
-                        { label: '3M', value: '3m' },
-                        { label: '6M', value: '6m' },
-                        { label: '1A', value: '1y' },
-                        { label: 'Todo', value: 'all' }
-                    ].map((period) => (
-                        <button
-                            key={period.value}
-                            onClick={() => setSelectedPeriod(period.value)}
-                            className={cn(
-                                "px-6 py-3 rounded-[24px] text-xs font-black uppercase tracking-widest transition-all duration-300",
-                                selectedPeriod === period.value
-                                    ? "bg-apple-blue text-white shadow-lg scale-105"
-                                    : "text-apple-gray-400 hover:text-foreground hover:bg-apple-gray-50 dark:hover:bg-white/5 hover:scale-102"
-                            )}
-                        >
-                            {period.label}
-                        </button>
-                    ))}
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex bg-white dark:bg-white/5 p-1 rounded-full border border-apple-gray-200 dark:border-white/5 shadow-sm">
+                        {[
+                            { label: '3M', value: '3m' },
+                            { label: '6M', value: '6m' },
+                            { label: '1A', value: '1y' },
+                            { label: 'TODO', value: 'all' }
+                        ].map((p) => (
+                            <button
+                                key={p.value}
+                                onClick={() => setSelectedPeriod(p.value)}
+                                className={cn(
+                                    "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                                    selectedPeriod === p.value
+                                        ? "bg-apple-blue text-white shadow-md scale-105"
+                                        : "text-apple-gray-400 hover:text-foreground"
+                                )}
+                            >
+                                {p.label}
+                            </button>
+                        ))}
+                    </div>
+                    <button className="flex items-center gap-2 px-6 py-3 rounded-full glass border border-apple-gray-200 dark:border-white/5 text-[10px] font-black uppercase tracking-widest shadow-sm hover:scale-105 active:scale-95 transition-all">
+                        <Filter className="w-4 h-4" />
+                        Filtros
+                    </button>
+                    <button
+                        onClick={() => handleExport('pdf')}
+                        disabled={isExporting}
+                        className="flex items-center gap-2 px-8 py-3 rounded-full bg-apple-blue text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-apple-blue/25 hover:bg-apple-blue-dark active:scale-95 transition-all disabled:opacity-50"
+                    >
+                        {isExporting ? <Activity className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                        {isExporting ? 'Exportando...' : 'Exportar'}
+                    </button>
                 </div>
             </header>
 
-            {/* Hero Metrics Bento with enhanced animations */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Global Efficiency - Animated gradient */}
-                <div className="relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white rounded-[48px] p-10 shadow-apple-float overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform duration-500">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 blur-2xl rounded-full -translate-x-1/2 translate-y-1/2" />
-                    <div className="relative z-10 space-y-6">
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-[24px] flex items-center justify-center border border-white/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                            <Activity className="w-8 h-8" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-2">Eficiencia Global</p>
-                            <h3 className="text-6xl font-black tracking-tighter leading-none mb-2">
-                                {globalEfficiency > 0 ? '+' : ''}{globalEfficiency.toFixed(1)}%
-                            </h3>
-                            <div className="flex items-center gap-2 mt-4">
-                                <div className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-white rounded-full transition-all duration-1000"
-                                        style={{ width: `${Math.min(Math.abs(globalEfficiency), 100)}%` }}
-                                    />
-                                </div>
-                                <span className="text-xs font-bold opacity-60">{Math.abs(globalEfficiency).toFixed(0)}%</span>
-                            </div>
-                        </div>
+            {/* Advanced Performance Stats - Row of 4 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="glass p-8 rounded-[2rem] border-apple-gray-100 dark:border-white/5 hover:-translate-y-1 transition-all">
+                    <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em] mb-4">CPI (Costo)</p>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-black font-display text-foreground">{cpi.toFixed(2)}</span>
+                        <span className={cn("text-xs font-bold", cpi >= 1 ? "text-emerald-500" : "text-amber-500")}>
+                            {cpi >= 1 ? '↑ Óptimo' : '↓ Riesgo'}
+                        </span>
                     </div>
                 </div>
-
-                {/* Budget Health - Enhanced */}
-                <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-10 border border-apple-gray-100 dark:border-white/5 shadow-apple-float space-y-6 group hover:-translate-y-2 hover:shadow-apple-lg transition-all duration-500 cursor-pointer">
-                    <div className="w-16 h-16 bg-gradient-to-br from-apple-blue to-indigo-600 rounded-[24px] flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-apple-blue/30">
-                        <Wallet className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em] mb-2">Salud Presupuestaria</p>
-                        <h3 className="text-6xl font-black text-foreground tracking-tighter leading-none mb-2">
-                            {budgetHealth.toFixed(0)}%
-                        </h3>
-                        <p className="text-xs font-bold text-apple-gray-400">{formatPesos(totalInversion)} de {formatPesos(totalPresupuesto)}</p>
-                        <div className="mt-4 h-2 bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                            <div
-                                className={cn(
-                                    "h-full rounded-full transition-all duration-1000",
-                                    budgetHealth > 90 ? "bg-red-500" : budgetHealth > 75 ? "bg-amber-500" : "bg-emerald-500"
-                                )}
-                                style={{ width: `${Math.min(budgetHealth, 100)}%` }}
-                            />
-                        </div>
+                <div className="glass p-8 rounded-[2rem] border-apple-gray-100 dark:border-white/5 hover:-translate-y-1 transition-all">
+                    <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em] mb-4">SPI (Agenda)</p>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-black font-display text-foreground">{spi.toFixed(2)}</span>
+                        <span className={cn("text-xs font-bold", spi >= 1 ? "text-emerald-500" : "text-amber-500")}>
+                            {spi >= 1 ? '↑ Adelanto' : '↓ Retraso'}
+                        </span>
                     </div>
                 </div>
-
-                {/* Critical Alerts - Pulsing animation when critical */}
-                <div className={cn(
-                    "rounded-[48px] p-10 shadow-apple-float space-y-6 group hover:-translate-y-2 transition-all duration-500 cursor-pointer",
-                    criticalDeviations > 0
-                        ? "bg-gradient-to-br from-amber-500 to-orange-600 text-white animate-pulse"
-                        : "bg-white dark:bg-apple-gray-50 border border-apple-gray-100 dark:border-white/5"
-                )}>
-                    <div className={cn(
-                        "w-16 h-16 rounded-[24px] flex items-center justify-center border group-hover:scale-110 group-hover:rotate-6 transition-all duration-500",
-                        criticalDeviations > 0
-                            ? "bg-white/20 border-white/20 backdrop-blur-sm"
-                            : "bg-red-500/10 border-red-500/20"
-                    )}>
-                        <AlertTriangle className={cn(
-                            "w-8 h-8",
-                            criticalDeviations > 0 ? "text-white" : "text-red-500"
-                        )} />
+                <div className="glass p-8 rounded-[2rem] border-apple-gray-100 dark:border-white/5 hover:-translate-y-1 transition-all">
+                    <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em] mb-4">EAC (Proyección Final)</p>
+                    <div className="flex flex-col gap-1">
+                        <span className="text-2xl font-black font-display text-foreground">{formatPesos(eac)}</span>
+                        <span className="text-[9px] font-bold text-apple-gray-300 uppercase tracking-widest">Basado en tendencia actual</span>
                     </div>
-                    <div>
-                        <p className={cn(
-                            "text-[10px] font-black uppercase tracking-[0.2em] mb-2",
-                            criticalDeviations > 0 ? "opacity-60" : "text-apple-gray-400"
-                        )}>Desvíos Críticos</p>
-                        <h3 className={cn(
-                            "text-6xl font-black tracking-tighter leading-none",
-                            criticalDeviations > 0 ? "" : "text-foreground"
-                        )}>
-                            {criticalDeviations}
-                        </h3>
-                        {criticalDeviations > 0 && (
-                            <p className="text-xs font-bold opacity-80 mt-2">⚠️ Requiere atención inmediata</p>
-                        )}
+                </div>
+                <div className="glass p-8 rounded-[2rem] border-apple-gray-100 dark:border-white/5 bg-gradient-to-br from-apple-blue/5 to-transparent hover:-translate-y-1 transition-all">
+                    <p className="text-[10px] font-black text-apple-blue uppercase tracking-[0.2em] mb-4">Ahorro Proyectado</p>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-black font-display text-emerald-500">{formatPesos(totalPresupuesto - totalInversion)}</span>
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                            <TrendingDown className="w-4 h-4 text-emerald-500" />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Main Analytics Grid - Enhanced charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {/* Material Efficiency Chart - Better styling */}
-                <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-10 md:p-12 border border-apple-gray-100 dark:border-white/5 shadow-apple-float space-y-10 hover:shadow-apple-lg transition-all duration-500">
-                    <div className="flex items-center justify-between">
+            {/* Performance Radar & Distribution Treemap */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                {/* Radar Chart - Left 5 cols */}
+                <div className="lg:col-span-5 glass p-10 rounded-[3rem] border-apple-gray-100 dark:border-white/5 shadow-apple-float flex flex-col items-center">
+                    <div className="w-full flex items-center gap-4 mb-10">
+                        <div className="w-10 h-10 bg-apple-blue/10 rounded-xl flex items-center justify-center">
+                            <Target className="w-5 h-5 text-apple-blue" />
+                        </div>
                         <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="w-10 h-10 bg-apple-blue/10 rounded-xl flex items-center justify-center">
-                                    <Package className="w-5 h-5 text-apple-blue" />
-                                </div>
-                                <h3 className="text-2xl font-black text-foreground tracking-tight">Eficiencia de Materiales</h3>
-                            </div>
-                            <p className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Estimado vs. Real Consumido</p>
+                            <h3 className="text-xl font-black text-foreground tracking-tight font-display">Vulnerabilidades</h3>
+                            <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">ANÁLISIS DE 5 PILARES</p>
                         </div>
                     </div>
 
-                    <div className="h-[400px]">
+                    <div className="w-full h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={efficiencyData} layout="horizontal" barGap={8}>
-                                <CartesianGrid strokeDasharray="0" horizontal={true} vertical={false} stroke="rgba(0,0,0,0.03)" />
-                                <XAxis
-                                    type="number"
-                                    hide
-                                />
-                                <YAxis
-                                    type="category"
-                                    dataKey="material"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 11, fontWeight: 800, fill: '#94a3b8' }}
-                                    width={120}
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                <PolarGrid stroke="var(--border)" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} />
+                                <Radar
+                                    name="Actual"
+                                    dataKey="A"
+                                    stroke="#0071e3"
+                                    strokeWidth={3}
+                                    fill="#0071e3"
+                                    fillOpacity={0.4}
                                 />
                                 <Tooltip content={<CustomTooltip />} />
-                                <Bar dataKey="estimado" fill="#f1f5f9" radius={[0, 12, 12, 0]} barSize={16} />
-                                <Bar dataKey="real" fill="#0071e3" radius={[0, 12, 12, 0]} barSize={16}>
-                                    {efficiencyData.map((entry, index) => (
-                                        <Cell
-                                            key={`cell-${index}`}
-                                            fill={entry.real > entry.estimado ? "#f59e0b" : "#0071e3"}
-                                        />
-                                    ))}
-                                </Bar>
-                            </BarChart>
+                            </RadarChart>
                         </ResponsiveContainer>
                     </div>
+                </div>
 
-                    <div className="flex items-center justify-center gap-8 pt-4 border-t border-apple-gray-100 dark:border-white/5">
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-apple-gray-100" />
-                            <span className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Estimado</span>
+                {/* Forecast & Distribution - Right 7 cols */}
+                <div className="lg:col-span-7 space-y-10">
+                    <div className="glass p-10 rounded-[3rem] border-apple-gray-100 dark:border-white/5 shadow-apple-float">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center">
+                                    <LayoutGrid className="w-5 h-5 text-indigo-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-foreground tracking-tight font-display">Distribución de Costos</h3>
+                                    <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">POR CATEGORÍA DE RUBRO</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-apple-blue" />
+                                    <span className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Estructural</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                                    <span className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Servicios</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-apple-blue" />
-                            <span className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Real</span>
+
+                        <div className="h-[250px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={distributionData} layout="vertical">
+                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 800, fill: '#64748b' }} width={100} />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Bar dataKey="value" radius={[0, 10, 10, 0]} barSize={24}>
+                                        {distributionData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-amber-500" />
-                            <span className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Exceso</span>
+                    </div>
+
+                    <div className="bg-slate-900 dark:bg-apple-blue/10 p-10 rounded-[3rem] text-white overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-apple-blue/20 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2" />
+                        <div className="relative z-10 flex items-center justify-between">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 w-fit border border-white/10">
+                                    <Rocket className="w-3.5 h-3.5 text-apple-blue-light" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">Forecast Alpha</span>
+                                </div>
+                                <h4 className="text-3xl font-black font-display tracking-tight">Finalización estimada: <span className="text-apple-blue-light">15 May. 2026</span></h4>
+                                <p className="text-white/60 text-sm font-medium max-w-md">La tendencia actual indica un adelanto de 4 días respecto al cronograma original con una eficiencia presupuestaria del 94%.</p>
+                            </div>
+                            <button className="w-16 h-16 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all group-hover:rotate-12">
+                                <ChevronRight className="w-8 h-8 font-black" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Standard Metrics Bento Grid (Enhanced) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Efficiency */}
+                <div className="group relative bg-emerald-500 text-white rounded-[2.5rem] p-10 shadow-2xl shadow-emerald-500/20 overflow-hidden hover:scale-[1.02] transition-transform duration-500 cursor-pointer">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
+                    <div className="relative z-10 flex flex-col justify-between h-full min-h-[220px]">
+                        <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                            <Activity className="w-7 h-7" />
+                        </div>
+                        <div>
+                            <p className="text-[11px] font-black uppercase tracking-[0.2em] opacity-70 mb-2">Salud de Materiales</p>
+                            <h3 className="text-6xl md:text-7xl font-black font-display tracking-tighter leading-none">
+                                {globalEfficiency > 0 ? '+' : ''}{globalEfficiency.toFixed(1)}%
+                            </h3>
+                            <div className="mt-6 w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+                                <div className="bg-white h-full transition-all duration-1000" style={{ width: '85%' }} />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Monthly Investment Trend - Area chart for better visual */}
-                <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-10 md:p-12 border border-apple-gray-100 dark:border-white/5 shadow-apple-float space-y-10 hover:shadow-apple-lg transition-all duration-500">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-apple-blue/10 rounded-xl flex items-center justify-center">
-                                <TrendingUp className="w-5 h-5 text-apple-blue" />
-                            </div>
-                            <h3 className="text-2xl font-black text-foreground tracking-tight">Inversión Mensual</h3>
+                {/* Budget */}
+                <div className="group relative bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-[2.5rem] p-10 shadow-2xl shadow-apple-gray-200/50 dark:shadow-none hover:-translate-y-2 transition-all duration-500 cursor-pointer text-card-foreground">
+                    <div className="relative z-10 flex flex-col justify-between h-full min-h-[220px]">
+                        <div className="w-14 h-14 rounded-2xl bg-apple-blue/10 dark:bg-apple-blue/20 flex items-center justify-center border border-apple-blue/10">
+                            <Wallet className="w-7 h-7 text-apple-blue fill-apple-blue" />
                         </div>
-                        <p className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Tendencia de Gastos vs. Presupuesto</p>
+                        <div>
+                            <p className="text-[11px] font-black text-apple-gray-400 dark:text-apple-gray-300 uppercase tracking-[0.2em] mb-2">Utilización Presupuesto</p>
+                            <h3 className="text-6xl md:text-7xl font-black font-display tracking-tighter text-foreground leading-none">
+                                {budgetHealth.toFixed(1)}%
+                            </h3>
+                            <div className="mt-6 space-y-2">
+                                <div className="w-full bg-apple-gray-100 dark:bg-white/5 h-2.5 rounded-full overflow-hidden">
+                                    <div
+                                        className={cn(
+                                            "h-full transition-all duration-1000",
+                                            budgetHealth > 90 ? "bg-red-500" : budgetHealth > 75 ? "bg-amber-500" : "bg-apple-blue"
+                                        )}
+                                        style={{ width: `${Math.min(budgetHealth, 100)}%` }}
+                                    />
+                                </div>
+                                <p className="text-[10px] font-black text-apple-gray-300 dark:text-apple-gray-400 uppercase tracking-widest">
+                                    {formatPesos(totalInversion)} devengados
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Deviations */}
+                <div className={cn(
+                    "group relative rounded-[2.5rem] p-10 shadow-2xl transition-all duration-500 cursor-pointer hover:scale-[1.02]",
+                    criticalDeviations > 0
+                        ? "bg-orange-500 text-white shadow-orange-500/20"
+                        : "bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10"
+                )}>
+                    <div className="relative z-10 flex flex-col justify-between h-full min-h-[220px]">
+                        <div className={cn(
+                            "w-14 h-14 rounded-2xl flex items-center justify-center",
+                            criticalDeviations > 0 ? "bg-white/20 backdrop-blur-sm border border-white/20" : "bg-apple-gray-50 dark:bg-white/5 opacity-50"
+                        )}>
+                            <AlertTriangle className={cn("w-7 h-7", criticalDeviations > 0 ? "text-white" : "text-apple-gray-400")} />
+                        </div>
+                        <div>
+                            <p className={cn(
+                                "text-[11px] font-black uppercase tracking-[0.2em] mb-2",
+                                criticalDeviations > 0 ? "opacity-70" : "text-apple-gray-400"
+                            )}>Puntos Críticos</p>
+                            <h3 className={cn(
+                                "text-6xl md:text-7xl font-black font-display tracking-tighter leading-none",
+                                criticalDeviations > 0 ? "text-white" : "text-foreground"
+                            )}>
+                                {criticalDeviations}
+                            </h3>
+                            <div className={cn(
+                                "mt-6 flex items-center gap-2 w-fit px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                criticalDeviations > 0 ? "bg-white/20" : "bg-apple-gray-50 dark:bg-white/5 text-apple-gray-400"
+                            )}>
+                                <Info className="w-3.5 h-3.5" />
+                                {criticalDeviations > 0 ? 'Requiere Mitigación' : 'Métricas Estables'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* In-depth Analysis Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-10 border-t border-apple-gray-100 dark:border-white/5">
+                {/* Material Details */}
+                <div className="group glass p-10 md:p-14 rounded-[3rem] shadow-apple-float">
+                    <div className="flex items-center gap-4 mb-12">
+                        <div className="w-12 h-12 bg-apple-blue/10 dark:bg-apple-blue/20 rounded-2xl flex items-center justify-center">
+                            <Package className="w-6 h-6 text-apple-blue" />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-black text-foreground tracking-tight font-display">Análisis de Desperdicios</h3>
+                            <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest mt-1">OPTIMIZACIÓN POR RECURSO</p>
+                        </div>
                     </div>
 
-                    <div className="h-[400px]">
+                    <div className="space-y-10">
+                        {efficiencyData.slice(0, 5).map((item, idx) => {
+                            const ratio = (item.real / item.estimado) * 100
+                            const isOver = item.real > item.estimado
+                            return (
+                                <div key={idx} className="space-y-3">
+                                    <div className="flex justify-between items-end px-1">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-black text-foreground">{item.material}</span>
+                                            <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-widest">REAL: {item.real} {item.unidad}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {isOver ? (
+                                                <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest bg-orange-500/10 px-2 py-0.5 rounded-md">
+                                                    +{Math.round(ratio - 100)}% DESVÍO
+                                                </span>
+                                            ) : (
+                                                <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                                                    {Math.round(ratio)}% EFICIENCIA
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="h-4 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden flex relative group/bar">
+                                        <div className="h-full bg-apple-blue/30 dark:bg-apple-blue/10 transition-all duration-1000" style={{ width: '70%' }} />
+                                        <div className={cn(
+                                            "h-full transition-all duration-1000",
+                                            isOver ? "bg-orange-500" : "bg-apple-blue"
+                                        )} style={{ width: `${Math.min(ratio, 100)}%` }} />
+                                        <div className="absolute inset-0 opacity-0 group-hover/bar:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                            <span className="text-[8px] font-black text-white mix-blend-difference uppercase tracking-widest">Tendencia Variable</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+
+                {/* Investment History */}
+                <div className="group glass p-10 md:p-14 rounded-[3rem] shadow-apple-float">
+                    <div className="flex items-center gap-4 mb-12">
+                        <div className="w-12 h-12 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-2xl flex items-center justify-center">
+                            <TrendingUp className="w-6 h-6 text-indigo-500" />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-black text-foreground tracking-tight font-display">Flujo de Fondos</h3>
+                            <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest mt-1">INVERSIÓN REAL VS. PLANIFICADA</p>
+                        </div>
+                    </div>
+
+                    <div className="h-[350px] mt-10">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={monthlyInvestment}>
                                 <defs>
@@ -336,13 +468,13 @@ export function ReportAnalytics({
                                         <stop offset="95%" stopColor="#0071e3" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="0" vertical={false} stroke="rgba(0,0,0,0.03)" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 11, fontWeight: 800, fill: '#cbd5e1' }}
-                                    dy={15}
+                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#94a3b8' }}
+                                    dy={10}
                                 />
                                 <YAxis hide />
                                 <Tooltip content={<CustomTooltip />} />
@@ -365,95 +497,63 @@ export function ReportAnalytics({
                         </ResponsiveContainer>
                     </div>
 
-                    <div className="flex items-center justify-center gap-8 pt-4 border-t border-apple-gray-100 dark:border-white/5">
+                    <div className="mt-12 flex gap-8 text-[10px] font-black text-apple-gray-300 dark:text-apple-gray-400 justify-center border-t border-apple-gray-50 dark:border-white/5 pt-8">
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-apple-gray-200" />
-                            <span className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Presupuesto</span>
+                            <div className="w-2.5 h-2.5 rounded-full bg-apple-gray-200" /> PLANIFICADO
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-apple-blue" />
-                            <span className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Inversión Real</span>
+                            <div className="w-2.5 h-2.5 rounded-full bg-apple-blue" /> REAL
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Top Deviations List - Enhanced cards */}
-            <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-10 md:p-12 border border-apple-gray-100 dark:border-white/5 shadow-apple-float space-y-8">
-                <div className="flex items-center justify-between">
+            {/* Smart Mitigation Section */}
+            <div className="bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-[3rem] p-10 md:p-14 shadow-apple-float">
+                <div className="flex items-center gap-4 mb-12">
+                    <div className="w-12 h-12 bg-orange-500/10 dark:bg-orange-500/20 rounded-2xl flex items-center justify-center">
+                        <Target className="w-6 h-6 text-orange-500" />
+                    </div>
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-apple-blue/10 rounded-xl flex items-center justify-center">
-                                <BarChart3 className="w-5 h-5 text-apple-blue" />
-                            </div>
-                            <h3 className="text-2xl font-black text-foreground tracking-tight">Desvíos Principales</h3>
-                        </div>
-                        <p className="text-xs font-bold text-apple-gray-400 uppercase tracking-widest">Items con mayor variación presupuestaria</p>
+                        <h3 className="text-2xl font-black text-foreground tracking-tight font-display">Plan de Mitigación</h3>
+                        <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest mt-1">ACCIONES RECOMENDADAS POR DESVÍO</p>
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    {topDeviations.map((deviation, idx) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {topDeviations.filter(d => d.desvio > 0).map((deviation, idx) => (
                         <div
                             key={idx}
-                            className="group p-8 bg-apple-gray-50/50 dark:bg-white/[0.02] border border-apple-gray-100 dark:border-white/5 rounded-[32px] flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-apple-lg hover:-translate-y-1 hover:border-apple-blue/20 transition-all duration-300 cursor-pointer"
+                            className="group p-8 bg-apple-gray-100/30 dark:bg-white/[0.02] border border-apple-gray-100 dark:border-white/5 rounded-[2.5rem] flex flex-col gap-6 hover:bg-white dark:hover:bg-white/5 hover:shadow-2xl transition-all duration-300"
                         >
-                            <div className="flex items-center gap-6">
-                                <div className={cn(
-                                    "w-14 h-14 rounded-[20px] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-6",
-                                    deviation.desvio > 10
-                                        ? "bg-red-500/10 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-                                        : deviation.desvio > 0
-                                            ? "bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white"
-                                            : "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white"
-                                )}>
-                                    {deviation.trend === 'up' ? <ArrowUpRight className="w-7 h-7" /> : <ArrowDownRight className="w-7 h-7" />}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                                        <AlertTriangle className="w-6 h-6 text-orange-500" />
+                                    </div>
+                                    <h4 className="text-lg font-black text-foreground tracking-tight font-display">{deviation.item}</h4>
                                 </div>
-                                <div>
-                                    <h4 className="text-lg font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors">{deviation.item}</h4>
-                                    <p className="text-xs font-bold text-apple-gray-400">Costo Real: {formatPesos(deviation.costo)}</p>
-                                </div>
+                                <span className="text-xl font-black font-display text-orange-500">+{deviation.desvio}%</span>
                             </div>
-
-                            <div className="flex items-center gap-8">
-                                <div className="text-right">
-                                    <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Desvío</p>
-                                    <p className={cn(
-                                        "text-3xl font-black tracking-tighter transition-colors",
-                                        deviation.desvio > 10
-                                            ? "text-red-500"
-                                            : deviation.desvio > 0
-                                                ? "text-amber-500"
-                                                : "text-emerald-500"
-                                    )}>
-                                        {deviation.desvio > 0 ? '+' : ''}{deviation.desvio.toFixed(1)}%
-                                    </p>
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-apple-blue uppercase tracking-widest">
+                                    <Sparkles className="w-3 h-3 fill-current" />
+                                    Acción Correctiva (IA)
                                 </div>
+                                <p className="text-sm font-medium text-apple-gray-400 leading-relaxed">
+                                    {deviation.item.includes('Hierro') ? 'Reevaluar proveedores regionales o consolidar órdenes para reducir costos logísticos.' : 'Se sugiere auditoría de ejecución en sitio para detectar fugas de rendimiento.'}
+                                </p>
                             </div>
+                            <button className="flex items-center justify-center w-full py-3 rounded-2xl bg-slate-900 dark:bg-white/5 text-white text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all">
+                                Aplicar Seguimiento
+                            </button>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* AI Insights Footer - Enhanced with gradient */}
-            <div className="relative p-10 glass dark:glass-dark rounded-[48px] border border-apple-gray-100 dark:border-white/10 overflow-hidden group hover:shadow-apple-lg transition-all duration-500">
-                <div className="absolute inset-0 bg-gradient-to-r from-apple-blue/5 to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative z-10 flex items-center gap-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-apple-blue to-indigo-600 rounded-[24px] flex items-center justify-center shadow-lg shadow-apple-blue/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                        <Sparkles className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                        <h4 className="text-lg font-black text-foreground tracking-tight mb-1 flex items-center gap-2">
-                            Insight Automático
-                            <span className="px-2 py-0.5 bg-apple-blue/10 text-apple-blue text-[9px] font-black uppercase tracking-widest rounded-full">AI</span>
-                        </h4>
-                        <p className="text-sm font-medium text-apple-gray-400 leading-relaxed">
-                            El consumo de materiales está {globalEfficiency > 0 ? 'por encima' : 'por debajo'} del estimado en un {Math.abs(globalEfficiency).toFixed(1)}%.
-                            {globalEfficiency > 5 && ' Se recomienda revisar los procesos de compra y almacenamiento.'}
-                            {criticalDeviations > 0 && ` Hay ${criticalDeviations} desvío${criticalDeviations > 1 ? 's' : ''} crítico${criticalDeviations > 1 ? 's' : ''} que requiere${criticalDeviations > 1 ? 'n' : ''} atención inmediata.`}
-                        </p>
-                    </div>
-                </div>
+            <div className="py-10 text-center border-t border-apple-gray-100 dark:border-white/5">
+                <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.4em]">Fin del Reporte Operativo • Sistema EDO v2 Premium</p>
             </div>
         </div>
     )

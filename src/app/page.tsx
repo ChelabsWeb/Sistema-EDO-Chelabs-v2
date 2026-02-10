@@ -12,6 +12,7 @@ import {
   Package, LayoutGrid, PlayCircle, BarChart3,
   Sun, Moon, Plus, Share2, AtSign, Twitter, Instagram
 } from 'lucide-react'
+import { Logo } from '@/components/shared/Logo'
 import { cn } from '@/lib/utils'
 
 const CornerPlus = ({ className }: { className?: string }) => (
@@ -55,11 +56,9 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-white/[0.02] backdrop-blur-md border-b border-slate-200/50 dark:border-white/5">
         <div className="max-w-screen-2xl mx-auto px-6 sm:px-10 h-20 flex justify-between items-center relative">
-          <div className="flex items-center gap-3 group cursor-pointer relative z-10">
-            <div className="w-9 h-9 bg-[#2563eb] rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform duration-500">
-              <Building2 className="w-5 h-5 text-white" strokeWidth={2} />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-[#0f172a] dark:text-white transition-colors">Sistema EDO</span>
+          <div className="flex items-center gap-4 group cursor-pointer relative z-10">
+            <Logo size={40} className="group-hover:scale-110 transition-transform duration-500" />
+            <span className="text-xl font-extrabold tracking-tight text-slate-800 dark:text-white transition-colors">Sistema EDO</span>
           </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-10">
@@ -113,7 +112,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.1 }}
-                className="text-6xl md:text-8xl font-extrabold tracking-tight max-w-5xl mx-auto leading-[1.05] text-[#0f172a] dark:text-white"
+                className="text-6xl md:text-8xl font-extrabold tracking-tight max-w-5xl mx-auto leading-[1.05] text-[#0f172a] dark:text-white font-display"
               >
                 Control <span className="text-[#0070f3]">total</span> para la <br className="hidden md:block" /> Ejecución de Obras
               </motion.h1>
@@ -155,17 +154,17 @@ export default function Home() {
 
         <div className="max-w-screen-2xl mx-auto px-6 text-center flex flex-col items-center">
           {/* Marquee Section */}
-          <section className="w-full py-16 border-t border-slate-100 dark:border-white/5 overflow-hidden">
+          <section className="w-full py-16 border-t border-black/5 dark:border-white/5 overflow-hidden">
             <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-600 mb-12 text-center">CONFIADO POR EMPRESAS LÍDERES DEL SECTOR</p>
             <div className="flex gap-24 overflow-hidden relative opacity-40 dark:opacity-60 grayscale">
               <div className="flex animate-marquee gap-24 flex-shrink-0 min-w-full justify-around items-center">
                 {['CONSTRUCTA', 'URBANIA', 'LOGOS GROUP', 'VERTICAL S.A.', 'PRO-OBRA', 'TECHNOBUILD'].map((name) => (
-                  <span key={name} className="text-xl md:text-2xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap">{name}</span>
+                  <span key={name} className="text-xl md:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tighter whitespace-nowrap">{name}</span>
                 ))}
               </div>
               <div className="flex animate-marquee gap-24 flex-shrink-0 min-w-full justify-around items-center" aria-hidden="true">
                 {['CONSTRUCTA', 'URBANIA', 'LOGOS GROUP', 'VERTICAL S.A.', 'PRO-OBRA', 'TECHNOBUILD'].map((name) => (
-                  <span key={name} className="text-xl md:text-2xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap">{name}</span>
+                  <span key={name} className="text-xl md:text-2xl font-extrabold text-slate-800 dark:text-white tracking-tighter whitespace-nowrap">{name}</span>
                 ))}
               </div>
             </div>
@@ -209,7 +208,7 @@ export default function Home() {
                 )}>
                   <feature.icon className="w-7 h-7" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 tracking-tight leading-tight text-slate-900 dark:text-white">{feature.title}</h3>
+                <h3 className="text-2xl font-bold mb-4 tracking-tight leading-tight text-slate-900 dark:text-white font-display">{feature.title}</h3>
                 <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-8 font-medium">{feature.desc}</p>
                 <div className="flex items-center text-blue-600 dark:text-blue-500 font-bold text-sm group-hover:gap-2 transition-all">
                   Conocer más <ChevronRight className="w-4 h-4 ml-1" />
@@ -218,11 +217,10 @@ export default function Home() {
             ))}
           </section>
 
-          {/* Pricing Section */}
-          <section id="precios" className="w-full py-32 border-t border-slate-200 dark:border-white/5">
+          <section id="precios" className="w-full py-32 border-t border-black/5 dark:border-white/5">
             <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6 text-slate-900 dark:text-white text-balance">Planes para cada etapa</h2>
-              <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">Elige el plan que mejor se adapte al volumen de tus obras. Sin contratos ocultos.</p>
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900 dark:text-white text-balance font-display">Planes para cada etapa</h2>
+              <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium text-lg">Elige el plan que mejor se adapte al volumen de tus obras. Sin contratos ocultos.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
@@ -251,7 +249,7 @@ export default function Home() {
                   <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">{plan.name}</h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-8 leading-tight">{plan.desc}</p>
                   <div className="mb-10 text-slate-900 dark:text-white">
-                    <span className="text-5xl font-black">{plan.price}</span>
+                    <span className="text-5xl font-extrabold">{plan.price}</span>
                     {plan.price !== 'Custom' && (
                       <div className="inline-flex flex-col ml-2 align-middle">
                         <span className="text-slate-500 dark:text-slate-400 text-xs font-bold leading-tight">por usuario</span>
@@ -283,7 +281,7 @@ export default function Home() {
           {/* Benefits Section */}
           <section id="beneficios" className="w-full py-32 grid lg:grid-cols-2 gap-20 items-center text-left">
             <div>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-12 text-slate-900 dark:text-white leading-tight">Por qué elegir <br /> Sistema EDO</h2>
+              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-12 text-slate-900 dark:text-white leading-tight font-display">Por qué elegir <br /> Sistema EDO</h2>
               <div className="space-y-10">
                 {[
                   { title: 'Implementación Rápida', desc: 'Migra tus datos en menos de 48 horas con nuestro equipo especializado de soporte.', icon: Zap, color: 'blue' },
@@ -327,8 +325,8 @@ export default function Home() {
                   <div className="p-10 space-y-10 text-left">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-[10px] font-bold text-blue-600 dark:text-blue-500 uppercase mb-1 tracking-widest">Proyecto Activo</div>
-                        <div className="text-2xl font-black text-slate-800 dark:text-white">Torre Residencial "Altos"</div>
+                        <div className="text-[10px] font-bold text-primary uppercase mb-1 tracking-widest">Proyecto Activo</div>
+                        <div className="text-2xl font-extrabold text-slate-800 dark:text-white">Torre Residencial "Altos"</div>
                       </div>
                       <div className="px-4 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold rounded-full border border-emerald-500/20">EN FECHA</div>
                     </div>
@@ -336,13 +334,13 @@ export default function Home() {
                       <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner">
                         <div className="text-[10px] font-bold text-slate-400 mb-4 tracking-widest uppercase text-center">PROGRESO</div>
                         <div className="relative h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mb-3">
-                          <div className="absolute top-0 left-0 h-full w-[72%] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
+                          <div className="absolute top-0 left-0 h-full w-[72%] bg-primary shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
                         </div>
-                        <div className="text-3xl font-black text-slate-800 dark:text-white text-center">72%</div>
+                        <div className="text-3xl font-extrabold text-slate-800 dark:text-white text-center">72%</div>
                       </div>
                       <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner">
                         <div className="text-[10px] font-bold text-slate-400 mb-4 tracking-widest uppercase text-center">DESVÍO COSTOS</div>
-                        <div className="text-3xl font-black text-red-500 text-center">-2.4%</div>
+                        <div className="text-3xl font-extrabold text-red-500 text-center">-2.4%</div>
                         <div className="text-[9px] text-slate-400 font-bold uppercase mt-1 text-center">Presupuestado</div>
                       </div>
                     </div>
@@ -379,11 +377,9 @@ export default function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-20 mb-24">
             <div className="col-span-2">
-              <div className="flex items-center gap-3 mb-10 group">
-                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform">
-                  <Building2 className="w-7 h-7 text-white" />
-                </div>
-                <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">Sistema EDO</span>
+              <div className="flex items-center gap-4 mb-10 group">
+                <Logo size={44} className="group-hover:scale-110 transition-transform" />
+                <span className="text-2xl font-extrabold tracking-tight text-slate-800 dark:text-white group-hover:text-primary transition-colors">Sistema EDO</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 text-base max-w-sm mb-10 leading-relaxed font-medium">
                 La plataforma líder en gestión de obras para el mercado hispano. Construyendo el futuro de la ingeniería digital con precisión y potencia.

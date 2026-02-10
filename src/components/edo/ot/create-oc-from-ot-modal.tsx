@@ -122,7 +122,7 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
             </div>
             <div>
               <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em]">Logística de Suministros</p>
-              <h3 className="text-2xl font-black text-foreground tracking-tighter italic uppercase">Nueva Orden de Compra</h3>
+              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">Nueva Orden de Compra</h3>
             </div>
           </div>
           <button
@@ -237,7 +237,7 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
                           <Package className="w-7 h-7 relative z-10" />
                         </div>
                         <div>
-                          <p className="text-lg font-black text-foreground tracking-tighter uppercase italic line-clamp-1">{getInsumoName(linea.insumo_id)}</p>
+                          <p className="text-lg font-black text-foreground tracking-tighter uppercase line-clamp-1">{getInsumoName(linea.insumo_id)}</p>
                           <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mt-0.5">
                             Cant: <span className="text-indigo-500">{linea.cantidad}</span> {getInsumoUnidad(linea.insumo_id)}
                           </p>

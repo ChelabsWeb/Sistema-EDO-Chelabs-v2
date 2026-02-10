@@ -215,7 +215,7 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
 
                 {/* Location Badge */}
                 {foto.latitud && (
-                  <div className="absolute top-3 right-3 w-8 h-8 glass dark:glass-dark rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-3 right-3 w-8 h-8 glass rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <MapPin className="w-3.5 h-3.5 text-apple-blue" />
                   </div>
                 )}

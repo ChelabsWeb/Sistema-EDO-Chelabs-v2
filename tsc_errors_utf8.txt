@@ -1,0 +1,20 @@
+﻿src/__tests__/actions/auth.test.ts(38,74): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'RateLimitResult'.
+src/__tests__/actions/auth.test.ts(79,17): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'RateLimitResult'.
+src/__tests__/actions/auth.test.ts(96,74): error TS2353: Object literal may only specify known properties, and 'limit' does not exist in type 'RateLimitResult'.
+src/__tests__/actions/obras.test.ts(43,63): error TS2554: Expected 1 arguments, but got 2.
+src/__tests__/actions/obras.test.ts(65,56): error TS2554: Expected 1 arguments, but got 2.
+src/__tests__/actions/obras.test.ts(68,27): error TS2339: Property 'error' does not exist on type 'ActionResult<{ cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }>'.
+  Property 'error' does not exist on type '{ success: true; data: { cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }; }'.
+src/__tests__/actions/obras.test.ts(203,27): error TS2339: Property 'error' does not exist on type 'ActionResult<{ cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }>'.
+  Property 'error' does not exist on type '{ success: true; data: { cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }; }'.
+src/__tests__/actions/obras.test.ts(228,27): error TS2339: Property 'error' does not exist on type 'ActionResult<{ cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }>'.
+  Property 'error' does not exist on type '{ success: true; data: { cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }; }'.
+src/__tests__/actions/obras.test.ts(239,27): error TS2339: Property 'error' does not exist on type 'ActionResult<{ cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }>'.
+  Property 'error' does not exist on type '{ success: true; data: { cooperativa: string | null; created_at: string | null; deleted_at: string | null; direccion: string | null; estado: ObraEstado | null; fecha_fin_estimada: string | null; ... 4 more ...; updated_at: string | null; }; }'.
+src/__tests__/actions/rubro-insumos.test.ts(85,24): error TS18048: 'result.data' is possibly 'undefined'.
+src/__tests__/actions/rubro-insumos.test.ts(86,24): error TS18048: 'result.data' is possibly 'undefined'.
+src/__tests__/actions/rubro-insumos.test.ts(86,24): error TS18048: 'result.data.presupuesto_status' is possibly 'undefined'.
+src/__tests__/actions/rubro-insumos.test.ts(87,24): error TS18048: 'result.data' is possibly 'undefined'.
+src/__tests__/actions/rubro-insumos.test.ts(87,24): error TS18048: 'result.data.presupuesto_status' is possibly 'undefined'.
+src/__tests__/actions/rubro-insumos.test.ts(346,24): error TS18048: 'result.data' is possibly 'undefined'.
+src/__tests__/actions/usuarios.test.ts(114,24): error TS18048: 'result.data' is possibly 'undefined'.

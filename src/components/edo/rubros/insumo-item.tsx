@@ -31,11 +31,11 @@ export function InsumoItem({ insumo, canEdit, onEdit, onRemove, isRemoving }: In
 
         {/* Insumo Info */}
         <div>
-          <p className="text-sm font-bold text-foreground group-hover:text-apple-blue transition-colors outline-none">{insumo.nombre}</p>
+          <p className="text-sm font-black text-foreground group-hover:text-apple-blue transition-colors outline-none font-display uppercase tracking-tight">{insumo.nombre}</p>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-[9px] font-black uppercase tracking-widest text-apple-gray-300 bg-apple-gray-50 dark:bg-white/5 px-2 py-0.5 rounded-md border border-current/5">{insumo.unidad}</span>
-            <span className="w-1 h-1 rounded-full bg-apple-gray-100" />
-            <span className="text-xs font-medium text-apple-gray-400">
+            <span className="text-[9px] font-black uppercase tracking-widest text-apple-gray-500 bg-apple-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-apple-gray-200 dark:border-white/10">{insumo.unidad}</span>
+            <span className="w-1 h-1 rounded-full bg-apple-gray-200 dark:bg-white/10" />
+            <span className="text-xs font-black text-foreground/70">
               {formatPesos(insumo.precio_unitario || insumo.precio_referencia)}
             </span>
           </div>

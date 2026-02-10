@@ -16,8 +16,8 @@ import type { OrdenTrabajo, OTStatus, OrdenTrabajoWithRelations, OTHistorial, OT
 import { type PaginationParams, type PaginatedResponse, normalizePagination, createPaginatedResponse } from '@/lib/utils/pagination'
 
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+  | { success: true; data: T; error?: never }
+  | { success: false; error: string; data?: never }
 
 /**
  * Get current user profile

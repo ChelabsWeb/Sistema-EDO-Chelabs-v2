@@ -40,7 +40,7 @@ describe('obras.ts - Obras Management', () => {
             })
             vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
-            const result = await updateObra('nonexistent-id', { nombre: 'Updated' })
+            const result = await updateObra({ id: 'nonexistent-id', nombre: 'Updated' })
 
             expect(result.success).toBe(false)
         })
@@ -62,7 +62,7 @@ describe('obras.ts - Obras Management', () => {
             })
             vi.mocked(createClient).mockResolvedValue(mockClient as any)
 
-            const result = await updateObra('some-id', { nombre: '' } as any) // Invalid input
+            const result = await updateObra({ id: 'some-id', nombre: '' } as any) // Invalid input
 
             expect(result.success).toBe(false)
             expect(result.error).toBeDefined()

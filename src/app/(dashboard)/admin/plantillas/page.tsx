@@ -83,7 +83,7 @@ export default async function PlantillasPage() {
               <Zap className="w-10 h-10 text-white fill-current" />
             </div>
             <div className="flex-1 space-y-2 text-center md:text-left">
-              <h3 className="text-3xl font-black tracking-tight leading-none italic">Acelera tu Presupuestación</h3>
+              <h3 className="text-3xl font-black tracking-tight leading-none">Acelera tu Presupuestación</h3>
               <p className="text-lg font-medium text-white/80 max-w-xl">
                 Al crear un rubro, selecciona una plantilla para precargar materiales y mano de obra. Optimiza el tiempo de carga y reduce errores.
               </p>

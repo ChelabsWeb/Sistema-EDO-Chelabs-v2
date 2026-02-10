@@ -34,27 +34,41 @@ export default async function OrdenCompraDetailPage({ params }: Props) {
     const StatusIcon = config.icon
 
     return (
-        <div className="min-h-screen bg-[#f5f5f7] dark:bg-black p-6 md:p-14 antialiased">
+        <div className="min-h-screen bg-grid-pattern p-6 md:p-14 antialiased selection:bg-blue-500/30">
             {/* Dynamic Header Actions */}
-            <nav className="max-w-4xl mx-auto flex items-center justify-between mb-12 animate-apple-fade-in">
-                <div className="flex items-center gap-6">
+            <nav className="max-w-4xl mx-auto pt-16 pb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-10 animate-apple-fade-in">
+                <div className="flex items-start gap-8">
                     <Link
                         href="/compras/ordenes-compra"
-                        className="w-12 h-12 glass dark:glass-dark rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-95 group shadow-apple-sm"
+                        className="w-14 h-14 rounded-full bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/10 flex items-center justify-center text-apple-gray-400 hover:text-apple-blue hover:scale-110 active:scale-95 transition-all shadow-xl mt-2"
                     >
-                        <ArrowLeft className="w-5 h-5 text-apple-gray-400 group-hover:text-apple-blue" />
+                        <ArrowLeft className="w-6 h-6" />
                     </Link>
-                    <div className="space-y-1">
-                        <p className="text-[10px] font-black text-apple-blue uppercase tracking-[0.2em]">Gestión de Suministros</p>
-                        <h2 className="text-xl font-black text-foreground tracking-tight">Orden #{oc.numero}</h2>
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/20 flex items-center gap-1.5">
+                                <Receipt className="w-3.5 h-3.5 text-apple-blue fill-apple-blue" />
+                                <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Documento Digital</span>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <h1 className="text-5xl md:text-6xl font-black font-display tracking-tight text-foreground leading-[0.9]">
+                                Orden #{oc.numero}<span className="text-apple-blue">.</span>
+                            </h1>
+                            <p className="text-lg text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed">
+                                Detalle técnico y financiero del compromiso de abastecimiento registrado.
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
-                    <button className="p-3 bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-full text-apple-gray-400 hover:text-foreground transition-all">
+                <div className="flex items-center gap-4">
+                    <button className="h-14 px-8 bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-apple-gray-200 transition-all flex items-center gap-3 shadow-xl active:scale-95">
                         <Printer className="w-5 h-5" />
+                        Imprimir
                     </button>
-                    <button className="p-3 bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-full text-apple-gray-400 hover:text-foreground transition-all">
+                    <button className="h-14 px-8 bg-apple-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-apple-blue/25 hover:bg-apple-blue-dark active:scale-95 transition-all flex items-center gap-3">
                         <Download className="w-5 h-5" />
+                        PDF
                     </button>
                 </div>
             </nav>
@@ -180,7 +194,7 @@ export default async function OrdenCompraDetailPage({ params }: Props) {
                         <div className="pt-12 border-t-4 border-apple-gray-100 dark:border-white/5 border-double flex flex-col md:flex-row md:items-start justify-between gap-12">
                             <div className="max-w-sm">
                                 <h4 className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em] mb-4">Notas Legales</h4>
-                                <p className="text-xs text-apple-gray-400 leading-relaxed italic">
+                                <p className="text-xs text-apple-gray-400 leading-relaxed">
                                     "Documento de validez interna. La recepción de mercadería debe ser validada contra este recibo digital para el procesamiento de facturas en administración."
                                 </p>
                             </div>

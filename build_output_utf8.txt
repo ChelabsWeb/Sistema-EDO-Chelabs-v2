@@ -1,0 +1,273 @@
+﻿
+> sistema-edo-chelabs@0.1.0 build
+> next build
+
+node.exe : [baseline-
+browser-mapping] The 
+data in this module 
+is over two months 
+old.  To ensure 
+accurate Baseline 
+data, please update: 
+`npm i baseline-brows
+er-mapping@latest -D`
+En C:\Program Files\n
+odejs\npm.ps1: 29 
+Carácter: 3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: ([baseli   
+ ne-brows...ping@    
+latest -D`:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+ ÔÜá Warning: 
+Next.js inferred 
+your workspace root, 
+but it may not be 
+correct.
+ We detected 
+multiple lockfiles 
+and selected the 
+directory of 
+C:\Users\Estudiante U
+CU\package-lock.json 
+as the root 
+directory.
+ To silence this 
+warning, set 
+`turbopack.root` in 
+your Next.js config, 
+or consider removing 
+one of the lockfiles 
+if it's not needed.
+   See https://nextjs
+.org/docs/app/api-ref
+erence/config/next-co
+nfig-js/turbopack#roo
+t-directory for more 
+information.
+ Detected additional 
+lockfiles: 
+   * 
+C:\Users\Estudiante U
+CU\Desktop\Sistema-ED
+O-Chelabs-v2\package-
+lock.json
+
+   Ôû▓ Next.js 16.0.10 (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ┬À serverActions
+
+ ÔÜá The 
+"middleware" file 
+convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://n
+extjs.org/docs/messag
+es/middleware-to-prox
+y
+   Creating an optimized production build ...
+[baseline-browser-map
+ping] The data in 
+this module is over 
+two months old.  To 
+ensure accurate 
+Baseline data, 
+please update: `npm 
+i baseline-browser-ma
+pping@latest -D`
+Error: Cannot apply 
+unknown utility 
+class 
+`shadow-apple-sm`
+    [2m[at 
+onInvalidCandidate 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:21:1511)][0
+m
+    [2m[at Te 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:16:36652)][
+0m
+    [2m[at 
+C:\Users\Estudiante U
+CU\Desktop\Sistema-ED
+O-Chelabs-v2\node_mod
+ules\tailwindcss\dist
+\lib.js:21:355][0m
+    [2m[at Rr 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:3:1718)][0m
+    [2m[at _ 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:3:1377)][0m
+    [2m[at $e 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:21:172)][0m
+    [2m[at un 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:38:294)][0m
+    [2m[at async cn 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\tailwindcss\dis
+t\lib.js:38:631)][0m
+    [2m[at async Xr 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\@tailwindcss\no
+de\dist\index.js:10:3
+417)][0m
+    [2m[at async I 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\@tailwindcss\po
+stcss\dist\index.js:1
+0:3977)][0m
+
+> Build error 
+occurred
+Error: Turbopack 
+build failed with 1 
+errors:
+./Desktop/Sistema-EDO
+-Chelabs-v2/src/app/g
+lobals.css
+Error evaluating 
+Node.js code
+CssSyntaxError: 
+tailwindcss: 
+C:\Users\Estudiante U
+CU\Desktop\Sistema-ED
+O-Chelabs-v2\src\app\
+globals.css:1:1: 
+Cannot apply unknown 
+utility class 
+`shadow-apple-sm`
+    at Input.error (D
+esktop/Sistema-EDO-Ch
+elabs-v2/node_modules
+/postcss/lib/input.js
+:135:16) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\463c4_2dd
+a3555._.js:4651:22]
+    at Root.error (De
+sktop/Sistema-EDO-Che
+labs-v2/node_modules/
+postcss/lib/node.js:1
+46:32) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\463c4_2dd
+a3555._.js:928:38]
+    [at Object.Once 
+(C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\node_mo
+dules\@tailwindcss\po
+stcss\dist\index.js:1
+0:6911)]
+    at async 
+LazyResult.runAsync (
+Desktop/Sistema-EDO-C
+helabs-v2/node_module
+s/postcss/lib/lazy-re
+sult.js:293:11) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\463c4_2dd
+a3555._.js:6206:21]
+    at async 
+transform (turbopack:
+///[turbopack-node]/t
+ransforms/postcss.ts:
+70:34) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\[root-of-
+the-server]__7938e2b1
+._.js:146:36]
+    at async run (tur
+bopack:///[turbopack-
+node]/ipc/evaluate.ts
+:92:23) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\[root-of-
+the-server]__133dea64
+._.js:443:31]
+
+Import trace:
+  Client Component 
+Browser:
+    ./Desktop/Sistema
+-EDO-Chelabs-v2/src/a
+pp/globals.css 
+[Client Component 
+Browser]
+    ./Desktop/Sistema
+-EDO-Chelabs-v2/src/a
+pp/layout.tsx 
+[Server Component]
+
+
+    at async 
+transform (turbopack:
+///[turbopack-node]/t
+ransforms/postcss.ts:
+70:34) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\[root-of-
+the-server]__7938e2b1
+._.js:146:36])
+    at async run (tur
+bopack:///[turbopack-
+node]/ipc/evaluate.ts
+:92:23) 
+[C:\Users\Estudiante 
+UCU\Desktop\Sistema-E
+DO-Chelabs-v2\.next\b
+uild\chunks\[root-of-
+the-server]__133dea64
+._.js:443:31])

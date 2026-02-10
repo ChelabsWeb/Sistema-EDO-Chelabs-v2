@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import type { UserRole } from '@/types/database'
 import { getRoleDisplayName } from '@/lib/roles'
 import { motion } from 'framer-motion'
+import { Logo } from '@/components/shared/Logo'
 import {
   LayoutDashboard,
   Building2,
@@ -16,24 +17,8 @@ import {
   LogOut,
   Trash2,
   ShoppingCart,
-  Database,
   ClipboardList
 } from 'lucide-react'
-
-// Material Symbols replacements using Lucide
-const icons = {
-  dashboard: LayoutDashboard,
-  obras: Building2,
-  tareas: ClipboardList, // Using ClipboardList instead of missing Assignment
-  analitica: BarChart3,
-  costos: TrendingUp,
-  usuarios: Users,
-  ajustes: Settings,
-  logout: LogOut,
-  papelera: Trash2,
-  compras: ShoppingCart
-}
-
 
 interface NavSection {
   title: string
@@ -90,14 +75,12 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 z-40 w-64 flex flex-col py-8 border-r border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-black/40 backdrop-blur-3xl shrink-0 transition-all duration-500">
+    <aside className="fixed left-0 top-0 bottom-0 z-40 w-64 flex flex-col py-8 border-r border-slate-200 dark:border-white/5 bg-transparent backdrop-blur-2xl shrink-0 transition-all duration-500">
       {/* Brand Header */}
       <div className="px-8 mb-10 flex items-center gap-4 group cursor-default">
-        <div className="size-11 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 group-hover:scale-105 transition-transform">
-          <Database className="text-white w-6 h-6" strokeWidth={2.5} />
-        </div>
+        <Logo size={44} className="group-hover:scale-110 transition-transform duration-500" />
         <div>
-          <h1 className="text-slate-900 dark:text-white text-[19px] font-black leading-none tracking-tight">
+          <h1 className="text-slate-900 dark:text-white text-[19px] font-extrabold leading-none tracking-tight">
             Sistema EDO
           </h1>
           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.25em] mt-1.5 opacity-80">
@@ -114,7 +97,7 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
 
           return (
             <div key={section.title}>
-              <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">
+              <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">
                 {section.title}
               </p>
               <div className="space-y-1">

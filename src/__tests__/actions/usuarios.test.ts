@@ -111,7 +111,7 @@ describe('usuarios.ts - User Management', () => {
 
             expect(result.success).toBe(true)
             if (result.success) {
-                expect(result.data.id).toBe(admin.id)
+                expect(result.data!.id).toBe(admin.id)
             }
         })
     })

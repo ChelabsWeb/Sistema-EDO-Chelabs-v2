@@ -26,6 +26,7 @@
 
   /* Shadows - Advanced layered shadows */
   --shadow-apple: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-apple-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-apple-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-apple-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-apple-float: 0 30px 60px -12px rgba(0, 0, 0, 0.1), 0 18px 36px -18px rgba(0, 0, 0, 0.15);
@@ -49,6 +50,10 @@
       transform: translateX(-100%);
     }
   }
+
+  /* Fonts */
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-inter);
 
   @keyframes apple-fade-in {
     from {
@@ -110,7 +115,7 @@
 }
 
 .dark {
-  --background: #000000;
+  --background: #0f111a;
   --foreground: #f5f5f7;
 
   /* Dark Gray Palette */
@@ -135,6 +140,16 @@
     @apply bg-background text-foreground antialiased selection:bg-[var(--selection)] selection:text-[var(--apple-blue)];
     font-feature-settings: "cv11", "ss01", "ss03";
     letter-spacing: -0.01em;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(43, 75, 238, 0.12) 0%, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(138, 43, 226, 0.08) 0%, transparent 60%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(43, 75, 238, 0.1) 0%, transparent 70%),
+      radial-gradient(circle at 100% 100%, rgba(138, 43, 226, 0.06) 0%, transparent 70%);
   }
 
   * {
@@ -143,8 +158,16 @@
 }
 
 @layer utilities {
+  .premium-card {
+    @apply bg-white/80 dark:bg-white/[0.03] backdrop-blur-xl border border-apple-gray-100 dark:border-white/10 shadow-apple dark:shadow-2xl rounded-[40px];
+  }
+
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-black/10 dark:bg-black/60 dark:border-white/10;
+    @apply bg-white/80 backdrop-blur-xl border border-black/10 dark:bg-[#161821]/80 dark:border-white/10 shadow-sm;
+  }
+
+  .glass-dark {
+    @apply bg-[#161821]/80 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
 
   .text-balance {
@@ -158,13 +181,10 @@
   }
 
   .premium-glass {
-    @apply transition-all duration-300;
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
-    background-color: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: var(--shadow-xl);
-    border-radius: 24px;
+    @apply transition-all duration-300 backdrop-blur-[32px] rounded-[24px];
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
   }
 
   .dark .premium-glass {
@@ -196,5 +216,14 @@
   .bg-noise {
     background-image: url('https://grainy-gradients.vercel.app/noise.svg');
     background-size: 100px 100px;
+  }
+
+  .bg-grid-pattern {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .dark .bg-grid-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   }
 }

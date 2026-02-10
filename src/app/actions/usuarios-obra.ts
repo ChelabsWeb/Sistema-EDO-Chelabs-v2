@@ -5,8 +5,8 @@ import { revalidatePath } from 'next/cache'
 import type { Usuario } from '@/types/database'
 
 export type ActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string }
+  | { success: true; data: T; error?: never }
+  | { success: false; error: string; data?: never }
 
 export type UsuarioWithObra = Usuario & {
   obras?: { id: string; nombre: string } | null
