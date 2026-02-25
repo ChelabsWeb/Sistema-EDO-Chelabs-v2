@@ -6,12 +6,18 @@ import { createOrdenCompra } from '@/app/actions/ordenes-compra'
 import type { Insumo } from '@/types/database'
 import {
   Plus, Trash2, ShoppingCart, Package,
-  X, CheckCircle2, AlertCircle, Loader2,
-  ListPlus, Info, Tag, ArrowRight
+  AlertCircle, Loader2,
+  ListPlus, Tag, ArrowRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AppleSelector } from '@/components/ui/apple-selector'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface LineaItem {
   insumo_id: string
@@ -98,40 +104,21 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
   }))
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
-        onClick={onClose}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 40 }}
-        className="relative bg-white dark:bg-apple-gray-50 w-full max-w-2xl rounded-[56px] shadow-[0_50px_100px_rgba(0,0,0,0.4)] flex flex-col max-h-full overflow-hidden border border-apple-gray-100 dark:border-white/5"
-      >
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-2xl bg-white dark:bg-apple-gray-50 flex flex-col p-0 overflow-hidden rounded-[56px] border border-apple-gray-100 dark:border-white/5 shadow-[0_50px_100px_rgba(0,0,0,0.4)] max-h-[92vh] gap-0">
         {/* Header */}
-        <div className="px-10 py-10 flex items-center justify-between bg-white dark:bg-apple-gray-50 border-b border-apple-gray-100 dark:border-white/5 shrink-0">
+        <DialogHeader className="px-10 py-10 flex flex-row items-center justify-between bg-white dark:bg-apple-gray-50 border-b border-apple-gray-100 dark:border-white/5 shrink-0 m-0">
           <div className="flex items-center gap-5">
             <div className="w-14 h-14 bg-apple-blue/10 rounded-2xl flex items-center justify-center text-apple-blue shadow-inner relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
               <ShoppingCart className="w-7 h-7 relative z-10" />
             </div>
-            <div>
+            <div className="text-left space-y-1">
               <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-[0.2em]">Logística de Suministros</p>
-              <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">Nueva Orden de Compra</h3>
+              <DialogTitle className="text-2xl font-black text-foreground tracking-tighter uppercase m-0">Nueva Orden de Compra</DialogTitle>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-12 h-12 rounded-full bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-300 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-90"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+        </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-10 space-y-12 custom-scrollbar">
           <AnimatePresence>
@@ -261,9 +248,6 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
         {/* Footer Area */}
         <div className="p-10 bg-apple-gray-50/80 dark:bg-black/40 backdrop-blur-xl border-t border-apple-gray-100 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-8 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
             <div className="space-y-0.5">
               <p className="text-[10px] font-black text-foreground uppercase tracking-widest">Garantía Técnica</p>
               <p className="text-[9px] font-bold text-apple-gray-400 uppercase tracking-[0.2em] leading-tight">
@@ -300,8 +284,8 @@ export function CreateOCFromOTModal({ otId, obraId, insumos, onClose }: Props) {
             </button>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

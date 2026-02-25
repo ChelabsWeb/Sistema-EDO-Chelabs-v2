@@ -45,6 +45,15 @@ export const ROLE_PERMISSIONS = {
     canApproveOTs: false,
     crossObraVisibility: true,
   },
+  encargado_stock: {
+    canViewAllObras: false,
+    canViewAllOTs: false,
+    canViewAllOCs: true,
+    canManageUsers: false,
+    canCreateObras: false,
+    canApproveOTs: false,
+    crossObraVisibility: false,
+  },
 } as const
 
 export type RolePermissions = typeof ROLE_PERMISSIONS[UserRole]

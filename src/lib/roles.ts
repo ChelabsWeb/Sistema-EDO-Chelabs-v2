@@ -14,6 +14,7 @@ export function getRoleDisplayName(role: UserRole | null): string {
     director_obra: 'Director de Obra',
     jefe_obra: 'Jefe de Obra',
     compras: 'Compras',
+    encargado_stock: 'Encargado de Stock',
   }
   return role ? roleNames[role] : 'Usuario'
 }
@@ -26,7 +27,8 @@ export function getRoleAbbreviation(role: UserRole | null): string {
     admin: 'Admin',
     director_obra: 'DO',
     jefe_obra: 'JO',
-    compras: 'Compras',
+    compras: 'COMP',
+    encargado_stock: 'STOCK',
   }
   return role ? roleAbbr[role] : ''
 }

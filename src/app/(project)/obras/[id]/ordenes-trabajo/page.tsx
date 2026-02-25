@@ -12,6 +12,14 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import React from 'react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -160,19 +168,19 @@ export default async function OrdenesTrabajoPage({ params, searchParams }: Props
         <section className="animate-apple-slide-up" style={{ animationDelay: '0.2s' }}>
           {otsWithProgress.length > 0 ? (
             <div className="premium-card overflow-hidden overflow-x-auto">
-              <table className="min-w-full divide-y divide-apple-gray-50 dark:divide-white/5">
-                <thead className="bg-apple-gray-50/50 dark:bg-apple-gray-50/10">
-                  <tr>
-                    <th className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Orden nº</th>
-                    <th className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Rubro / Categoría</th>
-                    <th className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Estado</th>
-                    <th className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Avance Operativo</th>
-                    <th className="px-8 py-6 text-right text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Certificado Est.</th>
-                    <th className="px-8 py-6 text-right text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Ratio Desvío</th>
-                    <th className="px-8 py-6 text-right text-[10px] font-black text-apple-gray-400 uppercase tracking-widest"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-apple-gray-50 dark:divide-white/5">
+              <Table className="min-w-full">
+                <TableHeader className="bg-apple-gray-50/50 dark:bg-apple-gray-50/10">
+                  <TableRow className="border-b border-apple-gray-50 dark:border-white/5 hover:bg-transparent">
+                    <TableHead className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Orden nº</TableHead>
+                    <TableHead className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Rubro / Categoría</TableHead>
+                    <TableHead className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Estado</TableHead>
+                    <TableHead className="px-8 py-6 text-left text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Avance Operativo</TableHead>
+                    <TableHead className="px-8 py-6 text-right text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Certificado Est.</TableHead>
+                    <TableHead className="px-8 py-6 text-right text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Ratio Desvío</TableHead>
+                    <TableHead className="px-8 py-6 text-right text-[10px] font-black text-apple-gray-400 uppercase tracking-widest"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-apple-gray-50 dark:divide-white/5">
                   {otsWithProgress.map((ot) => {
                     const desvio = ot.costo_real != null ? ot.costo_real - ot.costo_estimado : null
                     const desvioPercent = desvio != null && ot.costo_estimado > 0
@@ -182,15 +190,15 @@ export default async function OrdenesTrabajoPage({ params, searchParams }: Props
                     const isCritical = desvioPercent != null && desvioPercent > 20
 
                     return (
-                      <tr
+                      <TableRow
                         key={ot.id}
                         className={cn(
-                          "group hover:bg-apple-gray-50/50 dark:hover:bg-white/[0.02] transition-colors",
+                          "group hover:bg-apple-gray-50/50 dark:hover:bg-white/[0.02] transition-colors border-none",
                           isCritical && "bg-red-500/[0.03] dark:bg-red-500/[0.05]",
                           hasWarning && !isCritical && "bg-amber-500/[0.02]"
                         )}
                       >
-                        <td className="px-8 py-8 whitespace-nowrap">
+                        <TableCell className="px-8 py-8 whitespace-nowrap align-middle">
                           <div className="flex items-center gap-4">
                             <div className={cn(
                               "w-10 h-10 rounded-xl flex items-center justify-center shadow-sm",
@@ -212,15 +220,15 @@ export default async function OrdenesTrabajoPage({ params, searchParams }: Props
                               </div>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-8 py-8 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell className="px-8 py-8 whitespace-nowrap align-middle">
                           <div className="text-[15px] font-bold text-foreground">{(ot.rubros as any)?.nombre || '-'}</div>
                           <div className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Unidad: {(ot.rubros as any)?.unidad || '-'}</div>
-                        </td>
-                        <td className="px-8 py-8 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell className="px-8 py-8 whitespace-nowrap align-middle">
                           <OTStatusBadge estado={ot.estado || 'borrador'} />
-                        </td>
-                        <td className="px-8 py-8 whitespace-nowrap">
+                        </TableCell>
+                        <TableCell className="px-8 py-8 whitespace-nowrap align-middle">
                           <div className="space-y-2">
                             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-apple-gray-300">
                               <span>{ot.progreso}% completado</span>
@@ -236,11 +244,11 @@ export default async function OrdenesTrabajoPage({ params, searchParams }: Props
                               />
                             </div>
                           </div>
-                        </td>
-                        <td className="px-8 py-8 whitespace-nowrap text-right font-black text-foreground text-lg tracking-tighter">
+                        </TableCell>
+                        <TableCell className="px-8 py-8 whitespace-nowrap text-right font-black text-foreground text-lg tracking-tighter align-middle">
                           {formatPesos(ot.costo_estimado)}
-                        </td>
-                        <td className="px-8 py-8 whitespace-nowrap text-right">
+                        </TableCell>
+                        <TableCell className="px-8 py-8 whitespace-nowrap text-right align-middle">
                           {desvio != null ? (
                             <div className="flex flex-col items-end">
                               <span className={cn(
@@ -261,20 +269,20 @@ export default async function OrdenesTrabajoPage({ params, searchParams }: Props
                           ) : (
                             <span className="text-[10px] font-black text-apple-gray-300 dark:text-apple-gray-400 uppercase tracking-widest">Sin registro real</span>
                           )}
-                        </td>
-                        <td className="px-8 py-8 text-right whitespace-nowrap">
+                        </TableCell>
+                        <TableCell className="px-8 py-8 text-right whitespace-nowrap align-middle">
                           <Link
                             href={`/obras/${obraId}/ordenes-trabajo/${ot.id}`}
-                            className="size-12 rounded-full bg-apple-blue/10 flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform duration-500 overflow-hidden"
+                            className="size-12 rounded-full bg-apple-blue/10 flex items-center justify-center text-apple-blue group-hover:scale-110 transition-transform duration-500 overflow-hidden ml-auto"
                           >
                             <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                           </Link>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           ) : (
             <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-24 text-center border border-apple-gray-100 dark:border-white/5 shadow-apple">

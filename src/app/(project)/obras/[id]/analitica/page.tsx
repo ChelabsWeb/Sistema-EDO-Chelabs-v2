@@ -5,8 +5,8 @@ import { AnaliticaClient } from './analitica-client'
 import { notFound } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 
-export default async function ProjectAnaliticaPage({ params }: { params: { id: string } }) {
-    const { id } = params
+export default async function ProjectAnaliticaPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const [obra, deviations] = await Promise.all([
         getObra(id),
         getDeviationsByRubro(id)

@@ -4,6 +4,7 @@ import { useRoleBasedLayout } from '@/hooks/useRoleBasedLayout'
 import { DesktopSidebar } from './DesktopSidebar'
 import { MobileBottomNav } from './MobileBottomNav'
 import { MobileHeader } from './MobileHeader'
+import { ChatBubble } from '@/components/chat/ChatBubble'
 import type { UserRole } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
@@ -26,17 +27,7 @@ export function RoleBasedLayout({
   const { showSidebar, showBottomNav } = useRoleBasedLayout({ role: userRole })
 
   return (
-    <div className="min-h-screen bg-transparent text-foreground relative overflow-hidden selection:bg-blue-500/30 transition-colors duration-500">
-      {/* Background noise texture */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay"
-          style={{
-            backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')`,
-            backgroundSize: '128px 128px'
-          }}
-        />
-      </div>
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden selection:bg-primary/30 transition-colors duration-500">
 
       <div className="relative z-10 min-h-screen">
         {/* Desktop Sidebar */}
@@ -60,18 +51,21 @@ export function RoleBasedLayout({
         {/* Main Content */}
         <main
           className={cn(
-            'transition-all duration-500 ease-in-out min-h-screen',
+            'transition-all duration-300 ease-in-out min-h-screen',
             showSidebar && 'md:pl-64', // Exactly 256px for the sidebar
             showBottomNav && 'pt-16 pb-24'
           )}
         >
-          <div className="animate-apple-fade-in">
+          <div className="p-4 md:p-8 max-w-7xl mx-auto">
             {children}
           </div>
         </main>
 
         {/* Mobile Bottom Navigation */}
         {showBottomNav && <MobileBottomNav userRole={userRole} />}
+
+        {/* Global Realtime Chat */}
+        {userRole && <ChatBubble />}
       </div>
     </div>
   )

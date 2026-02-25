@@ -12,6 +12,10 @@ import {
   type ApproveOTInput,
   type CloseOTInput,
 } from '@/lib/validations/ordenes-trabajo'
+import {
+  updateOTDatesSchema,
+  type UpdateOTDatesInput
+} from '@/lib/validations/ordenes-trabajo-dates'
 import type { OrdenTrabajo, OTStatus, OrdenTrabajoWithRelations, OTHistorial, OTInsumoEstimado } from '@/types/database'
 import { type PaginationParams, type PaginatedResponse, normalizePagination, createPaginatedResponse } from '@/lib/utils/pagination'
 
@@ -243,6 +247,81 @@ export async function updateOT(input: UpdateOTInput): Promise<ActionResult<Orden
   revalidatePath(`/obras/${currentOT.obra_id}`)
   revalidatePath(`/obras/${currentOT.obra_id}/ots`)
   revalidatePath(`/obras/${currentOT.obra_id}/ots/${id}`)
+
+  return { success: true, data: data as OrdenTrabajo }
+}
+
+/**
+ * Update an OT's start and end dates directly (used for Gantt Chart dragging)
+ */
+export async function updateOTDates(input: UpdateOTDatesInput): Promise<ActionResult<OrdenTrabajo>> {
+  const supabase = await createClient()
+
+  const validation = updateOTDatesSchema.safeParse(input)
+  if (!validation.success) {
+    return {
+      success: false,
+      error: validation.error.issues[0]?.message || 'Datos inválidos',
+    }
+  }
+
+  const profile = await getCurrentUserProfile()
+  if (!profile) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  if (!['admin', 'director_obra', 'jefe_obra'].includes(profile.rol)) {
+    return { success: false, error: 'No tiene permisos para modificar fechas de ejecución' }
+  }
+
+  // Get current OT
+  const { data: currentOT } = await supabase
+    .from('ordenes_trabajo')
+    .select('id, obra_id, estado, fecha_inicio, fecha_fin')
+    .eq('id', validation.data.id)
+    .single()
+
+  if (!currentOT) {
+    return { success: false, error: 'Orden de trabajo no encontrada' }
+  }
+
+  // JO can only modify OTs in their assigned obra
+  if (profile.rol === 'jefe_obra' && profile.obra_id !== currentOT.obra_id) {
+    return { success: false, error: 'Solo puede modificar fechas en su obra asignada' }
+  }
+
+  // Allow modifications if draft or in execution, but prohibit changing closed ones
+  if (currentOT.estado === 'cerrada') {
+    return { success: false, error: 'No se pueden modificar fechas de una OT cerrada' }
+  }
+
+  const { data, error } = await supabase
+    .from('ordenes_trabajo')
+    .update({
+      fecha_inicio: validation.data.fecha_inicio,
+      fecha_fin: validation.data.fecha_fin,
+    })
+    .eq('id', validation.data.id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating OT dates:', error)
+    return { success: false, error: 'Error al actualizar las fechas de la orden de trabajo' }
+  }
+
+  // Record trace history of date bump quietly
+  await supabase.from('ot_historial').insert({
+    orden_trabajo_id: validation.data.id,
+    estado_anterior: currentOT.estado,
+    estado_nuevo: currentOT.estado as OTStatus,
+    usuario_id: profile.id,
+    notas: `Fechas modificadas a: ${validation.data.fecha_inicio} - ${validation.data.fecha_fin}`,
+  })
+
+  revalidatePath(`/obras/${currentOT.obra_id}`)
+  revalidatePath(`/obras/${currentOT.obra_id}/ots`)
+  revalidatePath(`/obras/${currentOT.obra_id}/calendario`)
 
   return { success: true, data: data as OrdenTrabajo }
 }

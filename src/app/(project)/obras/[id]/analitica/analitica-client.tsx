@@ -15,6 +15,9 @@ import {
     PolarGrid, PolarAngleAxis, PolarRadiusAxis,
     Radar as RechartsRadar
 } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { formatPesos } from '@/lib/utils/currency'
 import type { RubroDeviationSummary } from '@/app/actions/costos'
@@ -62,61 +65,57 @@ export function AnaliticaClient({ id, obra, deviations }: Props) {
     const [period, setPeriod] = useState<'7D' | '30D' | '1A' | 'TODO'>('30D')
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-12 antialiased animate-apple-fade-in pb-32 px-8 pt-10">
+        <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
             {/* Header Section */}
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                        <div className="px-3 py-1 rounded-full bg-apple-blue/10 border border-apple-blue/20 flex items-center gap-2">
-                            <div className="size-1.5 rounded-full bg-apple-blue animate-pulse" />
-                            <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest leading-none">Actualizado ahora</span>
-                        </div>
-                        <div className="px-3 py-1 rounded-full bg-apple-gray-50 dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 flex items-center gap-2">
-                            <Calendar className="w-3 h-3 text-apple-gray-400" />
-                            <span className="text-[10px] font-black text-apple-gray-500 uppercase tracking-widest leading-none">Febrero 2025</span>
-                        </div>
+                        <Badge variant="secondary" className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                            Actualizado ahora
+                        </Badge>
+                        <Badge variant="outline" className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            Febrero 2025
+                        </Badge>
                     </div>
-                    <h1 className="text-6xl font-black text-foreground tracking-tighter leading-none font-display">
-                        Analítica<span className="text-apple-blue">.</span>
-                    </h1>
-                    <p className="text-lg font-medium text-apple-gray-500 max-w-xl">
+                    <h2 className="text-3xl font-bold tracking-tight">Analítica</h2>
+                    <p className="text-muted-foreground mt-1 max-w-xl">
                         Análisis avanzado de rendimiento, predicciones presupuestarias y salud operativa del proyecto.
                     </p>
                 </div>
 
-                <div className="flex flex-col items-end gap-6">
-                    <div className="flex bg-apple-gray-100 dark:bg-white/5 rounded-full p-1 border border-apple-gray-100 dark:border-white/10">
+                <div className="flex flex-col items-end gap-4">
+                    <div className="flex bg-muted rounded-md p-1 border">
                         {['7D', '30D', '1A', 'TODO'].map((p) => (
                             <button
                                 key={p}
                                 onClick={() => setPeriod(p as any)}
                                 className={cn(
-                                    "px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all",
+                                    "px-4 py-1.5 text-sm font-medium rounded-sm transition-all",
                                     period === p
-                                        ? "bg-white dark:bg-apple-gray-50 text-apple-blue shadow-apple-sm"
-                                        : "text-apple-gray-400 hover:text-foreground"
+                                        ? "bg-background text-foreground shadow-sm"
+                                        : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {p}
                             </button>
                         ))}
                     </div>
-                    <button className="px-8 py-4 bg-apple-blue text-white rounded-full font-black text-[11px] uppercase tracking-[0.2em] hover:bg-apple-blue-dark transition-all shadow-lg active:scale-95 flex items-center gap-3 group">
-                        <Zap className="w-4 h-4" />
-                        Exportar Reporte
-                    </button>
+                    <Button className="h-9 px-4">
+                        <Zap className="w-4 h-4 mr-2" /> Exportar Reporte
+                    </Button>
                 </div>
-            </header>
+            </div>
 
             {/* KPI Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <KPICard
                     label="Costo por UR"
                     value="0.94"
                     unit="± Riesgo"
                     trend="down"
                     icon={Wallet}
-                    color="apple-blue"
                 />
                 <KPICard
                     label="Eficiencia UR"
@@ -124,14 +123,14 @@ export function AnaliticaClient({ id, obra, deviations }: Props) {
                     unit="↑ Avance"
                     trend="up"
                     icon={Target}
-                    color="emerald"
+                    color="text-emerald-500"
+                    bg="bg-emerald-500/10"
                 />
                 <KPICard
                     label="Presupuesto Final"
-                    value="$3.563.830"
+                    value="$3.56M"
                     unit="Basado en tendencia actual"
                     icon={PieChart}
-                    color="indigo"
                 />
                 <KPICard
                     label="Margen Proyectado"
@@ -139,396 +138,358 @@ export function AnaliticaClient({ id, obra, deviations }: Props) {
                     unit="+12%"
                     trend="up"
                     icon={TrendingUp}
-                    color="emerald"
+                    color="text-emerald-500"
+                    bg="bg-emerald-500/10"
                 />
             </div>
 
             {/* Main Analysis Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Row 1 */}
-                <section className="premium-card p-10 space-y-10">
-                    <div className="flex items-center gap-4">
-                        <div className="size-12 rounded-2xl bg-apple-blue/10 flex items-center justify-center text-apple-blue">
-                            <ShieldAlert className="w-6 h-6" />
+                <Card>
+                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                        <div className="p-2 w-10 h-10 rounded-md bg-secondary flex items-center justify-center">
+                            <ShieldAlert className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-foreground font-display uppercase tracking-tight">Vulnerabilidades</h3>
-                            <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-widest">Análisis de 5 pilares</p>
+                            <CardTitle className="text-base font-semibold">Vulnerabilidades</CardTitle>
+                            <CardDescription className="text-xs uppercase tracking-wider">Análisis de 5 pilares</CardDescription>
                         </div>
-                    </div>
-
-                    <div className="h-72 w-full">
+                    </CardHeader>
+                    <CardContent className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={vulnerabilityData}>
-                                <PolarGrid stroke="rgba(0,0,0,0.05)" />
-                                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fontWeight: 900, fill: '#8e8e93' }} />
+                            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={vulnerabilityData}>
+                                <PolarGrid stroke="rgba(0,0,0,0.1)" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.6 }} />
                                 <RechartsRadar
                                     name="Obra"
                                     dataKey="A"
-                                    stroke="#007aff"
-                                    fill="#007aff"
-                                    fillOpacity={0.15}
+                                    stroke="hsl(var(--primary))"
+                                    fill="hsl(var(--primary))"
+                                    fillOpacity={0.2}
                                 />
                             </RadarChart>
                         </ResponsiveContainer>
-                    </div>
-                </section>
+                    </CardContent>
+                </Card>
 
-                <section className="premium-card p-10 space-y-10">
-                    <div className="flex items-center gap-4">
-                        <div className="size-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                            <BarChart3 className="w-6 h-6" />
+                <Card>
+                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                        <div className="p-2 w-10 h-10 rounded-md bg-secondary flex items-center justify-center">
+                            <BarChart3 className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-foreground font-display uppercase tracking-tight">Distribución de Costos</h3>
-                            <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-widest">Por categoría de rubro</p>
+                            <CardTitle className="text-base font-semibold">Distribución de Costos</CardTitle>
+                            <CardDescription className="text-xs uppercase tracking-wider">Por categoría de rubro</CardDescription>
                         </div>
-                    </div>
-
-                    <div className="space-y-6">
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4">
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="flex items-center gap-2">
-                                <div className="size-2 rounded-full bg-apple-blue" />
-                                <span className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Estructural</span>
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <span className="w-2 h-2 rounded-full bg-primary" /> Estructural
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="size-2 rounded-full bg-emerald-500" />
-                                <span className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Servicios</span>
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Servicios
                             </div>
                         </div>
                         {distributionData.map((item) => (
-                            <div key={item.name} className="space-y-2">
-                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                    <span className="text-apple-gray-400">{item.name}</span>
-                                    <span className="text-foreground">{item.value}%</span>
+                            <div key={item.name} className="space-y-1.5">
+                                <div className="flex justify-between text-xs font-medium">
+                                    <span className="text-muted-foreground">{item.name}</span>
+                                    <span>{item.value}%</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                                     <div
                                         className={cn(
                                             "h-full rounded-full transition-all duration-1000",
-                                            item.category === 'ESTRUCTURAL' ? "bg-apple-blue" : "bg-emerald-500"
+                                            item.category === 'ESTRUCTURAL' ? "bg-primary" : "bg-emerald-500"
                                         )}
                                         style={{ width: `${item.value}%` }}
                                     />
                                 </div>
                             </div>
                         ))}
-                    </div>
-                </section>
+                    </CardContent>
+                </Card>
 
-                <div className="grid grid-cols-1 gap-8 lg:col-span-1">
+                <div className="grid grid-cols-1 gap-6 lg:col-span-1">
                     <HealthCard
-                        label="Salud Mat."
+                        label="Salud Materiales"
                         value="+4.1%"
                         progress={85}
-                        color="emerald"
+                        color="bg-emerald-500"
                         icon={Boxes}
                         compact
                     />
                     <HealthCard
-                        label="Puntos Crít."
+                        label="Puntos Críticos"
                         value="1"
                         progress={30}
-                        color="orange"
+                        color="bg-destructive"
                         icon={AlertTriangle}
                         compact
                     />
                 </div>
 
                 {/* Row 2 */}
-                <section className="lg:col-span-2 bg-slate-900 dark:bg-white/5 rounded-[40px] p-12 text-white relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-apple-blue/20 to-transparent" />
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                                <div className="px-3 py-1 rounded-full bg-white/10 border border-white/20">
-                                    <span className="text-[9px] font-black uppercase tracking-widest">Forecast Alpha</span>
-                                </div>
-                            </div>
+                <Card className="lg:col-span-2 bg-primary text-primary-foreground overflow-hidden relative">
+                    <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
+                    <CardContent className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                        <div className="space-y-4">
+                            <Badge variant="secondary" className="bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground border-transparent">
+                                FORECAST ALPHA
+                            </Badge>
                             <div>
-                                <h3 className="text-4xl font-black font-display tracking-tight leading-none mb-4">
-                                    Finalización estimada: <span className="text-apple-blue">15 May. 2026</span>
+                                <h3 className="text-2xl font-bold tracking-tight mb-2">
+                                    Finalización estimada: 15 May. 2026
                                 </h3>
-                                <p className="text-slate-400 text-sm font-medium max-w-md leading-relaxed">
-                                    La tendencia actual indica un adelanto cada 4 días respecto al cronograma original, con una eficiencia presupuestaria del 104%.
+                                <p className="text-primary-foreground/80 max-w-md">
+                                    La tendencia actual indica un adelanto mensual constante respecto al cronograma original, con eficiencia del 104%.
                                 </p>
                             </div>
                         </div>
-                        <button className="size-16 rounded-full bg-white text-slate-900 flex items-center justify-center hover:scale-110 transition-transform active:scale-95 shadow-2xl">
-                            <ChevronRight className="w-8 h-8" />
-                        </button>
-                    </div>
-                </section>
+                        <Button variant="secondary" size="icon" className="w-12 h-12 rounded-full shrink-0">
+                            <ChevronRight className="w-6 h-6" />
+                        </Button>
+                    </CardContent>
+                </Card>
 
                 <HealthCard
                     label="Utilización Presupuesto"
                     value="97.9%"
                     progress={97.9}
-                    color="apple-blue"
+                    color="bg-primary"
                     icon={Wallet}
                 />
 
-                {/* Row 3 - Wastage full width as requested */}
-                <section className="premium-card p-12 space-y-12 lg:col-span-3">
-                    <div className="flex items-center gap-4">
-                        <div className="size-14 rounded-2xl bg-apple-blue/10 flex items-center justify-center text-apple-blue">
-                            <Activity className="w-7 h-7" />
+                {/* Row 3 - Wastage full width */}
+                <Card className="lg:col-span-3">
+                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                        <div className="p-2 w-10 h-10 rounded-md bg-secondary flex items-center justify-center">
+                            <Activity className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-black text-foreground font-display uppercase tracking-tight">Análisis de Desperdicios</h3>
-                            <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-widest">Optimización por recurso</p>
+                            <CardTitle>Análisis de Desperdicios</CardTitle>
+                            <CardDescription className="uppercase tracking-wider">Optimización por recurso</CardDescription>
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                        {wastageData.map((item) => (
-                            <div key={item.name} className="space-y-3">
-                                <div className="flex justify-between items-end">
-                                    <div>
-                                        <h4 className="text-[13px] font-black text-foreground uppercase tracking-tight">{item.name}</h4>
-                                        <p className="text-[9px] font-black text-apple-gray-500 uppercase tracking-[0.2em] mt-1">{item.trend}</p>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
+                            {wastageData.map((item) => (
+                                <div key={item.name} className="space-y-2">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <h4 className="text-sm font-semibold">{item.name}</h4>
+                                            <p className="text-xs text-muted-foreground mt-0.5">{item.trend}</p>
+                                        </div>
+                                        <div className={cn(
+                                            "text-xs font-bold",
+                                            item.value > 80 ? "text-destructive" : "text-emerald-500"
+                                        )}>
+                                            {item.value > 80 ? 'ALTO' : 'BAJO'}
+                                        </div>
                                     </div>
-                                    <div className={cn(
-                                        "text-[10px] font-black uppercase tracking-widest",
-                                        item.value > 80 ? "text-orange-500" : "text-emerald-500"
-                                    )}>
-                                        {item.value > 80 ? 'ALTO DESPERDICIO' : 'BAJO DESPERDICIO'}
+                                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                                        <div
+                                            className={cn(
+                                                "h-full rounded-full transition-all duration-1000",
+                                                item.value > 80 ? "bg-destructive" : "bg-primary"
+                                            )}
+                                            style={{ width: `${item.value}%` }}
+                                        />
                                     </div>
                                 </div>
-                                <div className="h-3 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden p-0.5">
-                                    <div
-                                        className={cn(
-                                            "h-full rounded-full transition-all duration-1000 shadow-sm",
-                                            item.value > 80 ? "bg-orange-500" : "bg-apple-blue"
-                                        )}
-                                        style={{ width: `${item.value}%` }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
 
-                <section className="premium-card p-12 space-y-12 lg:col-span-3">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-4">
+                {/* Fund Flow */}
+                <Card className="lg:col-span-3">
+                    <CardHeader className="flex flex-col md:flex-row md:items-center justify-between pb-2">
                         <div className="flex items-center gap-4">
-                            <div className="size-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                                <LineChart className="w-7 h-7" />
+                            <div className="p-2 w-10 h-10 rounded-md bg-secondary flex items-center justify-center">
+                                <LineChart className="w-5 h-5 text-muted-foreground" />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-black text-foreground font-display uppercase tracking-tight">Flujo de Fondos</h3>
-                                <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-widest">Inversión Real vs Planificada</p>
+                                <CardTitle>Flujo de Fondos</CardTitle>
+                                <CardDescription className="uppercase tracking-wider">Inversión Real vs Planificada</CardDescription>
                             </div>
                         </div>
-                        <div className="flex justify-center gap-8">
-                            <div className="flex items-center gap-2">
-                                <div className="size-3 rounded-full bg-apple-blue" />
-                                <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Inversión Real</span>
+                        <div className="flex gap-4 mt-4 md:mt-0">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span className="w-3 h-3 rounded-full bg-primary" /> Real
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="size-3 rounded-full border-2 border-apple-gray-300" />
-                                <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Meta</span>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span className="w-3 h-3 rounded-full border-2 border-muted-foreground" /> Meta
                             </div>
                         </div>
-                    </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-[300px] w-full pt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={fundFlowData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="realGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                                        tickFormatter={(value) => `$${value}`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="real"
+                                        stroke="hsl(var(--primary))"
+                                        strokeWidth={3}
+                                        fill="url(#realGradient)"
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="planificado"
+                                        stroke="hsl(var(--muted-foreground))"
+                                        strokeWidth={2}
+                                        strokeDasharray="5 5"
+                                        fill="transparent"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    <div className="h-96 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={fundFlowData}>
-                                <defs>
-                                    <linearGradient id="realGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#007aff" stopOpacity={0.1} />
-                                        <stop offset="100%" stopColor="#007aff" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.03)" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#8e8e93' }}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '20px',
-                                        border: 'none',
-                                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                                        padding: '16px'
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="real"
-                                    stroke="#007aff"
-                                    strokeWidth={4}
-                                    fill="url(#realGradient)"
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="planificado"
-                                    stroke="#8e8e93"
-                                    strokeWidth={2}
-                                    strokeDasharray="5 5"
-                                    fill="transparent"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </section>
-
-                {/* Mitigation Plan integrated into same grid */}
-                <section className="premium-card p-12 space-y-12 lg:col-span-3">
-                    <div className="flex items-center gap-4">
-                        <div className="size-14 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500">
-                            <ShieldAlert className="w-7 h-7" />
+                {/* Mitigation Plan integration */}
+                <Card className="lg:col-span-3">
+                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                        <div className="p-2 w-10 h-10 rounded-md bg-secondary flex items-center justify-center">
+                            <ShieldAlert className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-black text-foreground font-display uppercase tracking-tight">Plan de Mitigación</h3>
-                            <p className="text-[10px] font-black text-apple-gray-500 uppercase tracking-widest">Acciones preventivas de alto impacto</p>
+                            <CardTitle>Plan de Mitigación</CardTitle>
+                            <CardDescription className="uppercase tracking-wider">Acciones preventivas de alto impacto</CardDescription>
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <MitigationCard
-                            title="Mano de Obra - Cimientos"
-                            impact="+15.4%"
-                            severity="critical"
-                            desc="Se sugiere auditoría de densidad de personal para detectar fugas de rendimiento."
-                            action="Aplicar Seguimiento"
-                        />
-                        <MitigationCard
-                            title="Hierro de Armadura"
-                            impact="+8.2%"
-                            severity="warning"
-                            desc="Revisar técnica de corte y habilitar consolidado de órdenes para reducir cortes logísticos."
-                            action="Aplicar Documento"
-                        />
-                    </div>
-                </section>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                            <MitigationCard
+                                title="Mano de Obra - Cimientos"
+                                impact="+15.4%"
+                                severity="critical"
+                                desc="Se sugiere auditoría de densidad de personal para detectar fugas de rendimiento."
+                                action="Aplicar Seguimiento"
+                            />
+                            <MitigationCard
+                                title="Hierro de Armadura"
+                                impact="+8.2%"
+                                severity="warning"
+                                desc="Revisar técnica de corte y habilitar consolidado de órdenes para reducir cortes logísticos."
+                                action="Aplicar Documento"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-
-            <footer className="text-center py-20 opacity-20">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground">Fin del Reporte Operativo • Sistema EDO V2 Premium</p>
-            </footer>
         </div>
     )
 }
 
-function KPICard({ label, value, unit, trend, icon: Icon, color }: any) {
+function KPICard({ label, value, unit, trend, icon: Icon, color = "text-foreground", bg = "bg-secondary" }: any) {
     return (
-        <div className="premium-card p-10 group hover:scale-[1.02] transition-all duration-500">
-            <div className="space-y-6">
-                <div className="flex justify-between items-start">
-                    <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest leading-none">
-                        {label}
-                    </p>
-                    <div className={cn(
-                        "size-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-inner",
-                        color === 'apple-blue' ? "bg-apple-blue/10 text-apple-blue" :
-                            color === 'emerald' ? "bg-emerald-500/10 text-emerald-500" :
-                                "bg-indigo-500/10 text-indigo-500"
-                    )}>
-                        <Icon className="w-5 h-5" />
+        <Card>
+            <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                    <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{label}</p>
+                    <div className={cn("p-2 rounded-md", bg, color)}>
+                        <Icon className="w-4 h-4" />
                     </div>
                 </div>
-                <div className="space-y-1">
-                    <h3 className="text-4xl font-black text-foreground tracking-tighter leading-none font-display uppercase">
-                        {value}
-                    </h3>
+                <div>
+                    <h3 className="text-2xl font-bold tracking-tight mb-1">{value}</h3>
                     <div className="flex items-center gap-2">
-                        <p className="text-[11px] font-bold text-apple-gray-400 uppercase tracking-tight">{unit}</p>
+                        <p className="text-xs text-muted-foreground">{unit}</p>
                         {trend && (
                             <div className={cn(
-                                "flex items-center",
-                                trend === 'up' ? "text-emerald-500" : "text-apple-blue"
+                                "flex items-center text-xs",
+                                trend === 'up' ? "text-emerald-500" : "text-destructive"
                             )}>
                                 {trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     )
 }
 
 function HealthCard({ label, value, progress, color, icon: Icon, action, compact }: any) {
     return (
-        <div className={cn(
-            "rounded-[40px] border transition-all duration-500 group relative overflow-hidden flex flex-col justify-center",
-            compact ? "p-6" : "p-10",
-            color === 'emerald' ? "bg-emerald-500 text-white border-emerald-400/20" :
-                color === 'apple-blue' ? "bg-white dark:bg-white/5 text-foreground border-apple-gray-100 dark:border-white/10" :
-                    "bg-orange-500 text-white border-orange-400/20"
+        <Card className={cn(
+            "relative overflow-hidden flex flex-col justify-center text-white border-none",
+            color
         )}>
-            <div className="relative z-10 space-y-6">
-                <div className="flex items-center gap-3">
-                    <div className={cn(
-                        "rounded-xl flex items-center justify-center shadow-inner shrink-0",
-                        compact ? "size-8" : "size-10",
-                        color === 'apple-blue' ? "bg-apple-blue/10 text-apple-blue" : "bg-white/20 text-white"
-                    )}>
-                        <Icon className={compact ? "w-4 h-4" : "w-5 h-5"} />
-                    </div>
-                    <span className={cn(
-                        "font-black uppercase tracking-widest opacity-70 leading-none",
-                        compact ? "text-[8px]" : "text-[10px]",
-                        color === 'apple-blue' ? "text-apple-gray-500" : "text-white"
-                    )}>
-                        {label}
-                    </span>
+            <CardContent className={cn("relative z-10", compact ? "p-6" : "p-8")}>
+                <div className="flex items-center gap-2 mb-4 opacity-80">
+                    <Icon className={compact ? "w-4 h-4" : "w-5 h-5"} />
+                    <span className="text-xs font-semibold uppercase tracking-wider">{label}</span>
                 </div>
-
-                <div className="space-y-4">
-                    <h3 className={cn(
-                        "font-black font-display tracking-tighter leading-none shrink-0",
-                        compact ? "text-3xl" : "text-6xl"
-                    )}>{value}</h3>
-                    <div className={cn(
-                        "h-1 w-full rounded-full overflow-hidden",
-                        color === 'apple-blue' ? "bg-apple-gray-100" : "bg-white/20"
-                    )}>
+                <div className="space-y-3">
+                    <h3 className={cn("font-bold tracking-tight", compact ? "text-2xl" : "text-4xl")}>
+                        {value}
+                    </h3>
+                    <div className="h-1.5 w-full bg-black/20 rounded-full overflow-hidden">
                         <div
-                            className={cn(
-                                "h-full rounded-full transition-all duration-1000",
-                                color === 'apple-blue' ? "bg-red-500" : "bg-white"
-                            )}
+                            className="h-full bg-white rounded-full transition-all duration-1000"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
                     {action && !compact && (
-                        <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-white/10 px-4 py-2 rounded-full border border-white/20 hover:bg-white/20 transition-all">
-                            {action} <ArrowRight className="w-3 h-3" />
-                        </button>
+                        <Button variant="secondary" size="sm" className="mt-4 text-xs font-semibold">
+                            {action} <ArrowRight className="w-3 h-3 ml-2" />
+                        </Button>
                     )}
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     )
 }
 
 function MitigationCard({ title, impact, severity, desc, action }: any) {
     return (
-        <div className="bg-apple-gray-50/50 dark:bg-white/[0.02] border border-apple-gray-100 dark:border-white/5 rounded-[32px] p-8 space-y-6 group hover:border-apple-blue/20 transition-all">
-            <div className="flex justify-between items-start">
+        <div className="p-5 border rounded-lg bg-card hover:border-primary/50 transition-colors">
+            <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3">
                     <div className={cn(
-                        "p-2 rounded-lg",
-                        severity === 'critical' ? "bg-orange-500/10 text-orange-500" : "bg-amber-500/10 text-amber-500"
+                        "p-2 rounded-md",
+                        severity === 'critical' ? "bg-destructive/10 text-destructive" : "bg-amber-500/10 text-amber-500"
                     )}>
-                        <AlertCircle className="w-5 h-5" />
+                        <AlertCircle className="w-4 h-4" />
                     </div>
-                    <h4 className="text-base font-black text-foreground font-display uppercase tracking-tight">{title}</h4>
+                    <h4 className="font-semibold text-sm">{title}</h4>
                 </div>
-                <span className={cn(
-                    "text-[10px] font-black uppercase tracking-widest",
-                    severity === 'critical' ? "text-orange-500" : "text-amber-500"
-                )}>{impact}</span>
+                <Badge variant={severity === 'critical' ? "destructive" : "secondary"} className={severity === 'warning' ? "bg-amber-500/10 text-amber-500" : ""}>
+                    {impact}
+                </Badge>
             </div>
-            <p className="text-sm text-apple-gray-500 font-medium leading-relaxed">{desc}</p>
-            <button className="w-full py-4 bg-slate-900 dark:bg-apple-gray-50 dark:text-apple-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all active:scale-[0.98]">
+            <p className="text-sm text-muted-foreground mb-4">{desc}</p>
+            <Button variant="outline" className="w-full" size="sm">
                 {action}
-            </button>
+            </Button>
         </div>
     )
 }

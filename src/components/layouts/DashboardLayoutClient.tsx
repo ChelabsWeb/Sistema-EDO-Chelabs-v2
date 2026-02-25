@@ -1,6 +1,7 @@
 'use client'
 
 import { RoleBasedLayout } from './RoleBasedLayout'
+import { PresenceProvider } from '@/components/providers/presence-provider'
 import type { UserRole } from '@/types/database'
 
 interface DashboardLayoutClientProps {
@@ -17,12 +18,14 @@ export function DashboardLayoutClient({
   userEmail,
 }: DashboardLayoutClientProps) {
   return (
-    <RoleBasedLayout
-      userRole={userRole}
-      userName={userName}
-      userEmail={userEmail}
-    >
-      {children}
-    </RoleBasedLayout>
+    <PresenceProvider>
+      <RoleBasedLayout
+        userRole={userRole}
+        userName={userName}
+        userEmail={userEmail}
+      >
+        {children}
+      </RoleBasedLayout>
+    </PresenceProvider>
   )
 }

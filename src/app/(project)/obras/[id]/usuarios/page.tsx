@@ -11,6 +11,7 @@ import {
   unassignUsuarioFromObra,
 } from '@/app/actions/usuarios-obra'
 import type { Obra, Usuario } from '@/types/database'
+import { UserPresenceBadge } from '@/components/shared/UserPresenceBadge'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -192,7 +193,10 @@ export default function UsuariosObraPage({ params }: Props) {
                           </div>
                         </div>
                         <div>
-                          <div className="text-base font-black text-foreground font-display">{usuario.nombre}</div>
+                          <div className="text-base font-black text-foreground font-display flex items-center gap-2">
+                            {usuario.nombre}
+                            <UserPresenceBadge userId={usuario.id} />
+                          </div>
                           <div className="text-xs font-medium text-apple-gray-500 flex items-center gap-2">
                             <Mail className="w-3 h-3 text-apple-blue/60" />
                             {usuario.email}
@@ -252,7 +256,10 @@ export default function UsuariosObraPage({ params }: Props) {
                           <User className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="text-sm font-black text-foreground font-display">{usuario.nombre}</div>
+                          <div className="text-sm font-black text-foreground font-display flex items-center gap-2">
+                            {usuario.nombre}
+                            <UserPresenceBadge userId={usuario.id} />
+                          </div>
                           <div className="text-[10px] font-medium text-apple-gray-500">{usuario.email}</div>
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-apple-gray-100 dark:bg-white/10 text-apple-gray-500 border border-apple-gray-200 dark:border-white/10 mt-1.5">
                             {rolLabels[usuario.rol] || usuario.rol}

@@ -241,6 +241,14 @@ export default async function ObraDetailPage({ params }: Props) {
               <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-apple-blue shadow-sm border border-apple-blue/10"><Users className="w-5 h-5" /></div>
               <span className="font-black text-xs text-foreground tracking-tight uppercase">Equipo de<br />Trabajo</span>
             </Link>
+            <Link href={`/obras/${id}/documentos`} className="flex flex-col gap-6 p-6 bg-purple-500/5 backdrop-blur-md rounded-[32px] border border-purple-500/10 hover:border-purple-500/30 hover:bg-purple-500/10 transition-all group shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-purple-500 shadow-sm border border-purple-500/10"><FileText className="w-5 h-5" /></div>
+              <span className="font-black text-xs text-foreground tracking-tight uppercase">Planos &<br />Renders</span>
+            </Link>
+            <Link href={`/obras/${id}/calendario`} className="flex flex-col gap-6 p-6 bg-amber-500/5 backdrop-blur-md rounded-[32px] border border-amber-500/10 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all group shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-amber-500 shadow-sm border border-amber-500/10"><Calendar className="w-5 h-5" /></div>
+              <span className="font-black text-xs text-foreground tracking-tight uppercase">Calendario<br />Maestro</span>
+            </Link>
           </div>
 
           {/* Activity Cards */}

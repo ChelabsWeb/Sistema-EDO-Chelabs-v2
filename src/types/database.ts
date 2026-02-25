@@ -13,8 +13,8 @@ export type Json =
 // ENUM TYPES
 // ============================================
 
-/** User roles: admin (super), director_obra (DO), jefe_obra (JO), compras */
-export type UserRole = 'admin' | 'director_obra' | 'jefe_obra' | 'compras';
+/** User roles: admin (super), director_obra (DO), jefe_obra (JO), compras, encargado_stock */
+export type UserRole = 'admin' | 'director_obra' | 'jefe_obra' | 'compras' | 'encargado_stock';
 
 /** Obra status */
 export type ObraEstado = 'activa' | 'pausada' | 'finalizada';
@@ -182,6 +182,38 @@ export interface Database {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      mensajes: {
+        Row: {
+          id: string
+          remitente_id: string
+          contenido: string
+          creado_en: string
+          leido: boolean
+        }
+        Insert: {
+          id?: string
+          remitente_id: string
+          contenido: string
+          creado_en?: string
+          leido?: boolean
+        }
+        Update: {
+          id?: string
+          remitente_id?: string
+          contenido?: string
+          creado_en?: string
+          leido?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensajes_remitente_id_fkey"
+            columns: ["remitente_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       ot_historial: {
         Row: {

@@ -1,8 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Building2, Plus, ChevronRight, MapPin, Calendar, AlertCircle } from 'lucide-react'
+import { Building2, Plus, ChevronRight, MapPin, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 
 export default async function ObrasPage() {
   const supabase = await createClient()
@@ -45,7 +49,6 @@ export default async function ObrasPage() {
     error = fetchError
   }
 
-  // Mock progress for demo purposes
   const getProgress = (id: string, estado: string) => {
     if (estado === 'finalizada') return 100;
     if (id === '1') return 65;
@@ -60,208 +63,120 @@ export default async function ObrasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-foreground selection:bg-blue-500/30 bg-grid-pattern transition-colors duration-500">
-      <div className="max-w-[1600px] mx-auto px-10 pb-20 relative z-10">
-        {/* Header Section */}
-        <header className="pt-16 pb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="px-3 py-1 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/20 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-apple-blue fill-apple-blue" />
-                <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">Gestión de Proyectos</span>
-              </div>
-              <div className="px-3 py-1 rounded-full bg-apple-gray-100 dark:bg-white/5 border border-apple-gray-200 dark:border-white/5 flex items-center gap-1.5">
-                <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">
-                  Activas: {obras.filter(o => o.estado === 'activa').length}
-                </span>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-black font-display tracking-tight text-foreground leading-[0.9]">
-                Mis Obras<span className="text-apple-blue">.</span>
-              </h1>
-              <p className="text-lg text-apple-gray-400 font-medium tracking-tight max-w-xl leading-relaxed">
-                Ecosistema centralizado para la orquestación de recursos y control de ejecución física.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/obras/nueva"
-            className="bg-apple-blue hover:bg-apple-blue-dark text-white px-10 py-5 rounded-full flex items-center gap-4 font-black transition-all shadow-xl shadow-apple-blue/25 group uppercase text-xs tracking-widest"
-          >
-            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" strokeWidth={3} />
-            <span>NUEVA OBRA</span>
-          </Link>
-        </header>
-
-        {/* Global Error State */}
-        {error && (
-          <div className="mb-8 p-6 glass rounded-[2rem] border-red-500/20 text-red-500 flex items-center gap-4 animate-shake">
-            <AlertCircle className="w-6 h-6" />
-            <p className="font-black text-sm uppercase tracking-tight">{error.message}</p>
-          </div>
-        )}
-
-        {/* Obras Grid */}
-        {obras.length === 0 ? (
-          <div className="py-32 text-center glass rounded-[3rem] border border-apple-gray-100 dark:border-white/5">
-            <div className="size-20 rounded-full bg-apple-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-8">
-              <Building2 className="w-10 h-10 text-apple-gray-300 dark:text-white/10" />
-            </div>
-            <h3 className="text-3xl font-black font-display uppercase mb-2">Vacío Estratégico</h3>
-            <p className="text-apple-gray-400 font-medium mb-10 max-w-sm mx-auto">No hay unidades operativas registradas. Comienza la expansión ahora.</p>
-            <Link href="/obras/nueva" className="bg-apple-blue text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-transform">
-              Crear Obra
+    <div className="flex-1 flex flex-col space-y-8 h-full">
+      {/* Header Section */}
+      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between py-2">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Mis Obras</h2>
+          <p className="text-muted-foreground mt-1">
+            Ecosistema centralizado para la orquestación de recursos y control de ejecución física.
+          </p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Badge variant="secondary" className="px-3 py-1">
+            Activas: {obras.filter(o => o.estado === 'activa').length}
+          </Badge>
+          <Button asChild>
+            <Link href="/obras/nueva">
+              <Plus className="mr-2 h-4 w-4" /> Nueva Obra
             </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-8">
-            {obras.map((obra) => {
-              const progress = getProgress(obra.id, obra.estado);
-              const ejecutado = getEjecutado(obra.presupuesto_total, progress);
-              const isFinalizada = obra.estado === 'finalizada';
+          </Button>
+        </div>
+      </div>
 
-              return (
-                <div key={obra.id} className={cn(
-                  "glass p-7 aspect-square flex flex-col justify-between group rounded-[2.25rem] border border-apple-gray-100 dark:border-white/5 hover:bg-white dark:hover:bg-white/5 hover:shadow-2xl transition-all duration-500 relative overflow-hidden",
-                  isFinalizada && "opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
-                )}>
-                  <div className="absolute top-0 right-0 w-32 h-full bg-apple-blue/[0.01] -skew-x-12 translate-x-12 pointer-events-none" />
+      {/* Global Error State */}
+      {error && (
+        <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-md flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <p className="font-medium text-sm">{error.message}</p>
+        </div>
+      )}
 
-                  {/* Top: Branding & Status */}
-                  <div className="flex flex-col gap-4 relative z-10">
-                    <div className="flex justify-between items-start">
-                      <div className="size-12 bg-apple-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center border border-apple-gray-200 dark:border-white/10 group-hover:border-apple-blue transition-colors duration-500">
-                        <Building2 className="w-6 h-6 text-apple-gray-400 group-hover:text-apple-blue transition-colors" />
-                      </div>
-                      <span className={cn(
-                        "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.2em] border transition-all shadow-sm",
-                        obra.estado === 'activa' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
-                          obra.estado === 'pausada' ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
-                            "bg-apple-gray-100 text-apple-gray-400 border-apple-gray-200"
-                      )}>
-                        {obra.estado}
-                      </span>
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className={cn(
-                        "text-2xl font-black font-display uppercase tracking-tight leading-tight transition-colors",
-                        isFinalizada ? "text-apple-gray-400" : "text-foreground group-hover:text-apple-blue"
-                      )}>
-                        {obra.nombre}
-                      </h3>
-                      <div className="flex items-center gap-2 text-apple-gray-400 font-medium">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span className="text-[10px] uppercase tracking-wider">{obra.direccion}</span>
-                      </div>
+      {/* Obras Grid */}
+      {obras.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center p-12 text-center border-dashed">
+          <Building2 className="w-12 h-12 text-muted-foreground mb-4 opacity-50" />
+          <h3 className="text-xl font-semibold mb-2">Vacío Estratégico</h3>
+          <p className="text-muted-foreground mb-6 max-w-sm">
+            No hay unidades operativas registradas. Comienza la expansión ahora.
+          </p>
+          <Button asChild>
+            <Link href="/obras/nueva">Crear Obra</Link>
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {obras.map((obra) => {
+            const progress = getProgress(obra.id, obra.estado);
+            const ejecutado = getEjecutado(obra.presupuesto_total, progress);
+            const isFinalizada = obra.estado === 'finalizada';
+
+            return (
+              <Card key={obra.id} className={cn("flex flex-col transition-all hover:shadow-md", isFinalizada && "opacity-75 grayscale hover:grayscale-0 hover:opacity-100")}>
+                <CardHeader className="flex flex-row items-start justify-between pb-2">
+                  <div className="space-y-1">
+                    <CardTitle className="text-xl line-clamp-1">{obra.nombre}</CardTitle>
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-1">
+                      <MapPin className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{obra.direccion}</span>
                     </div>
                   </div>
-
-                  {/* Middle: Progress & Financials */}
-                  <div className="space-y-6 relative z-10 flex-1 flex flex-col justify-center">
+                  <Badge variant={obra.estado === 'activa' ? 'default' : obra.estado === 'pausada' ? 'secondary' : 'outline'} className="capitalize">
+                    {obra.estado}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="flex-1 mt-4">
+                  <div className="space-y-4">
                     {/* Progress Bar */}
                     <div>
-                      <div className="flex justify-between items-end mb-3">
-                        <div className="space-y-0.5">
-                          <p className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest">Ejecución Física</p>
-                          <div className="size-1 rounded-full bg-apple-blue animate-pulse"></div>
-                        </div>
-                        <span className={cn(
-                          "text-3xl font-black font-display tracking-tight transition-colors",
-                          isFinalizada ? "text-apple-gray-400" : "text-apple-blue"
-                        )}>
-                          {progress}<span className="text-lg">%</span>
-                        </span>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Ejecución Física</span>
+                        <span className="text-sm font-bold">{progress}%</span>
                       </div>
-                      <div className="h-3 w-full bg-apple-gray-100 dark:bg-white/5 rounded-full overflow-hidden p-0.5 border border-apple-gray-200 dark:border-white/5">
-                        <div
-                          className={cn(
-                            "h-full rounded-full transition-all duration-1000 ease-out relative",
-                            isFinalizada ? "bg-apple-gray-300" : "bg-apple-blue shadow-[0_0_10px_rgba(43,75,238,0.3)]"
-                          )}
-                          style={{ width: `${progress}%` }}
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                        </div>
-                      </div>
+                      <Progress value={progress} className="h-2" />
                     </div>
 
                     {/* Financial Boxes */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-apple-gray-50 dark:bg-white/[0.02] p-4 rounded-2xl border border-apple-gray-100 dark:border-white/5">
-                        <p className="text-[8px] font-black text-apple-gray-400 uppercase tracking-widest mb-1.5">Certificado</p>
-                        <p className={cn(
-                          "text-base font-black font-display text-foreground tracking-tight",
-                          isFinalizada && "text-apple-gray-500"
-                        )}>
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <div className="bg-muted p-3 rounded-md">
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Certificado</p>
+                        <p className="text-sm font-bold truncate">
                           {new Intl.NumberFormat('es-UY', { style: 'currency', currency: 'UYU', maximumFractionDigits: 0 }).format(ejecutado)}
                         </p>
                       </div>
-                      <div className="bg-apple-gray-50 dark:bg-white/[0.02] p-4 rounded-2xl border border-apple-gray-100 dark:border-white/5">
-                        <p className="text-[8px] font-black text-apple-gray-400 uppercase tracking-widest mb-1.5">Capacidad</p>
-                        <p className={cn(
-                          "text-base font-black font-display text-foreground tracking-tight",
-                          isFinalizada && "text-apple-gray-500"
-                        )}>
+                      <div className="bg-muted p-3 rounded-md">
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Presupuesto</p>
+                        <p className="text-sm font-bold truncate">
                           {new Intl.NumberFormat('es-UY', { style: 'currency', currency: 'UYU', maximumFractionDigits: 0 }).format(obra.presupuesto_total || 0)}
                         </p>
                       </div>
                     </div>
                   </div>
+                </CardContent>
+                <CardFooter className="pt-4 border-t">
+                  <Button variant="ghost" className="w-full justify-between" asChild>
+                    <Link href={`/obras/${obra.id}`}>
+                      <span>Ver Detalles</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            )
+          })}
+        </div>
+      )}
 
-                  {/* Bottom: Action Link */}
-                  <Link
-                    href={`/obras/${obra.id}`}
-                    className="pt-6 border-t border-apple-gray-100 dark:border-white/5 flex items-center justify-between group/link relative z-10"
-                  >
-                    <span className={cn(
-                      "text-[9px] font-black uppercase tracking-[0.25em] transition-all",
-                      isFinalizada ? "text-apple-gray-400" : "text-apple-blue group-hover:tracking-[0.3em]"
-                    )}>
-                      Sumergirse en Datos
-                    </span>
-                    <div className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500",
-                      isFinalizada ? "bg-apple-gray-100 text-apple-gray-400" : "bg-apple-blue/5 text-apple-blue group-hover/link:bg-apple-blue group-hover/link:text-white group-hover/link:shadow-lg group-hover/link:shadow-apple-blue/20"
-                    )}>
-                      <ChevronRight className="w-5 h-5 group-hover/link:translate-x-1 transition-transform" />
-                    </div>
-                  </Link>
-                </div>
-              )
-            })}
-          </div>
-        )}
+      {/* Pagination Placeholder */}
+      <div className="flex items-center justify-between pt-6 border-t">
+        <p className="text-sm text-muted-foreground">
+          Mostrando <span className="font-medium text-foreground">1-{obras.length}</span> de <span className="font-medium text-foreground">{obras.length}</span> obras
+        </p>
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm" disabled>Anterior</Button>
+          <Button variant="outline" size="sm" disabled>Siguiente</Button>
+        </div>
       </div>
-
-      {/* Footer Pagination */}
-      <footer className="mt-8 px-10 py-12 flex flex-col md:flex-row items-center justify-between border-t border-apple-gray-100 dark:border-white/10 glass rounded-t-[3rem] gap-8">
-        <div className="flex items-center gap-8">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em] mb-1">Métricas de Vista</span>
-            <span className="text-base font-black text-foreground">1 - {obras.length} <span className="text-apple-gray-400 font-medium ml-2 uppercase text-[10px] tracking-widest">de {obras.length + 20} Unidades Operativas</span></span>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="w-14 h-14 flex items-center justify-center rounded-full glass border border-apple-gray-100 dark:border-white/5 text-apple-gray-400 hover:text-apple-blue transition-all">
-            <ChevronRight className="w-7 h-7 rotate-180" />
-          </button>
-          {[1, 2, 3].map(page => (
-            <button
-              key={page}
-              className={cn(
-                "w-14 h-14 flex items-center justify-center rounded-full font-black transition-all text-sm",
-                page === 1 ? "bg-apple-blue text-white shadow-xl shadow-apple-blue/25 scale-110" : "glass border border-apple-gray-100 dark:border-white/5 text-apple-gray-500 hover:text-foreground"
-              )}
-            >
-              {page}
-            </button>
-          ))}
-          <button className="w-14 h-14 flex items-center justify-center rounded-full glass border border-apple-gray-100 dark:border-white/5 text-apple-gray-400 hover:text-apple-blue transition-all">
-            <ChevronRight className="w-7 h-7" />
-          </button>
-        </div>
-      </footer>
     </div>
   )
 }

@@ -40,19 +40,19 @@ export function DatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-full justify-start text-left font-normal h-11",
-            "bg-[--color-apple-gray-50] border-[--color-apple-gray-200]/50",
-            "hover:bg-[--color-apple-gray-100] hover:border-[--color-apple-gray-300]",
-            "rounded-[12px] px-4",
+            "w-full justify-start text-left font-normal h-10",
+            "bg-background border-input",
+            "hover:bg-accent hover:text-accent-foreground",
+            "rounded-md px-4",
             "transition-all duration-200",
-            "focus:ring-2 focus:ring-[--color-apple-blue]/20 focus:border-[--color-apple-blue]",
-            !date && "text-[--color-apple-gray-400]",
+            "focus:ring-2 focus:ring-ring focus:border-ring",
+            !date && "text-muted-foreground",
             className
           )}
         >
-          <CalendarIcon className="mr-3 h-4 w-4 text-[--color-apple-gray-400]" />
+          <CalendarIcon className="mr-3 h-4 w-4 text-muted-foreground" />
           {date ? (
-            <span className="text-[--color-apple-gray-600]">
+            <span className="text-foreground">
               {format(date, "PPP", { locale: es })}
             </span>
           ) : (

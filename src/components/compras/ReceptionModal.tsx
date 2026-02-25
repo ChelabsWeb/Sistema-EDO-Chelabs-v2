@@ -1,8 +1,15 @@
 'use client'
 
 import React from 'react'
-import { X, CheckCircle2, AlertTriangle, AlertCircle, Package, ArrowRight, Save, XCircle, Calculator, Info } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, AlertCircle, Package, ArrowRight, Save, XCircle, Calculator, Info } from 'lucide-react'
 import { Card, CardContent } from "@/components/ui/card"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogOverlay,
+} from "@/components/ui/dialog"
 import { cn } from '@/lib/utils'
 import { formatPesos } from '@/lib/utils/currency'
 import type { OCForReception, RecepcionItem } from '@/app/actions/recepciones'
@@ -35,27 +42,20 @@ export function ReceptionModal({
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-14 animate-apple-fade-in antialiased font-sans">
-            {/* Backdrop Ultra-Blurred */}
-            <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500"
-                onClick={onClose}
-            />
-
-            {/* Modal Container: Apple Glass Design */}
-            <div className="relative w-full max-w-5xl bg-[#f5f5f7] dark:bg-apple-gray-50 border border-white/20 dark:border-white/5 rounded-[48px] shadow-apple-float overflow-hidden flex flex-col max-h-[92vh] scale-up-center">
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-w-5xl bg-[#f5f5f7] dark:bg-apple-gray-50 border-white/20 p-0 overflow-hidden flex flex-col max-h-[92vh] gap-0 rounded-[48px]">
 
                 {/* Surgical Header */}
-                <header className="px-12 py-10 bg-white/50 dark:bg-black/20 backdrop-blur-xl border-b border-apple-gray-100 dark:border-white/5 flex items-center justify-between shrink-0 relative z-10">
+                <DialogHeader className="px-12 py-8 bg-white/50 dark:bg-black/20 backdrop-blur-xl border-b border-apple-gray-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0 m-0">
                     <div className="flex items-center gap-6">
                         <div className="w-16 h-16 bg-apple-blue text-white rounded-[24px] flex items-center justify-center shadow-lg shadow-apple-blue/20">
                             <Package className="w-8 h-8" />
                         </div>
-                        <div>
+                        <div className="text-left space-y-1">
                             <p className="text-[10px] font-black text-apple-blue uppercase tracking-[0.2em] mb-1">Módulo de Compras</p>
-                            <h3 className="text-3xl font-black text-foreground tracking-tighter">
+                            <DialogTitle className="text-3xl font-black text-foreground tracking-tighter m-0">
                                 Control de Recepción
-                            </h3>
+                            </DialogTitle>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className="text-xs font-bold text-apple-gray-400">Orden de Compra OC-{oc?.numero}</span>
                                 <div className="w-1 h-1 rounded-full bg-apple-gray-200" />
@@ -63,13 +63,7 @@ export function ReceptionModal({
                             </div>
                         </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="w-14 h-14 rounded-full bg-apple-gray-100 dark:bg-white/5 flex items-center justify-center text-apple-gray-400 hover:text-foreground hover:rotate-90 transition-all active:scale-95 border border-apple-gray-200 dark:border-white/5"
-                    >
-                        <X className="w-6 h-6" />
-                    </button>
-                </header>
+                </DialogHeader>
 
                 {/* Dynamic Content Area */}
                 <div className="flex-1 overflow-y-auto p-12 space-y-12 scrollbar-none custom-scrollbar">
@@ -277,7 +271,7 @@ export function ReceptionModal({
                         </button>
                     </div>
                 </footer>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     )
 }

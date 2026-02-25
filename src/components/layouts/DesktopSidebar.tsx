@@ -75,15 +75,15 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 z-40 w-64 flex flex-col py-8 border-r border-slate-200 dark:border-white/5 bg-transparent backdrop-blur-2xl shrink-0 transition-all duration-500">
+    <aside className="fixed left-0 top-0 bottom-0 z-40 w-64 flex flex-col py-8 border-r border-sidebar-border bg-sidebar text-sidebar-foreground shrink-0 transition-all duration-300">
       {/* Brand Header */}
       <div className="px-8 mb-10 flex items-center gap-4 group cursor-default">
-        <Logo size={44} className="group-hover:scale-110 transition-transform duration-500" />
+        <Logo size={44} className="group-hover:scale-105 transition-transform duration-300" />
         <div>
-          <h1 className="text-slate-900 dark:text-white text-[19px] font-extrabold leading-none tracking-tight">
+          <h1 className="text-sidebar-foreground text-[19px] font-bold leading-none tracking-tight">
             Sistema EDO
           </h1>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.25em] mt-1.5 opacity-80">
+          <p className="text-[10px] text-muted-foreground font-semibold uppercase mt-1.5 opacity-80">
             Premium V2
           </p>
         </div>
@@ -97,7 +97,7 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
 
           return (
             <div key={section.title}>
-              <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">
+              <p className="px-4 text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-widest mb-4">
                 {section.title}
               </p>
               <div className="space-y-1">
@@ -109,20 +109,20 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        'group flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13.5px] font-bold transition-all duration-300 relative overflow-hidden',
+                        'group flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 relative',
                         isActive
-                          ? 'bg-primary/10 text-primary dark:text-white border-l-4 border-primary rounded-l-none pl-3'
-                          : 'text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white hover:bg-primary/5 dark:hover:bg-white/5 hover:translate-x-1'
+                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
                       )}
                     >
                       <Icon
                         className={cn(
-                          'w-[22px] h-[22px] transition-all duration-300',
-                          isActive ? 'text-primary' : 'text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors'
+                          'w-5 h-5 transition-all duration-200',
+                          isActive ? 'text-sidebar-accent-foreground' : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground'
                         )}
-                        strokeWidth={isActive ? 2.5 : 2}
+                        strokeWidth={2}
                       />
-                      <span className="tracking-tight">{item.label}</span>
+                      <span>{item.label}</span>
                     </Link>
                   )
                 })}
@@ -132,14 +132,13 @@ export function DesktopSidebar({ userRole, userName, userEmail }: DesktopSidebar
         })}
       </nav>
 
-      {/* Sign Out Only */}
       <div className="px-4 mt-auto">
         <form action="/api/auth/signout" method="post">
           <button
             type="submit"
-            className="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-slate-500 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 transition-all font-bold text-[11px] uppercase tracking-widest group"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all font-medium text-sm group"
           >
-            <LogOut className="w-[18px] h-[18px] transition-transform group-hover:-translate-x-1" strokeWidth={2.5} />
+            <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" strokeWidth={2} />
             Cerrar sesión
           </button>
         </form>

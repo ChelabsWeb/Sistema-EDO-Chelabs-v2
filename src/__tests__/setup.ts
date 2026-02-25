@@ -1,6 +1,10 @@
-import { vi } from 'vitest'
+import { vi, afterEach } from 'vitest'
 
-// Mock Next.js navigation
+// Global mock clearance
+afterEach(() => {
+  vi.clearAllMocks()
+  vi.resetAllMocks()
+})
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),

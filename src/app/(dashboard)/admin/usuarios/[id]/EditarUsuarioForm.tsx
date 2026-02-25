@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { updateUsuario, deactivateUsuario } from '@/app/actions/usuarios'
 import type { Usuario, UserRole } from '@/types/database'
 import {
@@ -12,6 +15,18 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface Obra {
   id: string
@@ -28,7 +43,25 @@ const roles: { value: UserRole; label: string; icon: any; color: string }[] = [
   { value: 'director_obra', label: 'Director de Obra (DO)', icon: Building2, color: 'text-blue-500' },
   { value: 'jefe_obra', label: 'Jefe de Obra (JO)', icon: User, color: 'text-emerald-500' },
   { value: 'compras', label: 'Gerencia Compras', icon: Lock, color: 'text-amber-500' },
+  { value: 'encargado_stock', label: 'Encargado de Stock', icon: Building2, color: 'text-amber-600' },
 ]
+
+const formSchema = z.object({
+  nombre: z.string().min(2, { message: 'El nombre debe tener al menos 2 caracteres.' }),
+  rol: z.enum(['admin', 'director_obra', 'jefe_obra', 'compras', 'encargado_stock'], {
+    message: 'Selecciona un rol.'
+  }),
+  obra_id: z.string().optional(),
+  activo: z.boolean(),
+}).refine(data => {
+  if (data.rol === 'jefe_obra' && !data.obra_id) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Jefe de Obra requiere una obra asignada.",
+  path: ["obra_id"],
+});
 
 export function EditarUsuarioForm({ usuario, obras }: Props) {
   const router = useRouter()
@@ -37,12 +70,26 @@ export function EditarUsuarioForm({ usuario, obras }: Props) {
   const [success, setSuccess] = useState(false)
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      nombre: usuario.nombre,
+      rol: usuario.rol as any,
+      obra_id: usuario.obra_id || '',
+      activo: usuario.activo ?? true,
+    },
+  })
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true)
     setError(null)
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData()
+    formData.append('nombre', values.nombre)
+    formData.append('rol', values.rol)
+    if (values.obra_id) formData.append('obra_id', values.obra_id)
+    if (values.activo) formData.append('activo', 'true')
+
     const result = await updateUsuario(usuario.id, formData)
 
     if (!result.success) {
@@ -72,181 +119,212 @@ export function EditarUsuarioForm({ usuario, obras }: Props) {
 
   return (
     <div className="space-y-12">
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-apple-gray-50 rounded-[48px] shadow-apple-float border border-apple-gray-100 dark:border-white/5 overflow-hidden relative">
-        {/* Accent Glow */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-apple-blue/5 blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="bg-white dark:bg-apple-gray-50 rounded-[48px] shadow-apple-float border border-apple-gray-100 dark:border-white/5 overflow-hidden relative">
+          {/* Accent Glow */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-apple-blue/5 blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
-        <div className="p-10 md:p-16 space-y-16 relative z-10">
-          {/* Identity Header */}
-          <div className="flex flex-col md:flex-row gap-10 items-start md:items-center">
-            <div className="w-24 h-24 rounded-[32px] bg-gradient-to-br from-apple-blue to-indigo-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-all duration-500">
-              <span className="text-white font-black text-4xl tracking-tighter uppercase leading-none pt-1">
-                {usuario.nombre.split(' ').map(n => n[0]).join('').substring(0, 2)}
-              </span>
-            </div>
-            <div className="flex-1 space-y-1">
-              <h2 className="text-4xl font-black text-foreground tracking-tighter uppercase">{usuario.nombre}</h2>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-apple-gray-300 uppercase tracking-widest">
-                  <Mail className="w-4 h-4 text-apple-blue" />
-                  {usuario.email}
-                </div>
-                <div className="w-1.5 h-1.5 rounded-full bg-apple-gray-100" />
-                <div className={cn(
-                  "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
-                  usuario.activo ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
-                    : "bg-apple-gray-50 text-apple-gray-400 border-apple-gray-100 dark:bg-apple-gray-50/50 dark:border-white/5"
-                )}>
-                  {usuario.activo ? 'Cuenta Activa' : 'Cuenta Suspendida'}
+          <div className="p-10 md:p-16 space-y-16 relative z-10">
+            {/* Identity Header */}
+            <div className="flex flex-col md:flex-row gap-10 items-start md:items-center">
+              <div className="w-24 h-24 rounded-[32px] bg-gradient-to-br from-apple-blue to-indigo-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-all duration-500">
+                <span className="text-white font-black text-4xl tracking-tighter uppercase leading-none pt-1">
+                  {usuario.nombre.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                </span>
+              </div>
+              <div className="flex-1 space-y-1">
+                <h2 className="text-4xl font-black text-foreground tracking-tighter uppercase">{usuario.nombre}</h2>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-apple-gray-300 uppercase tracking-widest">
+                    <Mail className="w-4 h-4 text-apple-blue" />
+                    {usuario.email}
+                  </div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-apple-gray-100" />
+                  <div className={cn(
+                    "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                    usuario.activo ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
+                      : "bg-apple-gray-50 text-apple-gray-400 border-apple-gray-100 dark:bg-apple-gray-50/50 dark:border-white/5"
+                  )}>
+                    {usuario.activo ? 'Cuenta Activa' : 'Cuenta Suspendida'}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Form Fields Section */}
-          <div className="pt-10 border-t border-apple-gray-100 dark:border-white/5 space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {/* Nombre Input */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 px-2">
-                  <User className="w-4 h-4 text-apple-blue" />
-                  <label htmlFor="nombre" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Nombre Completo</label>
-                </div>
-                <input
-                  type="text"
-                  id="nombre"
+            {/* Form Fields Section */}
+            <div className="pt-10 border-t border-apple-gray-100 dark:border-white/5 space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <FormField
+                  control={form.control}
                   name="nombre"
-                  required
-                  defaultValue={usuario.nombre}
-                  className="w-full h-16 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-bold text-foreground transition-all outline-none"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <User className="w-4 h-4 text-apple-blue" />
+                        <FormLabel className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Nombre Completo</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Input
+                          placeholder="Nombre y Apellido"
+                          className="w-full h-16 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 focus-visible:ring-4 focus-visible:ring-apple-blue/10 px-6 font-bold text-foreground transition-all outline-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="px-2" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="rol"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <Shield className="w-4 h-4 text-apple-blue" />
+                        <FormLabel className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Nivel de Acceso</FormLabel>
+                      </div>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-full h-16 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-bold text-foreground transition-all outline-none">
+                            <SelectValue placeholder="Seleccionar nivel..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-apple-gray-100 dark:border-white/10 dark:bg-[#0f111a] p-2">
+                          {roles.map((role) => (
+                            <SelectItem key={role.value} value={role.value} className="rounded-xl focus:bg-apple-gray-50 dark:focus:bg-white/5 cursor-pointer py-3 px-4">
+                              <span className="font-bold">{role.label}</span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="px-2" />
+                    </FormItem>
+                  )}
                 />
               </div>
 
-              {/* Rol Selection (Segmented Control style UI) */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 px-2">
-                  <Shield className="w-4 h-4 text-apple-blue" />
-                  <label htmlFor="rol" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Nivel de Acceso</label>
-                </div>
-                <select
-                  id="rol"
-                  name="rol"
-                  required
-                  defaultValue={usuario.rol}
-                  className="w-full h-16 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-bold text-foreground transition-all outline-none appearance-none"
-                >
-                  {roles.map((role) => (
-                    <option key={role.value} value={role.value}>
-                      {role.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {/* Obra Assignment */}
-              <div className="space-y-4 text-left">
-                <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center gap-3">
-                    <Building2 className="w-4 h-4 text-apple-blue" />
-                    <label htmlFor="obra_id" className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Obra Designada</label>
-                  </div>
-                  <span className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">(Opcional)</span>
-                </div>
-                <select
-                  id="obra_id"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <FormField
+                  control={form.control}
                   name="obra_id"
-                  defaultValue={usuario.obra_id || ''}
-                  className="w-full h-16 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-bold text-foreground transition-all outline-none appearance-none"
-                >
-                  <option value="">Global / Sin asignar</option>
-                  {obras.map((obra) => (
-                    <option key={obra.id} value={obra.id}>
-                      {obra.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <div className="flex items-center justify-between px-2">
+                        <div className="flex items-center gap-3">
+                          <Building2 className="w-4 h-4 text-apple-blue" />
+                          <FormLabel className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Obra Designada</FormLabel>
+                        </div>
+                        <span className="text-[9px] font-black text-apple-gray-300 uppercase tracking-widest">(Opcional)</span>
+                      </div>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-full h-16 rounded-2xl bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 focus:ring-4 focus:ring-apple-blue/10 px-6 font-bold text-foreground transition-all outline-none">
+                            <SelectValue placeholder="Global / Sin asignar" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-apple-gray-100 dark:border-white/10 dark:bg-[#0f111a] p-2">
+                          <SelectItem value="" className="rounded-xl focus:bg-apple-gray-50 dark:focus:bg-white/5 cursor-pointer py-3 px-4 shadow-sm">
+                            <span className="font-bold uppercase tracking-widest text-[10px] text-apple-gray-400">Global / Sin asignar</span>
+                          </SelectItem>
+                          {obras.map((obra) => (
+                            <SelectItem key={obra.id} value={obra.id} className="rounded-xl focus:bg-apple-gray-50 dark:focus:bg-white/5 cursor-pointer py-3 px-4">
+                              <span className="font-bold">{obra.nombre}</span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="px-2" />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Account Status Switch */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 px-2">
-                  <Key className="w-4 h-4 text-apple-blue" />
-                  <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Estado Operativo</label>
-                </div>
-                <label className="flex items-center gap-6 p-1.5 px-4 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 rounded-2xl cursor-pointer hover:bg-white dark:hover:bg-white/5 transition-all h-16">
-                  <input
-                    type="checkbox"
-                    name="activo"
-                    value="true"
-                    defaultChecked={usuario.activo ?? true}
-                    className="w-6 h-6 rounded-lg text-apple-blue border-apple-gray-200 focus:ring-apple-blue/20 transition-all"
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-black text-foreground uppercase tracking-tight">Cuenta Habilitada</span>
-                    <span className="text-[9px] font-bold text-apple-gray-300 uppercase tracking-[0.2em]">Permite login y operaciones</span>
-                  </div>
-                </label>
+                <FormField
+                  control={form.control}
+                  name="activo"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <Key className="w-4 h-4 text-apple-blue" />
+                        <FormLabel className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest">Estado Operativo</FormLabel>
+                      </div>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <label className="flex items-center gap-6 p-1.5 px-4 bg-apple-gray-50 dark:bg-black/20 border border-apple-gray-100 dark:border-white/5 rounded-2xl cursor-pointer hover:bg-white dark:hover:bg-white/5 transition-all h-16 w-full">
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="w-6 h-6 rounded-lg text-apple-blue border-apple-gray-200 focus-visible:ring-apple-blue/20 transition-all"
+                            />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-black text-foreground uppercase tracking-tight">Cuenta Habilitada</span>
+                              <span className="text-[9px] font-bold text-apple-gray-300 uppercase tracking-[0.2em]">Permite login y operaciones</span>
+                            </div>
+                          </label>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Error / Success feedback */}
-          <AnimatePresence>
-            {(error || success) && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={cn(
-                  "p-8 rounded-[32px] border flex items-center gap-6 shadow-apple-sm",
-                  error ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400"
-                    : "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                )}
-              >
-                {error ? <AlertCircle className="w-8 h-8 shrink-0" /> : <CheckCircle2 className="w-8 h-8 shrink-0" />}
-                <div>
-                  <h4 className="text-sm font-black uppercase tracking-widest">{error ? 'Se detectó un problema' : 'Operación exitosa'}</h4>
-                  <p className="text-sm font-medium opacity-80">{error || 'Los datos han sido actualizados en la base maestra'}</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Action Bar Footer */}
-        <footer className="px-10 py-10 bg-apple-gray-50/50 dark:bg-black/10 border-t border-apple-gray-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 relative z-20">
-          <button
-            type="button"
-            onClick={() => setShowDeactivateConfirm(true)}
-            className="px-8 py-3 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-red-500 hover:text-white transition-all active:scale-95 flex items-center gap-2"
-          >
-            <Trash2 className="w-4 h-4" />
-            Desactivar Cuenta
-          </button>
-
-          <div className="flex items-center gap-6 w-full md:w-auto">
-            <Link href="/admin/usuarios" className="flex-1 md:flex-none px-6 py-3 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest hover:text-foreground transition-all">Cancelar</Link>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-[2] md:flex-none h-18 px-12 py-5 bg-apple-blue text-white rounded-[24px] font-black text-xs uppercase tracking-[0.2em] hover:bg-apple-blue-dark transition-all shadow-apple-float active:scale-[0.96] flex items-center justify-center gap-3 disabled:opacity-30"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Sincronizando...
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" />
-                  Guardar Perfil
-                </>
+            {/* Error / Success feedback */}
+            <AnimatePresence>
+              {(error || success) && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className={cn(
+                    "p-8 rounded-[32px] border flex items-center gap-6 shadow-apple-sm",
+                    error ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400"
+                      : "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                  )}
+                >
+                  {error ? <AlertCircle className="w-8 h-8 shrink-0" /> : <CheckCircle2 className="w-8 h-8 shrink-0" />}
+                  <div>
+                    <h4 className="text-sm font-black uppercase tracking-widest">{error ? 'Se detectó un problema' : 'Operación exitosa'}</h4>
+                    <p className="text-sm font-medium opacity-80">{error || 'Los datos han sido actualizados en la base maestra'}</p>
+                  </div>
+                </motion.div>
               )}
-            </button>
+            </AnimatePresence>
           </div>
-        </footer>
-      </form>
+
+          {/* Action Bar Footer */}
+          <footer className="px-10 py-10 bg-apple-gray-50/50 dark:bg-black/10 border-t border-apple-gray-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 relative z-20">
+            <button
+              type="button"
+              onClick={() => setShowDeactivateConfirm(true)}
+              className="px-8 py-3 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-red-500 hover:text-white transition-all active:scale-95 flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Desactivar Cuenta
+            </button>
+
+            <div className="flex items-center gap-6 w-full md:w-auto">
+              <Link href="/admin/usuarios" className="flex-1 md:flex-none px-6 py-3 text-[10px] font-black text-apple-gray-300 uppercase tracking-widest hover:text-foreground transition-all">Cancelar</Link>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-[2] md:flex-none h-18 px-12 py-5 bg-apple-blue text-white rounded-[24px] font-black text-xs uppercase tracking-[0.2em] hover:bg-apple-blue-dark transition-all shadow-apple-float active:scale-[0.96] flex items-center justify-center gap-3 disabled:opacity-30"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sincronizando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    Guardar Perfil
+                  </>
+                )}
+              </button>
+            </div>
+          </footer>
+        </form>
+      </Form>
 
       {/* Confirmation Modal */}
       <AnimatePresence>
