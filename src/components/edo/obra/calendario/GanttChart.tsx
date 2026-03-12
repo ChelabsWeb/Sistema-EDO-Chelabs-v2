@@ -7,6 +7,9 @@ import { updateOTDates } from '@/app/actions/ordenes-trabajo'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, CalendarRange, Loader2, Maximize, Minimize } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
 
 interface GanttChartProps {
     initialOts: any[]
@@ -98,105 +101,111 @@ export function GanttChart({ initialOts }: GanttChartProps) {
     // Hide loading state
     if (loading) {
         return (
-            <div className="h-[500px] w-full bg-apple-gray-50 dark:bg-black/20 rounded-[48px] animate-pulse flex items-center justify-center border border-apple-gray-100 dark:border-white/5">
-                <Loader2 className="w-8 h-8 text-apple-gray-400 animate-spin" />
-            </div>
+            <Card className="h-[500px] w-full flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
+            </Card>
         )
     }
 
     if (tasks.length === 0) {
         return (
-            <div className="h-[400px] w-full premium-card flex flex-col items-center justify-center p-10 text-center">
-                <div className="w-20 h-20 bg-apple-gray-50 dark:bg-white/5 rounded-3xl flex items-center justify-center mb-6">
-                    <CalendarRange className="w-8 h-8 text-apple-gray-300" />
+            <Card className="h-[400px] w-full flex flex-col items-center justify-center p-10 text-center border-dashed">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-6">
+                    <CalendarRange className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Sin Órdenes Programadas</h3>
-                <p className="text-sm font-medium text-apple-gray-400 max-w-sm mt-3">Crée órdenes de trabajo para que aparezcan en la línea de tiempo del proyecto.</p>
-            </div>
+                <h3 className="text-xl font-bold tracking-tight">Sin Órdenes Programadas</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mt-2">Cree órdenes de trabajo para que aparezcan en la línea de tiempo del proyecto.</p>
+            </Card>
         )
     }
 
     return (
-        <div className={cn(
-            "transition-all duration-500",
-            expanded ? "fixed inset-0 z-50 bg-white dark:bg-[#0f111a] p-6 pt-10" : "premium-card p-6 md:p-10"
+        <Card className={cn(
+            "transition-all duration-500 overflow-hidden",
+            expanded ? "fixed inset-0 z-50 m-0 rounded-none h-screen bg-background border-0" : "w-full"
         )}>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-                <div>
-                    <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter flex items-center gap-3">
-                        Calendario Maestro
-                        {updating && <Loader2 className="w-5 h-5 text-apple-blue animate-spin" />}
-                    </h2>
-                    <p className="text-sm font-medium text-apple-gray-400 mt-1">Arrastre las barras para recalendarizar. Las OT cerradas no pueden modificarse.</p>
-                </div>
-
-                <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden">
-                    <div className="bg-apple-gray-50 dark:bg-black/20 p-1.5 rounded-2xl flex w-full md:w-fit overflow-x-auto">
-                        <button
-                            onClick={() => setViewMode(ViewMode.Day)}
-                            className={cn("px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all", viewMode === ViewMode.Day ? "bg-white dark:bg-apple-gray-50 text-foreground shadow-sm" : "text-apple-gray-400 hover:text-foreground")}
-                        >
-                            Día
-                        </button>
-                        <button
-                            onClick={() => setViewMode(ViewMode.Week)}
-                            className={cn("px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all", viewMode === ViewMode.Week ? "bg-white dark:bg-apple-gray-50 text-foreground shadow-sm" : "text-apple-gray-400 hover:text-foreground")}
-                        >
-                            Semana
-                        </button>
-                        <button
-                            onClick={() => setViewMode(ViewMode.Month)}
-                            className={cn("px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all", viewMode === ViewMode.Month ? "bg-white dark:bg-apple-gray-50 text-foreground shadow-sm" : "text-apple-gray-400 hover:text-foreground")}
-                        >
-                            Mes
-                        </button>
+            <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
+                    <div>
+                        <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                            Calendario Maestro
+                            {updating && <Loader2 className="w-4 h-4 text-primary animate-spin" />}
+                        </h2>
+                        <p className="text-sm text-muted-foreground mt-1">Arrastre las barras para recalendarizar. Las OT cerradas no pueden modificarse.</p>
                     </div>
 
-                    <button
-                        onClick={() => setExpanded(!expanded)}
-                        className="w-12 h-12 rounded-2xl bg-apple-gray-50 dark:bg-black/20 flex items-center justify-center hover:bg-apple-gray-100 dark:hover:bg-white/10 transition-colors shrink-0"
-                    >
-                        {expanded ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-                    </button>
+                    <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden">
+                        <Tabs value={viewMode as unknown as string} onValueChange={(v) => setViewMode(v as unknown as ViewMode)}>
+                            <TabsList className="inline-flex w-max items-center justify-start rounded-xl bg-muted p-1.5 text-muted-foreground gap-1">
+                                <TabsTrigger 
+                                    value={ViewMode.Day as unknown as string} 
+                                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                                >
+                                    Día
+                                </TabsTrigger>
+                                <TabsTrigger 
+                                    value={ViewMode.Week as unknown as string} 
+                                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                                >
+                                    Semana
+                                </TabsTrigger>
+                                <TabsTrigger 
+                                    value={ViewMode.Month as unknown as string} 
+                                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                                >
+                                    Mes
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setExpanded(!expanded)}
+                            className="shrink-0"
+                        >
+                            {expanded ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                        </Button>
+                    </div>
                 </div>
-            </div>
 
-            <AnimatePresence>
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, height: 'auto', scale: 1 }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mb-8 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-2xl flex items-center gap-3"
-                    >
-                        <AlertCircle className="w-5 h-5" />
-                        <span className="text-xs font-black uppercase tracking-widest">{error}</span>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                <AnimatePresence>
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mb-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl flex items-center gap-3"
+                        >
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-sm font-semibold">{error}</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-            <div className={cn(
-                "rounded-[32px] overflow-hidden border border-apple-gray-100 dark:border-white/5",
-                expanded ? "h-[calc(100vh-160px)]" : "h-[600px]"
-            )}>
-                <Gantt
-                    tasks={tasks}
-                    viewMode={viewMode}
-                    onDateChange={handleTaskChange}
-                    onProgressChange={handleTaskChange}
-                    listCellWidth={expanded ? '155px' : '0px'} // Hide task list sidebar on standard view to maximize timeline space
-                    columnWidth={60}
-                    barBackgroundColor="#3b82f6"
-                    barBackgroundSelectedColor="#2563eb"
-                    barProgressColor="#1d4ed8"
-                    barProgressSelectedColor="#1e3a8a"
-                    barCornerRadius={12}
-                    fontFamily="inherit"
-                    fontSize="12px"
-                    rowHeight={60}
-                    ganttHeight={expanded ? window.innerHeight - 160 : 600}
-                />
-            </div>
-        </div>
+                <div className={cn(
+                    "rounded-xl overflow-hidden border",
+                    expanded ? "h-[calc(100vh-140px)]" : "h-[600px]"
+                )}>
+                    <Gantt
+                        tasks={tasks}
+                        viewMode={viewMode}
+                        onDateChange={handleTaskChange}
+                        onProgressChange={handleTaskChange}
+                        listCellWidth={expanded ? '155px' : '0px'} // Hide task list sidebar on standard view to maximize timeline space
+                        columnWidth={60}
+                        barBackgroundColor="#3b82f6"
+                        barBackgroundSelectedColor="#2563eb"
+                        barProgressColor="#1d4ed8"
+                        barProgressSelectedColor="#1e3a8a"
+                        barCornerRadius={8}
+                        fontFamily="inherit"
+                        fontSize="12px"
+                        rowHeight={50}
+                        ganttHeight={expanded ? window.innerHeight - 140 : 600}
+                    />
+                </div>
+            </CardContent>
+        </Card>
     )
 }

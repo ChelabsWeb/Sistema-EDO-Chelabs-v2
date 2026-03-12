@@ -22,7 +22,7 @@ export function SocialProof() {
   ]
 
   return (
-    <section className="w-full py-32 bg-slate-50 dark:bg-white/[0.02] border-t border-black/5 dark:border-white/5 relative overflow-hidden">
+    <section className="w-full py-16 md:py-32 bg-slate-50 dark:bg-white/[0.02] border-t border-black/5 dark:border-white/5 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
       
       <div className="max-w-screen-xl mx-auto px-6 relative z-10">
@@ -40,13 +40,13 @@ export function SocialProof() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 text-balance font-display"
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 text-balance font-display"
           >
             Constructores que ya blindan sus márgenes
           </motion.h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {testimonials.map((test, i) => (
             <motion.div
               key={i}
@@ -54,9 +54,9 @@ export function SocialProof() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: 0.1 * i }}
-              className="bg-white dark:bg-[#0b0f1a] p-10 rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-sm relative group hover:shadow-xl transition-all duration-500"
+              className="bg-white dark:bg-[#0b0f1a] p-6 sm:p-8 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-sm relative group hover:shadow-xl transition-all duration-500"
             >
-              <Quote className="absolute top-10 right-10 w-12 h-12 text-slate-100 dark:text-white/5 group-hover:text-blue-50 dark:group-hover:text-blue-500/10 transition-colors" />
+              <Quote className="absolute top-6 right-6 md:top-10 md:right-10 w-8 h-8 md:w-12 md:h-12 text-slate-100 dark:text-white/5 group-hover:text-blue-50 dark:group-hover:text-blue-500/10 transition-colors" />
               
               <div className="flex gap-1 mb-8 text-yellow-400">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -64,7 +64,7 @@ export function SocialProof() {
                 ))}
               </div>
 
-              <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 font-medium leading-relaxed mb-10">
+              <p className="text-base sm:text-lg md:text-xl text-slate-700 dark:text-slate-300 font-medium leading-relaxed mb-8 md:mb-10 relative z-10">
                 "{test.quote}"
               </p>
 
@@ -74,8 +74,8 @@ export function SocialProof() {
                 </div>
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white">{test.author}</h4>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                    {test.role} <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" /> <Building2 className="w-3 h-3" /> {test.company}
+                  <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    {test.role} <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 hidden sm:block" /> <Building2 className="w-3 h-3" /> {test.company}
                   </p>
                 </div>
               </div>

@@ -19,7 +19,7 @@ export default async function ProjectAnaliticaPage({ params }: { params: Promise
     return (
         <Suspense fallback={
             <div className="flex h-[80vh] items-center justify-center">
-                <Loader2 className="h-12 w-12 animate-spin text-apple-blue" />
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
         }>
             <AnaliticaClient

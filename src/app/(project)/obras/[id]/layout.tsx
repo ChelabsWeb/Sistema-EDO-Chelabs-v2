@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ProjectLayoutClient } from '@/components/layouts/ProjectLayoutClient'
+import { DashboardLayoutClient } from '@/components/layouts/DashboardLayoutClient'
 import type { Usuario, UserRole } from '@/types/database'
 
 export default async function ProjectLayout({
@@ -46,13 +47,19 @@ export default async function ProjectLayout({
     }
 
     return (
-        <ProjectLayoutClient
-            projectId={id}
+        <DashboardLayoutClient
             userRole={userProfile?.rol ?? null}
             userName={userProfile?.nombre ?? null}
             userEmail={userEmail}
         >
-            {children}
-        </ProjectLayoutClient>
+            <ProjectLayoutClient
+                projectId={id}
+                userRole={userProfile?.rol ?? null}
+                userName={userProfile?.nombre ?? null}
+                userEmail={userEmail}
+            >
+                {children}
+            </ProjectLayoutClient>
+        </DashboardLayoutClient>
     )
 }

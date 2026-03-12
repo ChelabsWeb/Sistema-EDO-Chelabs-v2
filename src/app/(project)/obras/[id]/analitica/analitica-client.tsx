@@ -18,6 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { formatPesos } from '@/lib/utils/currency'
 import type { RubroDeviationSummary } from '@/app/actions/costos'
@@ -86,22 +87,19 @@ export function AnaliticaClient({ id, obra, deviations }: Props) {
                 </div>
 
                 <div className="flex flex-col items-end gap-4">
-                    <div className="flex bg-muted rounded-md p-1 border">
-                        {['7D', '30D', '1A', 'TODO'].map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setPeriod(p as any)}
-                                className={cn(
-                                    "px-4 py-1.5 text-sm font-medium rounded-sm transition-all",
-                                    period === p
-                                        ? "bg-background text-foreground shadow-sm"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                {p}
-                            </button>
-                        ))}
-                    </div>
+                    <Tabs value={period} onValueChange={(val) => setPeriod(val as any)}>
+                        <TabsList className="inline-flex w-max items-center justify-start rounded-xl bg-muted p-1.5 text-muted-foreground gap-1">
+                            {['7D', '30D', '1A', 'TODO'].map((p) => (
+                                <TabsTrigger
+                                    key={p}
+                                    value={p}
+                                    className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                                >
+                                    {p}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                    </Tabs>
                     <Button className="h-9 px-4">
                         <Zap className="w-4 h-4 mr-2" /> Exportar Reporte
                     </Button>

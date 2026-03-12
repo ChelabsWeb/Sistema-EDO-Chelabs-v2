@@ -4,10 +4,12 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { uploadOTPhoto, deleteOTPhoto } from '@/app/actions/ot-fotos'
 import { createClient } from '@/lib/supabase/client'
-import { Camera, X, Trash2, MapPin, Maximize2, Plus, Clock, User } from 'lucide-react'
+import { Camera, X, Trash2, MapPin, Clock, User, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface Foto {
   id: string
@@ -191,27 +193,27 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-apple-gray-50">
-      <div className="p-8 space-y-8">
+    <div className="flex flex-col h-full bg-background">
+      <div className="p-6 space-y-6">
         {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-2xl text-red-600 dark:text-red-400 text-sm font-medium animate-apple-fade-in flex items-center justify-between">
-            {error}
-            <button onClick={() => setError(null)} className="text-red-500/50 hover:text-red-500">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md flex items-center justify-between">
+            <span className="text-sm font-semibold text-destructive">{error}</span>
+            <Button variant="ghost" size="icon" onClick={() => setError(null)} className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/20">
+              <X className="w-3 h-3" />
+            </Button>
           </div>
         )}
 
         {/* Upload Interface */}
         {canEdit && (
-          <div className="p-6 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-[32px] border border-apple-gray-100 dark:border-white/[0.05] space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <input
+          <div className="p-4 bg-muted/30 rounded-xl border space-y-4">
+            <div className="flex flex-col md:flex-row gap-3">
+              <Input
                 type="text"
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
-                placeholder="Nota para esta foto..."
-                className="flex-1 bg-white dark:bg-black px-5 py-3 rounded-2xl border border-apple-gray-100 dark:border-white/10 outline-none text-sm font-medium focus:ring-2 focus:ring-apple-blue/20 transition-all"
+                placeholder="Nota para esta foto (opcional)..."
+                className="flex-1 bg-background"
               />
               <input
                 ref={fileInputRef}
@@ -222,39 +224,37 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
                 className="hidden"
                 id="ot-photo-upload"
               />
-              <label
-                htmlFor="ot-photo-upload"
-                className={cn(
-                  "h-12 px-6 rounded-2xl bg-apple-blue text-white flex items-center justify-center gap-2 text-sm font-bold tracking-tight cursor-pointer hover:bg-apple-blue-dark transition-all active:scale-95 shadow-apple-blue/20",
-                  uploadMutation.isPending && "opacity-50 cursor-not-allowed"
-                )}
+              <Button
+                asChild
+                disabled={uploadMutation.isPending}
+                className={cn("cursor-pointer shrink-0 font-bold uppercase tracking-wider text-xs", uploadMutation.isPending && "opacity-50")}
               >
-                {uploadMutation.isPending ? (
-                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Camera className="w-5 h-5" />
-                    Capturar
-                  </>
-                )}
-              </label>
+                <label htmlFor="ot-photo-upload">
+                  {uploadMutation.isPending ? (
+                    <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin mr-2" />
+                  ) : (
+                    <Camera className="w-4 h-4 mr-2" />
+                  )}
+                  Capturar
+                </label>
+              </Button>
             </div>
           </div>
         )}
 
         {/* Dynamic Gallery Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {fotos.length === 0 ? (
-            <div className="col-span-full py-12 flex flex-col items-center justify-center opacity-30">
-              <Camera className="w-16 h-16 mb-4" />
-              <p className="text-sm font-bold tracking-tight text-center">Sin evidencia fotográfica</p>
+            <div className="col-span-full py-10 flex flex-col items-center justify-center border-2 border-dashed rounded-xl bg-muted/20">
+              <Camera className="w-10 h-10 mb-3 text-muted-foreground opacity-50" />
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Sin evidencia fotográfica</p>
             </div>
           ) : (
             fotos.map((foto: Foto) => (
               <div
                 key={foto.id}
                 className={cn(
-                  "group relative aspect-square rounded-[24px] overflow-hidden bg-apple-gray-50 dark:bg-white/5 border border-apple-gray-100 dark:border-white/[0.05] cursor-zoom-in hover:shadow-apple-float transition-all duration-500",
+                  "group relative aspect-square rounded-xl overflow-hidden bg-muted border cursor-pointer hover:border-primary/50 transition-colors",
                   foto.id.startsWith('temp-') && "opacity-60 grayscale-[50%]"
                 )}
                 onClick={() => !foto.id.startsWith('temp-') && setSelectedFoto(foto)}
@@ -262,22 +262,22 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
                 <img
                   src={foto.url}
                   alt={foto.descripcion || ""}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-[10px] text-white/90 font-medium truncate">{foto.descripcion || "Sin descripción"}</p>
-                  <p className="text-[9px] text-white/60 font-black uppercase tracking-widest mt-1">{formatDate(foto.tomada_en)}</p>
+                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <p className="text-xs text-white font-medium truncate">{foto.descripcion || "Sin descripción"}</p>
+                  <p className="text-[9px] text-white/70 font-bold uppercase tracking-widest mt-0.5">{formatDate(foto.tomada_en)}</p>
                 </div>
 
                 {foto.latitud && (
-                  <div className="absolute top-3 right-3 w-8 h-8 glass rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MapPin className="w-3.5 h-3.5 text-apple-blue" />
+                  <div className="absolute top-2 right-2 w-6 h-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <MapPin className="w-3 h-3 text-white" />
                   </div>
                 )}
 
                 {foto.id.startsWith('temp-') && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
                     <span className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   </div>
                 )}
@@ -288,17 +288,17 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
       </div>
 
       <Dialog open={!!selectedFoto} onOpenChange={(open) => !open && setSelectedFoto(null)}>
-        <DialogContent className="max-w-5xl bg-white dark:bg-apple-gray-50 flex flex-col p-0 overflow-hidden rounded-[40px] shadow-2xl gap-0 border-none">
+        <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-xl border-none shadow-2xl bg-background">
           {selectedFoto && (
-            <>
-              <div className="p-4 flex flex-row items-center justify-between border-b border-apple-gray-100 dark:border-white/10 m-0 pr-16 bg-white dark:bg-apple-gray-50 z-10 w-full relative">
+            <div className="flex flex-col">
+              <div className="p-4 flex items-center justify-between border-b">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full glass flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-apple-gray-400" />
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-foreground">{formatDate(selectedFoto.tomada_en)}</p>
-                    <p className="text-[10px] text-apple-gray-400 font-medium flex items-center gap-1">
+                    <p className="text-sm font-bold text-foreground">{formatDate(selectedFoto.tomada_en)}</p>
+                    <p className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
                       <User className="w-3 h-3" />
                       {selectedFoto.subida_por?.nombre || "Sistema"}
                     </p>
@@ -306,7 +306,7 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
                 </div>
               </div>
 
-              <div className="relative aspect-auto max-h-[70vh] flex items-center justify-center bg-black/5 flex-shrink overflow-hidden">
+              <div className="relative aspect-auto max-h-[60vh] flex items-center justify-center bg-black/5">
                 <img
                   src={selectedFoto.url}
                   className="max-w-full max-h-full object-contain"
@@ -314,35 +314,36 @@ export function OTFotos({ otId, obraId, fotos: initialFotos, canEdit }: OTFotosP
                 />
               </div>
 
-              <div className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="space-y-2">
-                  <p className="text-xl font-bold text-foreground tracking-tight">
-                    {selectedFoto.descripcion || "Nota de Obra"}
+              <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-background">
+                <div className="space-y-1">
+                  <p className="text-lg font-bold text-foreground">
+                    {selectedFoto.descripcion || "Sin descripción extra"}
                   </p>
                   {selectedFoto.latitud && (
                     <a
                       href={`https://maps.google.com/?q=${selectedFoto.latitud},${selectedFoto.longitud}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2 text-xs font-bold text-apple-blue hover:underline"
+                      className="flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
                     >
-                      <MapPin className="w-4 h-4" />
+                      <MapPin className="w-3.5 h-3.5" />
                       Ver ubicación en mapa
                     </a>
                   )}
                 </div>
                 {canEdit && (
-                  <button
+                  <Button
+                    variant="destructive"
                     onClick={() => handleDelete(selectedFoto.id)}
                     disabled={deleteMutation.isPending}
-                    className="px-6 py-3 rounded-full bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-sm font-bold flex items-center gap-2 hover:bg-red-100 transition-all disabled:opacity-50"
+                    className="shrink-0 text-xs font-bold uppercase tracking-wider"
                   >
-                    <Trash2 className="w-4 h-4" />
-                    {deleteMutation.isPending ? 'Procesando...' : 'Eliminar evidencia'}
-                  </button>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar Foto'}
+                  </Button>
                 )}
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>

@@ -1,9 +1,10 @@
 'use client'
 
-import { OTStatusIcon } from './ot-status-badge'
+import { OTStatusBadge } from './ot-status-badge'
 import type { OTStatus } from '@/types/database'
-import { AlertCircle, ArrowRight, User, Calendar } from 'lucide-react'
+import { ArrowRight, Calendar, UserIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface HistorialItem {
   id: string
@@ -32,75 +33,80 @@ const statusLabels: Record<OTStatus, string> = {
 export function OTHistoryTimeline({ historial }: OTHistoryTimelineProps) {
   if (historial.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 opacity-30">
-        <Calendar className="w-10 h-10 mb-2" />
-        <p className="text-sm font-medium">Sin actividad registrada</p>
+      <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed rounded-xl bg-muted/20">
+        <Calendar className="w-10 h-10 mb-4 text-muted-foreground opacity-50" />
+        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Sin actividad registrada</p>
       </div>
     )
   }
 
   return (
-    <div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-apple-blue/20 before:via-apple-gray-100 before:to-transparent dark:before:from-apple-blue/10 dark:before:via-white/5">
-      {historial.map((item, idx) => (
-        <div key={item.id} className="relative flex items-start group animate-apple-fade-in" style={{ animationDelay: `${idx * 50}ms` }}>
-          {/* Indicator */}
-          <div className="absolute left-0 w-10 h-10 rounded-full border-4 border-white dark:border-apple-gray-50 bg-apple-gray-50 dark:bg-white/10 flex items-center justify-center z-10 shadow-apple-sm transition-transform group-hover:scale-110">
-            <OTStatusIcon estado={item.estado_nuevo} className="w-4 h-4" />
-          </div>
+    <div className="relative pl-6 before:absolute before:inset-y-0 before:left-[11px] before:w-[2px] before:bg-border">
+      <div className="space-y-6">
+        {historial.map((item) => (
+          <div key={item.id} className="relative group">
+            <div className="absolute -left-[32px] mt-1.5 w-4 h-4 rounded-full border-[3px] border-background bg-primary ring-1 ring-border shadow-sm z-10" />
 
-          {/* Content Card */}
-          <div className="ml-14 flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[11px] font-black text-apple-gray-400 uppercase tracking-widest">
-                {item.usuarios?.nombre || 'Sistema'}
-              </span>
-              <span className="w-1 h-1 rounded-full bg-apple-gray-200" />
-              <time className="text-[10px] font-medium text-apple-gray-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                  <UserIcon className="w-3.5 h-3.5" />
+                  {item.usuarios?.nombre || 'Sistema'}
+                </span>
+                <span className="w-1 h-1 rounded-full bg-border md:hidden" />
+                <time className="text-[10px] font-semibold text-muted-foreground md:hidden">
+                  {new Date(item.created_at).toLocaleDateString('es-UY', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                  })}
+                </time>
+              </div>
+
+              <time className="hidden md:block text-[10px] font-semibold text-muted-foreground">
                 {new Date(item.created_at).toLocaleDateString('es-UY', {
                   month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                 })}
               </time>
             </div>
 
-            <div className="p-4 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-2xl border border-apple-gray-100 dark:border-white/[0.05] group-hover:bg-white dark:group-hover:bg-white/[0.04] transition-all">
-              <div className="flex items-center gap-2 mb-2">
-                {item.estado_anterior ? (
-                  <>
-                    <span className="text-[10px] px-2 py-0.5 bg-apple-gray-100 dark:bg-white/5 rounded-full text-apple-gray-400 font-bold uppercase tracking-tighter line-through opacity-50">
-                      {statusLabels[item.estado_anterior]}
-                    </span>
-                    <ArrowRight className="w-3 h-3 text-apple-gray-300" />
-                  </>
-                ) : (
-                  <span className="text-[9px] font-black text-apple-blue uppercase tracking-widest mr-1">Nueva</span>
-                )}
-                <span className="text-[10px] px-2 py-0.5 bg-apple-blue/10 text-apple-blue rounded-full font-black uppercase tracking-tighter">
-                  {statusLabels[item.estado_nuevo]}
-                </span>
-              </div>
-
-              {item.notas && (
-                <p className="text-[13px] text-apple-gray-500 dark:text-apple-gray-300 leading-relaxed">
-                  {item.notas}
-                </p>
-              )}
-
-              {item.acknowledged_by && (
-                <div className="mt-3 flex items-center gap-2 p-2 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
-                  <div className="flex -space-x-2">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-[10px] text-white font-bold ring-2 ring-white dark:ring-apple-gray-50">
-                      {item.acknowledged_usuario?.nombre?.[0] || 'D'}
-                    </div>
-                  </div>
-                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    Desvío reconocido por {item.acknowledged_usuario?.nombre || 'Director'}
-                  </p>
+            <Card className="hover:border-primary/50 transition-colors shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  {item.estado_anterior ? (
+                    <>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider line-through decoration-muted-foreground/50 opacity-60">
+                        {statusLabels[item.estado_anterior]}
+                      </span>
+                      <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mr-1">Nueva</span>
+                  )}
+                  <OTStatusBadge estado={item.estado_nuevo} size="sm" />
                 </div>
-              )}
-            </div>
+
+                {item.notas && (
+                  <p className="text-sm font-medium text-foreground mt-2">
+                    {item.notas}
+                  </p>
+                )}
+
+                {item.acknowledged_by && (
+                  <div className="mt-3 flex items-center gap-2 p-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-lg">
+                    <div className="flex -space-x-2 shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-[10px] text-white font-bold ring-2 ring-background">
+                        {item.acknowledged_usuario?.nombre?.[0] || 'D'}
+                      </div>
+                    </div>
+                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                      Desvío reconocido por {item.acknowledged_usuario?.nombre || 'Director'}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

@@ -30,11 +30,11 @@ export default async function DocumentosObraPage({ params }: Props) {
     }
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-8 antialiased px-8 pt-10 pb-20">
+        <div className="space-y-6">
             <div>
-                <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase">Documentación Técnica</h1>
-                <p className="text-sm font-medium text-apple-gray-400 mt-2">
-                    Gestión de planos y renders para la obra <span className="font-bold text-foreground">{obraNombre}</span>
+                <h2 className="text-2xl font-bold tracking-tight">Documentación Técnica</h2>
+                <p className="text-muted-foreground mt-1 text-sm">
+                    Gestión de planos y renders para la obra <span className="font-semibold text-foreground">{obraNombre}</span>
                 </p>
             </div>
 

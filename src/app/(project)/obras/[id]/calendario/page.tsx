@@ -57,9 +57,9 @@ export default async function CalendarioObraPage({ params }: Props) {
     return (
         <div className="max-w-[1700px] mx-auto space-y-8 antialiased px-4 sm:px-8 pt-10 pb-20">
             <div className="px-2">
-                <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase">Planificación Temporal</h1>
-                <p className="text-sm font-medium text-apple-gray-400 mt-2">
-                    Línea de tiempo interactiva de la obra <span className="font-bold text-foreground">{obraNombre}</span>
+                <h2 className="text-2xl font-bold tracking-tight">Planificación Temporal</h2>
+                <p className="text-muted-foreground mt-1 text-sm">
+                    Línea de tiempo interactiva de la obra <span className="font-semibold text-foreground">{obraNombre}</span>
                 </p>
             </div>
 

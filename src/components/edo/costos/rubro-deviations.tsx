@@ -2,116 +2,95 @@
 
 import { formatPesos } from '@/lib/utils/currency'
 import type { RubroDeviationSummary } from '@/app/actions/costos'
-import { TrendingUp, AlertTriangle, CheckCircle2, Minus } from 'lucide-react'
+import { TrendingUp, AlertTriangle, CheckCircle2, ShieldAlert, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 interface RubroDeviationsProps {
   deviations: RubroDeviationSummary[]
 }
 
-const statusConfig = {
-  ok: { color: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: CheckCircle2, label: 'Bajo Control' },
-  warning: { color: 'text-amber-500', bg: 'bg-amber-500/10', icon: AlertTriangle, label: 'Precaución' },
-  alert: { color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertTriangle, label: 'Sobrecosto' },
-}
-
 export function RubroDeviations({ deviations }: RubroDeviationsProps) {
   if (deviations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-4">
-        <div className="w-16 h-16 bg-apple-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center shadow-inner">
-          <Minus className="w-8 h-8 text-apple-gray-200" />
-        </div>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-apple-gray-300">Sin datos de desvío</p>
+      <div className="text-center py-10 bg-muted/20 border-2 border-dashed rounded-xl mx-4">
+        <Wallet className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-50" />
+        <h4 className="text-sm font-semibold text-foreground">Sin datos de desempeño</h4>
+        <p className="text-xs text-muted-foreground mt-1">Aún no hay rubros con órdenes de trabajo presupuestadas.</p>
       </div>
     )
   }
 
-  const totals = deviations.reduce(
-    (acc, d) => ({
-      presupuesto: acc.presupuesto + d.presupuesto,
-      estimado: acc.estimado + d.costo_estimado_total,
-      real: acc.real + d.costo_real_total,
-      desvio: acc.desvio + d.desvio,
-    }),
-    { presupuesto: 0, estimado: 0, real: 0, desvio: 0 }
+  return (
+    <div className="space-y-4 px-4 pb-4">
+      {deviations.map((d) => (
+        <DeviationCard key={d.rubro_id} dev={d} />
+      ))}
+    </div>
   )
+}
 
-  const totalDesvioPorcentaje = totals.estimado > 0
-    ? (totals.desvio / totals.estimado) * 100
-    : 0
+function DeviationCard({ dev }: { dev: RubroDeviationSummary }) {
+  const isOk = dev.status === 'ok';
+  const isWarning = dev.status === 'warning';
+  const isAlert = dev.status === 'alert';
+
+  const getStatusColor = () => {
+      if (isAlert) return 'text-destructive';
+      if (isWarning) return 'text-amber-500';
+      return 'text-emerald-500';
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        {deviations.map((d) => {
-          const config = statusConfig[d.status] || statusConfig.ok
-          const Icon = config.icon
-
-          return (
-            <div key={d.rubro_id} className="p-4 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-3xl border border-apple-gray-100 dark:border-white/5 hover:border-apple-blue/20 transition-all group">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shadow-sm", config.bg, config.color)}>
-                    <Icon className="w-4 h-4" />
+      <div className="p-5 border rounded-3xl bg-card hover:border-primary/30 transition-colors">
+          <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-4">
+                  <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                      isAlert ? "bg-destructive/10 text-destructive" :
+                      isWarning ? "bg-amber-500/10 text-amber-500" :
+                      "bg-emerald-500/10 text-emerald-500"
+                  )}>
+                      {isAlert ? <ShieldAlert className="w-5 h-5" /> : 
+                       isWarning ? <AlertTriangle className="w-5 h-5" /> : 
+                       <CheckCircle2 className="w-5 h-5" />}
                   </div>
                   <div>
-                    <h4 className="text-sm font-black text-foreground tracking-tight group-hover:text-apple-blue transition-colors uppercase">{d.rubro_nombre}</h4>
-                    <p className="text-[9px] font-bold text-apple-gray-300 uppercase tracking-widest">{d.ots_count} Órdenes Activas</p>
+                      <h4 className="font-bold text-sm tracking-tight uppercase text-foreground">{dev.rubro_nombre}</h4>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+                          {dev.ots_count} {dev.ots_count === 1 ? 'ORDEN ACTIVA' : 'ÓRDENES ACTIVAS'}
+                      </p>
                   </div>
-                </div>
-                <div className="text-right">
-                  <span className={cn(
-                    "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest",
-                    config.bg, config.color
-                  )}>
-                    {d.desvio_porcentaje > 0 ? '+' : ''}{d.desvio_porcentaje.toFixed(1)}%
-                  </span>
-                </div>
               </div>
+              <Badge variant="secondary" className={cn(
+                  "font-bold rounded-md px-2.5 py-1 text-xs",
+                  isAlert && "bg-destructive/10 text-destructive hover:bg-destructive/20",
+                  isWarning && "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20",
+                  isOk && "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+              )}>
+                  {dev.desvio_porcentaje > 0 ? '+' : ''}{dev.desvio_porcentaje.toFixed(1)}%
+              </Badge>
+          </div>
 
-              <div className="grid grid-cols-3 gap-2">
-                <div className="p-2.5 bg-white dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
-                  <p className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest leading-none mb-1">Estimado</p>
-                  <p className="text-xs font-black text-foreground tracking-tight">{formatPesos(d.costo_estimado_total)}</p>
-                </div>
-                <div className="p-2.5 bg-white dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
-                  <p className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest leading-none mb-1">Real</p>
-                  <p className="text-xs font-black text-foreground tracking-tight">{d.costo_real_total > 0 ? formatPesos(d.costo_real_total) : '-'}</p>
-                </div>
-                <div className="p-2.5 bg-white dark:bg-black/20 rounded-xl border border-apple-gray-100 dark:border-white/5">
-                  <p className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest leading-none mb-1">Diferencia</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="p-3 border rounded-xl bg-background/50">
+                  <p className="text-[9px] font-bold text-foreground uppercase tracking-widest mb-1">Estimado</p>
+                  <p className="font-bold text-sm text-foreground">{formatPesos(dev.costo_estimado_total)}</p>
+              </div>
+              <div className="p-3 border rounded-xl bg-background/50">
+                  <p className="text-[9px] font-bold text-foreground uppercase tracking-widest mb-1">Real</p>
+                  <p className="font-bold text-sm text-foreground">{formatPesos(dev.costo_real_total)}</p>
+              </div>
+              <div className="p-3 border rounded-xl bg-background/50">
+                  <p className="text-[9px] font-bold text-foreground uppercase tracking-widest mb-1">Diferencia</p>
                   <p className={cn(
-                    "text-xs font-black tracking-tight",
-                    d.desvio > 0 ? "text-red-500" : d.desvio < 0 ? "text-emerald-500" : "text-foreground"
+                      "font-bold text-sm",
+                      getStatusColor()
                   )}>
-                    {d.desvio > 0 ? '+' : ''}{formatPesos(d.desvio)}
+                      {dev.desvio > 0 && '+'}{formatPesos(dev.desvio)}
                   </p>
-                </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Mini Summary Footer */}
-      <div className="p-6 bg-apple-blue/[0.03] dark:bg-apple-blue/10 rounded-[32px] border border-apple-blue/10">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-black text-apple-blue uppercase tracking-[0.2em] mb-1">Desvío Global Obra</p>
-            <h4 className={cn(
-              "text-xl font-black tracking-tighter",
-              totals.desvio > 0 ? "text-red-500" : "text-emerald-500"
-            )}>
-              {totals.desvio > 0 ? '+' : ''}{formatPesos(totals.desvio)}
-            </h4>
           </div>
-          <div className="text-right">
-            <p className="text-[9px] font-black text-apple-gray-400 uppercase tracking-widest leading-none mb-1">Eficiencia</p>
-            <p className="text-sm font-black text-foreground">{(100 - totalDesvioPorcentaje).toFixed(1)}%</p>
-          </div>
-        </div>
       </div>
-    </div>
   )
 }
