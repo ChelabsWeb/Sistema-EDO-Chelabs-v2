@@ -405,7 +405,7 @@ export default function Home() {
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative"
+              className="relative mt-12 md:mt-24 lg:mt-0"
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-transparent to-purple-600/10 dark:from-blue-600/20 dark:to-purple-600/20 rounded-[2rem] sm:rounded-[3rem] blur-3xl opacity-50" />
               <div className="relative p-1 bg-white dark:bg-white/[0.03] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] border border-slate-200 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] w-full overflow-hidden">
