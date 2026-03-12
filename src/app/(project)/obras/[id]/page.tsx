@@ -7,7 +7,7 @@ import { getDeviationsByRubro } from '@/app/actions/costos'
 import { DeleteObraButton } from '@/components/edo/obra/delete-obra-button'
 import { RubroDeviations } from '@/components/edo/costos/rubro-deviations'
 import { RubrosList } from '@/components/edo/rubros'
-import type { UserRole } from '@/types/database'
+import type { UserRole, Database } from '@/types/database'
 import {
   Building2, MapPin, Users, ClipboardList, TrendingUp, DollarSign,
   Wallet, ChevronRight, ArrowLeft, Calendar, FileText, LayoutGrid,
@@ -25,12 +25,16 @@ export default async function ObraDetailPage({ params }: Props) {
   const isDemo = id.startsWith('demo-') || process.env.DEMO_MODE === 'true'
   const supabase = await createClient()
 
+  type Obra = Database['public']['Tables']['obras']['Row']
+  type Rubro = Database['public']['Tables']['rubros']['Row']
+  type OrdenTrabajo = Database['public']['Tables']['ordenes_trabajo']['Row'] & { rubros: { nombre: string } | null }
+  
   let user = null
   let profile = null
-  let obra: any = null
+  let obra: Obra | null = null
   let cotizacion = 0
-  let rubros: any[] = []
-  let ordenesTrabajo: any[] = []
+  let rubros: Rubro[] = []
+  let ordenesTrabajo: OrdenTrabajo[] = []
   let deviations: any[] = []
 
   if (isDemo) {
@@ -43,16 +47,16 @@ export default async function ObraDetailPage({ params }: Props) {
       cooperativa: 'COVICO IV',
       presupuesto_total: 1500000,
       estado: 'activa'
-    }
+    } as unknown as Obra
     cotizacion = 1450.50
     rubros = [
       { id: 'r1', nombre: 'Albañilería', unidad: 'm2', presupuesto: 50000, presupuesto_ur: 34.47, es_predefinido: true },
       { id: 'r2', nombre: 'Estructura', unidad: 'm3', presupuesto: 120000, presupuesto_ur: 82.72, es_predefinido: true }
-    ]
+    ] as unknown as Rubro[]
     ordenesTrabajo = [
       { id: 'ot-1', numero: 1, descripcion: 'Fundaciones y platea de hormigón', estado: 'en_ejecucion', rubros: { nombre: 'Estructura' } },
       { id: 'ot-2', numero: 2, descripcion: 'Levantado de muros planta baja', estado: 'aprobada', rubros: { nombre: 'Albañilería' } }
-    ]
+    ] as unknown as OrdenTrabajo[]
     deviations = []
   } else {
     const { data: { user: authUser } } = await supabase.auth.getUser()
@@ -114,8 +118,7 @@ export default async function ObraDetailPage({ params }: Props) {
     en_ejecucion: 'bg-amber-500/10 text-amber-600 border-amber-500/10',
     cerrada: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/10',
   }
-
-  const { label: statusLabel, color: statusColor, border: statusBorder, bg: statusBg } = estadoConfig[obra.estado] || estadoConfig.activa
+  const { label: statusLabel, color: statusColor, border: statusBorder, bg: statusBg } = estadoConfig[obra!.estado || 'activa'] || estadoConfig.activa
 
   return (
     <div className="max-w-[1600px] mx-auto space-y-12 antialiased pb-20 px-8 pt-10">
@@ -241,6 +244,7 @@ export default async function ObraDetailPage({ params }: Props) {
               <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-apple-blue shadow-sm border border-apple-blue/10"><Users className="w-5 h-5" /></div>
               <span className="font-black text-xs text-foreground tracking-tight uppercase">Equipo de<br />Trabajo</span>
             </Link>
+            {/* POST-MVP:
             <Link href={`/obras/${id}/documentos`} className="flex flex-col gap-6 p-6 bg-purple-500/5 backdrop-blur-md rounded-[32px] border border-purple-500/10 hover:border-purple-500/30 hover:bg-purple-500/10 transition-all group shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-purple-500 shadow-sm border border-purple-500/10"><FileText className="w-5 h-5" /></div>
               <span className="font-black text-xs text-foreground tracking-tight uppercase">Planos &<br />Renders</span>
@@ -249,6 +253,7 @@ export default async function ObraDetailPage({ params }: Props) {
               <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-amber-500 shadow-sm border border-amber-500/10"><Calendar className="w-5 h-5" /></div>
               <span className="font-black text-xs text-foreground tracking-tight uppercase">Calendario<br />Maestro</span>
             </Link>
+            */}
           </div>
 
           {/* Activity Cards */}

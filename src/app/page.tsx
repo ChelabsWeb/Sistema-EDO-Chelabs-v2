@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import Image from 'next/image'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import {
   Building2, ArrowRight, Zap, ChevronRight,
@@ -14,6 +15,13 @@ import {
 } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { cn } from '@/lib/utils'
+import { LandingButton } from '@/components/ui/landing-button'
+import { LandingCard, type ColorScheme } from '@/components/ui/landing-card'
+import { PainSection } from '@/components/landing/PainSection'
+import { ROICalculator } from '@/components/landing/ROICalculator'
+import { BeamAnimation } from '@/components/landing/BeamAnimation'
+import { SocialProof } from '@/components/landing/SocialProof'
+import { FinalCTA } from '@/components/landing/FinalCTA'
 
 const CornerPlus = ({ className }: { className?: string }) => (
   <div className={cn("absolute w-4 h-4 flex items-center justify-center text-slate-400/30 dark:text-white/20 font-light select-none pointer-events-none z-20", className)}>
@@ -40,6 +48,11 @@ export default function Home() {
     }
     checkUser()
   }, [router, supabase.auth])
+
+  // Parallax Effect Hooks
+  const { scrollYProgress } = useScroll()
+  const y = useTransform(scrollYProgress, [0, 1], [0, -100])
+  const rotateX = useTransform(scrollYProgress, [0, 1], [15, 0])
 
   if (loading || !mounted) return null
 
@@ -73,82 +86,118 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex items-center gap-6 relative z-10">
-            <Link href="/auth/login" className="hidden sm:block text-[14px] font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+          <div className="flex items-center gap-4 relative z-10">
+            <LandingButton href="/auth/login" intent="ghost" size="sm" className="hidden sm:block">
               Login
-            </Link>
-            <Link
-              href="/auth/login"
-              className="px-6 py-2.5 bg-[#0070f3] text-white text-[14px] font-semibold rounded-full hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-600/20 transition-all active:scale-95 shadow-md shadow-blue-500/10"
-            >
-              Prueba Gratis
-            </Link>
+            </LandingButton>
+            <LandingButton href="/auth/register" intent="outline" size="sm" className="hidden sm:block">
+              Regístrate
+            </LandingButton>
+            <LandingButton href="/auth/register" intent="primary" size="sm">
+              Agendar Demo
+            </LandingButton>
           </div>
         </div>
       </nav>
 
       <main className="relative z-10">
-        {/* Full-screen Hero Section */}
-        <section className="h-screen flex flex-col items-center justify-center px-6">
-          <div className="max-w-screen-2xl mx-auto text-center flex flex-col items-center">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ecf5ff] dark:bg-blue-500/10 border border-[#d1e9ff] dark:border-blue-500/20 text-[#0070f3] dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-[0.05em] mb-12"
-            >
-              <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Plataforma N°1 para Constructores</span>
-            </motion.div>
+        {/* Full-screen Split Hero Section */}
+        <section className="min-h-screen pt-32 pb-16 md:pt-40 md:pb-24 px-6 flex items-center overflow-hidden">
+          <div className="max-w-screen-2xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column - Content */}
+            <div className="flex flex-col items-start text-left relative z-20">
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ecf5ff] dark:bg-blue-500/10 border border-[#d1e9ff] dark:border-blue-500/20 text-[#0070f3] dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-[0.05em] mb-8"
+              >
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                <span>Plataforma N°1 para Constructores</span>
+              </motion.div>
 
-            {/* Hero Content */}
-            <motion.div className="relative mb-10">
-              {/* Glow Behind "total" */}
-              <div className="absolute top-[15%] left-[40%] w-[20%] h-[30%] bg-blue-400/20 blur-[60px] rounded-full pointer-events-none -z-10" />
+              {/* Title */}
+              <motion.div className="relative mb-8 w-full">
+                {/* Glow Behind "caos" */}
+                <div className="absolute top-[20%] left-[10%] w-[40%] h-[50%] bg-blue-400/20 blur-[60px] rounded-full pointer-events-none -z-10" />
 
-              <motion.h1
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-foreground"
+                >
+                  Ejecuta sin sobrecostos.<br /> 
+                  Controla el <span className="text-primary">caos</span> en tiempo real.
+                </motion.h1>
+              </motion.div>
+
+              {/* Description */}
+              <motion.p
                 initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                className="text-6xl md:text-8xl font-extrabold tracking-tight max-w-5xl mx-auto leading-[1.05] text-[#0f172a] dark:text-white font-display"
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-[600px] leading-[1.6] font-medium text-balance"
               >
-                Control <span className="text-[#0070f3]">total</span> para la <br className="hidden md:block" /> Ejecución de Obras
-              </motion.h1>
+                Pasa de la incertidumbre en Excel a tener el control financiero y logístico absoluto. Gestiona presupuestos, compras y cuadrillas en una única plataforma de alto rendimiento.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto"
+              >
+                <LandingButton href="/auth/register" intent="primary" size="md" className="w-full sm:w-auto group">
+                  Agendar Demo Ejecutiva
+                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </LandingButton>
+                <LandingButton intent="outline" size="md" className="w-full sm:w-auto">
+                  <PlayCircle className="w-5 h-5 text-primary" />
+                  Ver Video Demo
+                </LandingButton>
+              </motion.div>
+            </div>
+
+            {/* Right Column - Image Container */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+              className="relative w-full aspect-square md:aspect-[4/3] lg:aspect-square xl:aspect-[4/3] group z-10"
+            >
+              {/* Premium Background Glow/Shadow */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-700 rounded-[3rem]" />
+              
+              {/* The Container */}
+              <div className="relative h-full w-full rounded-[2rem] md:rounded-[3rem] p-1.5 bg-white/20 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-2xl overflow-hidden">
+                <div className="relative h-full w-full rounded-[1.75rem] md:rounded-[2.75rem] overflow-hidden bg-slate-100 dark:bg-slate-900 isolation-isolate">
+                  {/* Subtle inner overlay for borders */}
+                  <div className="absolute inset-0 border border-black/5 dark:border-white/5 rounded-[1.75rem] md:rounded-[2.75rem] z-20 pointer-events-none" />
+                  
+                  <Image
+                    src="/hero-bg.jpg"
+                    alt="Sistema EDO Hero Dashboard 3D"
+                    fill
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
+                    priority
+                    quality={100}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+              </div>
+
+              {/* Floating Decorative Elements (Optional, based on Equimas UI design patterns) */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="absolute -top-6 -right-6 md:-top-10 md:-right-10 w-24 h-24 md:w-32 md:h-32 bg-[url('/grid-pattern.svg')] opacity-20 pointer-events-none z-0" 
+              />
             </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-lg md:text-[21px] text-slate-500 dark:text-slate-400 mb-16 max-w-[800px] mx-auto leading-[1.6] font-medium"
-            >
-              Gestión centralizada de presupuestos, órdenes de trabajo y suministros diseñada específicamente para constructoras modernas que buscan eficiencia.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-5"
-            >
-              <Link
-                href="/auth/login"
-                className="w-full sm:w-auto px-10 py-4 bg-[#0070f3] text-white text-base font-bold rounded-full hover:bg-blue-600 transition-all active:scale-[0.98] shadow-2xl shadow-blue-500/30 flex items-center justify-center gap-3 group"
-              >
-                Empezar ahora
-                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Link>
-              <button
-                className="w-full sm:w-auto px-10 py-4 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-base font-bold rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-[0.98] flex items-center justify-center gap-3 border border-slate-200 dark:border-white/10 shadow-sm"
-              >
-                <PlayCircle className="w-5 h-5 text-blue-600 dark:text-blue-500 fill-blue-600/10 dark:fill-blue-500/20" />
-                Ver Video Demo
-              </button>
-            </motion.div>
           </div>
         </section>
 
@@ -170,8 +219,36 @@ export default function Home() {
             </div>
           </section>
 
+          <PainSection />
+
+
+
+          <ROICalculator />
+
           {/* Feature Cards Grid */}
-          <section id="funciones" className="w-full py-32 grid md:grid-cols-3 gap-8">
+          <section id="funciones" className="w-full py-32 grid md:grid-cols-3 gap-8 border-t border-black/5 dark:border-white/5">
+            <div className="md:col-span-3">
+              <div className="text-center mb-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200/50 dark:bg-white/10 border border-slate-300/50 dark:border-white/20 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold uppercase tracking-widest mb-6"
+                >
+                  Plataforma Unificada
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 text-balance font-display"
+                >
+                  Cada métrica de tu obra,<br/> en tiempo real
+                </motion.h2>
+              </div>
+              <BeamAnimation />
+            </div>
             {[
               {
                 title: 'Órdenes de Trabajo',
@@ -192,31 +269,21 @@ export default function Home() {
                 color: 'orange'
               }
             ].map((feature, i) => (
-              <motion.div
+              <LandingCard
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="group p-10 md:p-12 rounded-[40px] bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-2xl hover:border-blue-500/30 transition-all duration-500 text-left hover:-translate-y-2"
-              >
-                <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center mb-10 transition-transform group-hover:scale-110 border",
-                  feature.color === 'blue' ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-600/10 dark:text-blue-500 dark:border-blue-500/20' :
-                    feature.color === 'purple' ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-600/10 dark:text-purple-500 dark:border-purple-500/20' :
-                      'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-600/10 dark:text-orange-500 dark:border-orange-500/20'
-                )}>
-                  <feature.icon className="w-7 h-7" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 tracking-tight leading-tight text-slate-900 dark:text-white font-display">{feature.title}</h3>
-                <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-8 font-medium">{feature.desc}</p>
-                <div className="flex items-center text-blue-600 dark:text-blue-500 font-bold text-sm group-hover:gap-2 transition-all">
-                  Conocer más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
-              </motion.div>
+                index={i}
+                title={feature.title}
+                description={feature.desc}
+                icon={feature.icon}
+                colorScheme={feature.color as ColorScheme}
+                actionLabel="Conocer más"
+              />
             ))}
           </section>
 
+          <SocialProof />
+          
+          {/* Prices Section (Optional - Moved below SocialProof) */}
           <section id="precios" className="w-full py-32 border-t border-black/5 dark:border-white/5">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900 dark:text-white text-balance font-display">Planes para cada etapa</h2>
@@ -230,25 +297,15 @@ export default function Home() {
                 { name: 'Pro', price: '$49', desc: 'Control profesional total', features: ['Precio por usuario', 'Obras Ilimitadas', 'Presupuesto Vivo API', 'Soporte 24/7 Premium'], highlight: true },
                 { name: 'Enterprise', price: 'Custom', desc: 'Soluciones a medida', features: ['Usuarios Ilimitados', 'Server Dedicado', 'SSO & Seguridad', 'SLA de Respuesta'] }
               ].map((plan, i) => (
-                <motion.div
+                <LandingCard
                   key={plan.name}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className={cn(
-                    "relative p-10 rounded-[40px] border transition-all duration-500 flex flex-col items-start text-left",
-                    plan.highlight
-                      ? "bg-blue-50/50 dark:bg-blue-600/10 border-blue-600 shadow-2xl shadow-blue-600/10 dark:shadow-blue-600/20 md:scale-105 z-10"
-                      : "bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
-                  )}
+                  index={i}
+                  title={plan.name}
+                  description={plan.desc}
+                  isHighlight={plan.highlight}
+                  className="flex flex-col h-full"
                 >
-                  {plan.highlight && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Más Popular</div>
-                  )}
-                  <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">{plan.name}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-8 leading-tight">{plan.desc}</p>
-                  <div className="mb-10 text-slate-900 dark:text-white">
+                  <div className="mb-10 text-slate-900 dark:text-white mt-auto">
                     <span className="text-5xl font-extrabold">{plan.price}</span>
                     {plan.price !== 'Custom' && (
                       <div className="inline-flex flex-col ml-2 align-middle">
@@ -265,15 +322,10 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <button className={cn(
-                    "w-full py-4 px-6 rounded-2xl font-bold text-sm transition-all shadow-lg",
-                    plan.highlight
-                      ? "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-600/20"
-                      : "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/5"
-                  )}>
+                  <LandingButton intent={plan.highlight ? "highlight" : "outline"} size="full" className="mt-auto w-full">
                     {plan.name === 'Enterprise' ? 'Contactar Ventas' : 'Elegir Plan'}
-                  </button>
-                </motion.div>
+                  </LandingButton>
+                </LandingCard>
               ))}
             </div>
           </section>
@@ -305,6 +357,7 @@ export default function Home() {
             </div>
 
             <motion.div
+              style={{ y, rotateX, perspective: 1000 }}
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -363,6 +416,7 @@ export default function Home() {
               </div>
             </motion.div>
           </section>
+
         </div>
       </main>
 
@@ -385,24 +439,79 @@ export default function Home() {
                 La plataforma líder en gestión de obras para el mercado hispano. Construyendo el futuro de la ingeniería digital con precisión y potencia.
               </p>
               <div className="flex gap-4">
-                {[Share2, AtSign, Twitter, Instagram].map((Icon, i) => (
-                  <Link key={i} href="#" className="w-11 h-11 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 hover:-translate-y-1 transition-all text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white shadow-sm">
-                    <Icon className="w-5 h-5" />
-                  </Link>
-                ))}
+                {[Share2, AtSign, Twitter, Instagram].map((Icon, i) => {
+                  const isSocialDisabled = true; // MVP: Deshabilitar redes momentáneamente
+                  return (
+                    <Link 
+                      key={i} 
+                      href="#" 
+                      aria-disabled={isSocialDisabled}
+                      tabIndex={isSocialDisabled ? -1 : 0}
+                      onClick={(e) => isSocialDisabled && e.preventDefault()}
+                      title={isSocialDisabled ? 'Próximamente' : undefined}
+                      className={cn(
+                        "w-11 h-11 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center transition-all shadow-sm",
+                        isSocialDisabled 
+                          ? "pointer-events-none opacity-50" 
+                          : "hover:bg-slate-100 dark:hover:bg-white/10 hover:-translate-y-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-white"
+                      )}>
+                      <Icon className={cn("w-5 h-5", isSocialDisabled ? "text-slate-400" : "text-inherit")} />
+                    </Link>
+                  )
+                })}
               </div>
             </div>
 
             {[
-              { title: 'PRODUCTO', links: ['Funciones', 'Integraciones', 'Precios', 'Roadmap V2'] },
-              { title: 'COMPAÑÍA', links: ['Acerca de', 'Blog de Obra', 'Carreras', 'Contacto'] },
-              { title: 'SOPORTE', links: ['Centro de Ayuda', 'Privacidad', 'Términos', 'API Docs'] }
+              { 
+                title: 'PRODUCTO', 
+                links: [
+                  { label: 'Funciones', href: '#', disabled: true },
+                  { label: 'Integraciones', href: '#', disabled: true },
+                  { label: 'Precios', href: '#', disabled: true },
+                  { label: 'Roadmap V2', href: '#', disabled: true }
+                ] 
+              },
+              { 
+                title: 'COMPAÑÍA', 
+                links: [
+                  { label: 'Acerca de', href: '#', disabled: true },
+                  { label: 'Blog de Obra', href: '#', disabled: true },
+                  { label: 'Carreras', href: '#', disabled: true },
+                  { label: 'Contacto', href: '#', disabled: true }
+                ] 
+              },
+              { 
+                title: 'SOPORTE', 
+                links: [
+                  { label: 'Centro de Ayuda', href: '#', disabled: true },
+                  { label: 'Privacidad', href: '#', disabled: true },
+                  { label: 'Términos', href: '#', disabled: true },
+                  { label: 'API Docs', href: '#', disabled: true }
+                ] 
+              }
             ].map((section) => (
               <div key={section.title}>
                 <h5 className="font-bold mb-8 text-[11px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-600">{section.title}</h5>
                 <ul className="space-y-5 text-[15px] font-medium text-slate-500 dark:text-slate-400">
                   {section.links.map((link) => (
-                    <li key={link}><Link href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{link}</Link></li>
+                    <li key={link.label}>
+                      <Link 
+                        href={link.href}
+                        aria-disabled={link.disabled}
+                        tabIndex={link.disabled ? -1 : 0}
+                        onClick={(e) => link.disabled && e.preventDefault()}
+                        title={link.disabled ? 'Próximamente' : undefined}
+                        className={cn(
+                          "transition-colors",
+                          link.disabled 
+                            ? "pointer-events-none opacity-50" 
+                            : "hover:text-blue-600 dark:hover:text-blue-400"
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
                   ))}
                 </ul>
               </div>

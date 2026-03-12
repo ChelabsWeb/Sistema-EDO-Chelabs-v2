@@ -11,6 +11,15 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 function translateError(errorMessage: string): string {
   const errorTranslations: Record<string, string> = {
@@ -86,9 +95,15 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Contraseña</Label>
-                  <Link href="#" className="text-xs text-primary hover:underline font-medium">
+                  <button
+                    type="button"
+                    onClick={() => toast.info("Funcionalidad en desarrollo", {
+                      description: "Por favor, contacta a tu administrador para restablecer tu contraseña."
+                    })}
+                    className="text-xs text-primary hover:underline font-medium bg-transparent border-none p-0 cursor-pointer"
+                  >
                     ¿Olvidaste tu contraseña?
-                  </Link>
+                  </button>
                 </div>
                 <div className="relative">
                   <Input
@@ -161,9 +176,32 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          ¿No tienes una cuenta? <Link href="#" className="font-semibold hover:text-primary transition-colors">Solicitar Acceso</Link>
-        </p>
+        <div className="text-center text-xs text-muted-foreground mt-8">
+          ¿No tienes una cuenta?{' '}
+          <Dialog>
+            <DialogTrigger asChild>
+              <button type="button" className="font-semibold hover:text-primary transition-colors bg-transparent border-none p-0 cursor-pointer">
+                Solicitar Acceso
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Solicitud de Acceso</DialogTitle>
+                <DialogDescription>
+                  El registro automático se encuentra deshabilitado en esta fase.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 py-4 text-sm text-muted-foreground">
+                <p>
+                  Para obtener credenciales de acceso al Sistema EDO, comunícate con el administrador responsable de tu proyecto o envía un correo a nuestro equipo de soporte:
+                </p>
+                <div className="p-3 bg-muted rounded-md text-foreground font-medium text-center tracking-wide">
+                  soporte@chelabs.com
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
 
         <div className="text-center mt-12 opacity-50 select-none pointer-events-none">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">

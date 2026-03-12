@@ -38,13 +38,13 @@ const navSections: NavSection[] = [
     items: [
       { href: '/dashboard', label: 'Resumen', icon: LayoutDashboard },
       { href: '/obras', label: 'Obras', icon: Building2 },
-      { href: '/compras/ordenes-compra', label: 'Compras', icon: ShoppingCart, roles: ['admin', 'director_obra', 'jefe_obra', 'compras'] },
+      // { href: '/compras/ordenes-compra', label: 'Compras', icon: ShoppingCart, roles: ['admin', 'director_obra', 'jefe_obra', 'compras'] },
     ]
   },
   {
     title: 'Análisis',
     items: [
-      { href: '/reportes', label: 'Analítica', icon: BarChart3, roles: ['admin', 'director_obra'] },
+      // { href: '/reportes', label: 'Analítica', icon: BarChart3, roles: ['admin', 'director_obra'] },
       { href: '/papelera', label: 'Papelera', icon: Trash2, roles: ['admin', 'director_obra'] },
     ]
   },
