@@ -102,34 +102,34 @@ export default function Home() {
 
       <main className="relative z-10">
         {/* Full-screen Split Hero Section */}
-        <section className="min-h-screen pt-32 pb-16 md:pt-40 md:pb-24 px-6 flex items-center overflow-hidden">
-          <div className="max-w-screen-2xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+        <section className="min-h-[100svh] lg:min-h-screen pt-32 pb-16 lg:pt-0 lg:pb-0 px-4 sm:px-6 flex items-center overflow-hidden">
+          <div className="max-w-screen-2xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mt-8 lg:mt-0">
             
             {/* Left Column - Content */}
-            <div className="flex flex-col items-start text-left relative z-20">
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left relative z-20">
               {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ecf5ff] dark:bg-blue-500/10 border border-[#d1e9ff] dark:border-blue-500/20 text-[#0070f3] dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-[0.05em] mb-8"
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-[#ecf5ff] dark:bg-blue-500/10 border border-[#d1e9ff] dark:border-blue-500/20 text-[#0070f3] dark:text-blue-400 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-[0.05em] mb-6 sm:mb-8"
               >
                 <Zap className="w-3.5 h-3.5 fill-current" />
                 <span>Plataforma N°1 para Constructores</span>
               </motion.div>
 
               {/* Title */}
-              <motion.div className="relative mb-8 w-full">
+              <motion.div className="relative mb-6 sm:mb-8 w-full">
                 {/* Glow Behind "caos" */}
-                <div className="absolute top-[20%] left-[10%] w-[40%] h-[50%] bg-blue-400/20 blur-[60px] rounded-full pointer-events-none -z-10" />
+                <div className="absolute top-[20%] left-1/2 lg:left-[10%] -translate-x-1/2 lg:translate-x-0 w-[60%] lg:w-[40%] h-[50%] bg-blue-400/20 blur-[60px] rounded-full pointer-events-none -z-10" />
 
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.1 }}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-foreground"
+                  className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-foreground mx-auto lg:mx-0 max-w-2xl lg:max-w-none text-balance"
                 >
-                  Ejecuta sin sobrecostos.<br /> 
-                  Controla el <span className="text-primary">caos</span> en tiempo real.
+                  Ejecuta sin sobrecostos.<br className="hidden sm:block" /> 
+                  <span className="sm:hidden"> </span>Controla el <span className="text-primary">caos</span> en tiempo real.
                 </motion.h1>
               </motion.div>
 
@@ -138,7 +138,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-[600px] leading-[1.6] font-medium text-balance"
+                className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-8 sm:mb-10 max-w-[600px] leading-[1.6] font-medium text-balance mx-auto lg:mx-0"
               >
                 Pasa de la incertidumbre en Excel a tener el control financiero y logístico absoluto. Gestiona presupuestos, compras y cuadrillas en una única plataforma de alto rendimiento.
               </motion.p>
@@ -148,11 +148,11 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
-                className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto"
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-5 w-full sm:w-auto"
               >
                 <LandingButton href="/auth/register" intent="primary" size="md" className="w-full sm:w-auto group">
                   Agendar Demo Ejecutiva
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1 hidden sm:block" />
                 </LandingButton>
                 <LandingButton intent="outline" size="md" className="w-full sm:w-auto">
                   <PlayCircle className="w-5 h-5 text-primary" />
@@ -226,9 +226,9 @@ export default function Home() {
           <ROICalculator />
 
           {/* Feature Cards Grid */}
-          <section id="funciones" className="w-full py-32 grid md:grid-cols-3 gap-8 border-t border-black/5 dark:border-white/5">
+          <section id="funciones" className="w-full py-20 md:py-32 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-black/5 dark:border-white/5">
             <div className="md:col-span-3">
-              <div className="text-center mb-16">
+              <div className="text-center mb-12 md:mb-16 px-4">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -242,9 +242,9 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
-                  className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 text-balance font-display"
+                  className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 text-balance font-display"
                 >
-                  Cada métrica de tu obra,<br/> en tiempo real
+                  Cada métrica de tu obra,<br className="hidden sm:block" /> en tiempo real
                 </motion.h2>
               </div>
               <BeamAnimation />
@@ -284,13 +284,13 @@ export default function Home() {
           <SocialProof />
           
           {/* Prices Section (Optional - Moved below SocialProof) */}
-          <section id="precios" className="w-full py-32 border-t border-black/5 dark:border-white/5">
-            <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900 dark:text-white text-balance font-display">Planes para cada etapa</h2>
-              <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium text-lg">Elige el plan que mejor se adapte al volumen de tus obras. Sin contratos ocultos.</p>
+          <section id="precios" className="w-full py-20 md:py-32 border-t border-black/5 dark:border-white/5">
+            <div className="text-center mb-16 md:mb-24 px-4">
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-4 md:mb-6 text-slate-900 dark:text-white text-balance font-display">Planes para cada etapa</h2>
+              <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium text-base sm:text-lg">Elige el plan que mejor se adapte al volumen de tus obras. Sin contratos ocultos.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch">
               {[
                 { name: 'Free', price: '$0', desc: 'Para equipos pequeños', features: ['Hasta 2 Usuarios', '1 Obra Activa', 'Soporte por Email'] },
                 { name: 'Starter', price: '$24', desc: 'Sincronización de equipos', features: ['Precio por usuario', '5 Obras Activas', 'Gestión de Compras', 'Reportes PDF'] },
@@ -331,18 +331,18 @@ export default function Home() {
           </section>
 
           {/* Benefits Section */}
-          <section id="beneficios" className="w-full py-32 grid lg:grid-cols-2 gap-20 items-center text-left">
-            <div>
-              <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-12 text-slate-900 dark:text-white leading-tight font-display">Por qué elegir <br /> Sistema EDO</h2>
-              <div className="space-y-10">
+          <section id="beneficios" className="w-full py-20 md:py-32 grid lg:grid-cols-2 gap-12 md:gap-20 items-center text-left">
+            <div className="px-4 md:px-0">
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-8 md:mb-12 text-slate-900 dark:text-white leading-tight font-display text-center lg:text-left text-balance">Por qué elegir <br className="hidden lg:block"/> Sistema EDO</h2>
+              <div className="space-y-8 md:space-y-10">
                 {[
                   { title: 'Implementación Rápida', desc: 'Migra tus datos en menos de 48 horas con nuestro equipo especializado de soporte.', icon: Zap, color: 'blue' },
                   { title: 'Movilidad Total', desc: 'Accede desde el pie de obra con nuestra app móvil, incluso sin conexión a internet.', icon: Smartphone, color: 'emerald' },
                   { title: 'Seguridad Bancaria', desc: 'Tus datos están protegidos con encriptación AES-256 y respaldos diarios automáticos.', icon: Lock, color: 'purple' }
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-8 group">
+                  <div key={i} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 md:gap-8 group">
                     <div className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all border shadow-sm",
+                      "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all border shadow-sm",
                       "bg-white dark:bg-white/5 text-slate-400 border-slate-200 dark:border-white/5 group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white"
                     )}>
                       <item.icon className="w-6 h-6" />
@@ -366,25 +366,25 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-transparent to-purple-600/10 dark:from-blue-600/20 dark:to-purple-600/20 rounded-[3rem] blur-3xl opacity-50" />
               <div className="relative p-1 bg-white dark:bg-white/[0.03] backdrop-blur-3xl rounded-[3rem] border border-slate-200 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
                 <div className="bg-white dark:bg-[#0b0f1a] rounded-[2.8rem] overflow-hidden border border-slate-100 dark:border-white/5">
-                  <div className="p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5">
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-red-400" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                      <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                  <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5">
+                    <div className="flex gap-1.5 sm:gap-2">
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-400" />
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-400" />
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-400" />
                     </div>
-                    <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5">Dashboard de Control</div>
-                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    <div className="text-[8px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 sm:px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5">Dashboard de Control</div>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-slate-200 dark:bg-slate-800" />
                   </div>
-                  <div className="p-10 space-y-10 text-left">
-                    <div className="flex items-center justify-between">
+                  <div className="p-6 sm:p-10 space-y-8 sm:space-y-10 text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
                         <div className="text-[10px] font-bold text-primary uppercase mb-1 tracking-widest">Proyecto Activo</div>
-                        <div className="text-2xl font-extrabold text-slate-800 dark:text-white">Torre Residencial "Altos"</div>
+                        <div className="text-xl sm:text-2xl font-extrabold text-slate-800 dark:text-white">Torre Residencial "Altos"</div>
                       </div>
-                      <div className="px-4 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold rounded-full border border-emerald-500/20">EN FECHA</div>
+                      <div className="self-start sm:self-auto px-4 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold rounded-full border border-emerald-500/20">EN FECHA</div>
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                      <div className="p-5 sm:p-6 rounded-[1.5rem] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner">
                         <div className="text-[10px] font-bold text-slate-400 mb-4 tracking-widest uppercase text-center">PROGRESO</div>
                         <div className="relative h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mb-3">
                           <div className="absolute top-0 left-0 h-full w-[72%] bg-primary shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
@@ -421,21 +421,21 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-white/[0.03] backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 pt-32 pb-20 px-6 relative z-10 overflow-hidden">
-        <div className="max-w-screen-2xl mx-auto px-6 sm:px-10 relative">
+      <footer className="bg-white dark:bg-white/[0.03] backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 pt-20 md:pt-32 pb-12 md:pb-20 px-6 relative z-10 overflow-hidden">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 relative">
           {/* Decorative Corner Pluses */}
           <CornerPlus className="top-0 left-0 -translate-x-1/2 -translate-y-1/2" />
           <CornerPlus className="top-0 right-0 translate-x-1/2 -translate-y-1/2" />
           <CornerPlus className="bottom-0 left-0 -translate-x-1/2 translate-y-1/2" />
           <CornerPlus className="bottom-0 right-0 translate-x-1/2 translate-y-1/2" />
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-20 mb-24">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-12 md:gap-20 mb-16 md:mb-24 px-2 sm:px-0">
             <div className="col-span-2">
-              <div className="flex items-center gap-4 mb-10 group">
-                <Logo size={44} className="group-hover:scale-110 transition-transform" />
-                <span className="text-2xl font-extrabold tracking-tight text-slate-800 dark:text-white group-hover:text-primary transition-colors">Sistema EDO</span>
+              <div className="flex items-center gap-4 mb-8 md:mb-10 group">
+                <Logo size={40} className="md:w-[44px] md:h-[44px] group-hover:scale-110 transition-transform" />
+                <span className="text-xl md:text-2xl font-extrabold tracking-tight text-slate-800 dark:text-white group-hover:text-primary transition-colors">Sistema EDO</span>
               </div>
-              <p className="text-slate-500 dark:text-slate-400 text-base max-w-sm mb-10 leading-relaxed font-medium">
+              <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base max-w-sm mb-8 md:mb-10 leading-relaxed font-medium">
                 La plataforma líder en gestión de obras para el mercado hispano. Construyendo el futuro de la ingeniería digital con precisión y potencia.
               </p>
               <div className="flex gap-4">

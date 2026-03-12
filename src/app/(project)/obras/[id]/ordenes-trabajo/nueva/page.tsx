@@ -2,7 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { OTCreateForm } from '@/components/edo/ot/ot-create-form'
-import { ArrowLeft, Hammer, Info, LayoutGrid } from 'lucide-react'
+import { ArrowLeft, Hammer, Info, LayoutGrid, ChevronLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -40,68 +42,69 @@ export default async function NuevaOTPage({ params }: Props) {
     .order('nombre')
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] dark:bg-black p-6 md:p-14 antialiased">
-      {/* Header Glassmorphic */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-8 py-6 backdrop-blur-xl bg-white/70 dark:bg-apple-gray-50/70 border-b border-apple-gray-100 dark:border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link
-            href={`/obras/${obraId}/ordenes-trabajo`}
-            className="w-12 h-12 glass rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-95 group shadow-apple-sm"
-          >
-            <ArrowLeft className="w-5 h-5 text-apple-gray-400 group-hover:text-apple-blue" />
-          </Link>
+    <div className="flex-1 flex flex-col space-y-8 pb-10">
+      {/* Navigation Header */}
+      <nav className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" asChild className="rounded-full">
+            <Link href={`/obras/${obraId}/ordenes-trabajo`}>
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+            </Link>
+          </Button>
           <div>
-            <p className="text-[10px] font-black text-apple-blue uppercase tracking-[0.2em] mb-0.5">Gestión de Obra</p>
-            <h1 className="text-xl font-black text-foreground tracking-tight">Nueva Orden de Trabajo</h1>
+            <div className="flex items-center gap-2 mb-1">
+               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Gestión de Obra</span>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Nueva Orden de Trabajo
+            </h1>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-apple-gray-50 dark:bg-white/5 rounded-full border border-apple-gray-100 dark:border-white/10">
-          <LayoutGrid className="w-4 h-4 text-apple-gray-300" />
-          <span className="text-xs font-bold text-apple-gray-400">{obra.nombre}</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full">
+          <LayoutGrid className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-semibold text-muted-foreground">{obra.nombre}</span>
         </div>
-      </header>
+      </nav>
 
       {/* Main Content Area */}
-      <main className="max-w-4xl mx-auto pt-28 pb-20 animate-apple-slide-up">
+      <main className="max-w-4xl w-full mx-auto">
         {(!rubros || rubros.length === 0) ? (
-          <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-16 text-center border border-apple-gray-100 dark:border-white/5 shadow-apple-float">
-            <div className="w-24 h-24 bg-amber-500/10 rounded-[32px] flex items-center justify-center mx-auto mb-8">
-              <Hammer className="w-12 h-12 text-amber-500" />
+          <div className="flex flex-col items-center justify-center p-12 text-center border-dashed border-2 rounded-xl">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-6">
+              <Hammer className="w-8 h-8 text-muted-foreground/50" />
             </div>
-            <h3 className="text-3xl font-black text-foreground tracking-tighter mb-4">No hay rubros de base</h3>
-            <p className="text-lg text-apple-gray-400 font-medium mb-10 max-w-md mx-auto">
+            <h3 className="text-xl font-bold tracking-tight mb-2">No hay rubros de base</h3>
+            <p className="text-sm text-muted-foreground mb-8 max-w-sm">
               Necesitas definir al menos un rubro en esta obra para poder asignar órdenes de trabajo.
             </p>
-            <Link
-              href={`/obras/${obraId}/rubros/nuevo`}
-              className="inline-flex items-center gap-3 px-10 py-5 bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] rounded-full hover:bg-apple-blue-dark transition-all shadow-apple-float active:scale-95"
-            >
-              Crear primer rubro
-            </Link>
+            <Button asChild>
+              <Link href={`/obras/${obraId}/rubros/nuevo`}>
+                Crear primer rubro
+              </Link>
+            </Button>
           </div>
         ) : (
-          <div className="space-y-12">
-            <div className="flex flex-col gap-4">
-              <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter">Configuración de Tarea</h2>
-              <p className="text-lg text-apple-gray-400 font-medium tracking-tight">Define el alcance, selecciona los recursos y monitorea el presupuesto en tiempo real.</p>
+          <div className="space-y-8">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-xl font-semibold tracking-tight">Configuración de Tarea</h2>
+              <p className="text-sm text-muted-foreground">Define el alcance, selecciona los recursos y monitorea el presupuesto.</p>
             </div>
 
-            <div className="bg-white dark:bg-apple-gray-50 rounded-[48px] p-10 md:p-14 border border-apple-gray-100 dark:border-white/5 shadow-apple-float overflow-hidden relative">
-              {/* Background Glow */}
-              <div className="absolute top-0 right-0 w-96 h-96 bg-apple-blue/5 blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-
-              <OTCreateForm
-                obraId={obraId}
-                rubros={rubros}
-                insumosObra={(insumosObra || []) as any}
-              />
-            </div>
+            <Card className="overflow-hidden">
+               <CardContent className="p-6 md:p-8">
+                 <OTCreateForm
+                   obraId={obraId}
+                   rubros={rubros}
+                   insumosObra={(insumosObra || []) as any}
+                 />
+               </CardContent>
+            </Card>
 
             {/* Hint Box */}
-            <div className="flex items-center gap-4 px-8 py-6 glass rounded-[32px] border border-apple-gray-100 dark:border-white/10">
-              <Info className="w-6 h-6 text-apple-blue shrink-0" />
-              <p className="text-xs font-bold text-apple-gray-400 leading-relaxed uppercase tracking-widest">
-                La Orden de Trabajo se creará en estado <span className="text-foreground">BORRADOR</span>. Deberá ser aprobada por un Director de Obra antes de iniciar el consumo de materiales.
+            <div className="flex items-center gap-3 px-6 py-4 bg-muted/50 rounded-xl border text-sm">
+              <Info className="w-5 h-5 text-primary shrink-0" />
+              <p className="text-muted-foreground font-medium">
+                La Orden se creará en estado <span className="font-bold text-foreground">Borrador</span>. Deberá ser aprobada antes de iniciar el consumo.
               </p>
             </div>
           </div>

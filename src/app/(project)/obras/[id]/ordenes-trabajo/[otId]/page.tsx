@@ -5,7 +5,7 @@ import {
   ArrowLeft, Building2, Calendar, ClipboardList, Clock,
   DollarSign, LayoutGrid, MapPin, Plus, TrendingUp,
   Users, Wallet, Activity, ArrowUpRight, AlertTriangle,
-  Camera, Package, Receipt, CheckCircle2
+  Camera, Package, Receipt, CheckCircle2, ChevronLeft
 } from 'lucide-react'
 import { formatPesos } from '@/lib/utils/currency'
 import { OTStatusBadge } from '@/components/edo/ot/ot-status-badge'
@@ -16,7 +16,9 @@ import { OTTareas } from '@/components/edo/ot/ot-tareas'
 import { OTFotos } from '@/components/edo/ot/ot-fotos'
 import { OTConsumos } from '@/components/edo/ot/ot-consumos'
 import { OTOrdenesCompra } from '@/components/edo/ot/ot-ordenes-compra'
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import {
   Tooltip,
   TooltipContent,
@@ -181,23 +183,22 @@ export default async function OTDetailPage({ params }: Props) {
   const canExecute = profile && ['admin', 'director_obra', 'jefe_obra'].includes(profile.rol)
 
   return (
-    <div className="min-h-screen antialiased bg-[#f5f5f7] dark:bg-black p-6 md:p-14 space-y-10">
-      {/* Premium Navigation Header */}
-      <nav className="flex items-center justify-between mb-8 animate-apple-fade-in">
-        <div className="flex items-center gap-6">
-          <Link
-            href={`/obras/${obraId}/ordenes-trabajo`}
-            className="w-12 h-12 glass rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-95 group shadow-apple-sm"
-          >
-            <ArrowLeft className="w-5 h-5 text-apple-gray-500 group-hover:text-apple-blue transition-colors" />
-          </Link>
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] font-black text-apple-blue uppercase tracking-[0.2em]">Orden de Trabajo</span>
-              <span className="w-1 h-1 rounded-full bg-apple-gray-200" />
-              <span className="text-[10px] font-bold text-apple-gray-400 uppercase tracking-widest">#{ot.numero}</span>
+    <div className="flex-1 flex flex-col space-y-8 pb-10">
+      {/* Navigation Header */}
+      <nav className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" asChild className="rounded-full">
+            <Link href={`/obras/${obraId}/ordenes-trabajo`}>
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+            </Link>
+          </Button>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Orden de Trabajo</span>
+              <span className="w-1 h-1 rounded-full bg-border" />
+              <span className="text-sm font-semibold text-foreground">OT-{ot.numero}</span>
             </div>
-            <h1 className="text-3xl font-extrabold text-foreground tracking-tighter">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               {ot.rubros?.nombre}
             </h1>
           </div>
@@ -218,232 +219,232 @@ export default async function OTDetailPage({ params }: Props) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content Area - Span 2 */}
-        <div className="lg:col-span-2 space-y-8 animate-apple-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="lg:col-span-2 space-y-6">
 
-          {/* Header Widget - Hero Bento */}
-          <div className="p-10 bg-white dark:bg-apple-gray-50 rounded-[40px] border border-apple-gray-100 dark:border-white/[0.05] shadow-apple-float relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-apple-blue/5 blur-[100px] -translate-y-1/2 translate-x-1/2 rounded-full" />
-
-            <div className="relative z-10 flex flex-col md:flex-row justify-between gap-10">
-              <div className="space-y-6 flex-1">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-apple-blue/10 flex items-center justify-center">
-                    <LayoutGrid className="w-6 h-6 text-apple-blue" />
+          {/* Context & Progress Header Card */}
+          <Card>
+            <CardContent className="p-6 md:p-8">
+              <div className="flex flex-col md:flex-row justify-between gap-8">
+                <div className="space-y-4 flex-1">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Contexto de Obra</p>
+                    <p className="text-base font-semibold text-foreground flex items-center gap-2">
+                       <Building2 className="w-4 h-4 text-muted-foreground" />
+                       {ot.obras?.nombre}
+                    </p>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Contexto de Obra</p>
-                    <p className="text-lg font-bold text-foreground">{ot.obras?.nombre}</p>
-                  </div>
+                  <p className="text-sm text-foreground/80 leading-relaxed max-w-xl">
+                    {ot.descripcion}
+                  </p>
                 </div>
-                <p className="text-xl text-apple-gray-400 font-medium leading-relaxed max-w-xl">
-                  {ot.descripcion}
-                </p>
-              </div>
 
-              <div className="flex flex-col items-center md:items-end gap-6 min-w-[140px]">
-                <div className="relative w-32 h-32 flex items-center justify-center">
-                  <svg className="w-full h-full -rotate-90">
-                    <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-apple-gray-100 dark:text-white/5" />
-                    <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={364.4} strokeDashoffset={364.4 - (364.4 * progreso) / 100} className="text-apple-blue transition-all duration-1000 ease-out" />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-black text-foreground tracking-tighter">{progreso}%</span>
-                    <span className="text-[8px] font-black text-apple-gray-300 uppercase tracking-widest">Avance</span>
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <div className="relative w-24 h-24 flex items-center justify-center bg-muted/20 rounded-full border">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-xl font-bold tracking-tight">{progreso}%</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Avance</span>
+                    </div>
                   </div>
-                </div>
-                <div className="text-center md:text-right">
-                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Tareas</p>
-                  <p className="text-sm font-bold text-foreground">{tareasCompletadas} de {totalTareas} completadas</p>
+                  <div className="text-center">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">Tareas</p>
+                    <p className="text-sm font-medium">{tareasCompletadas} de {totalTareas}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
+
+          {/* Metrics Row */}
+          <div className="grid gap-4 md:grid-cols-3">
+             <Card>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                   <CardTitle className="text-sm font-medium">Costo Estimado</CardTitle>
+                   <DollarSign className="w-4 h-4 text-muted-foreground" />
+                 </CardHeader>
+                 <CardContent>
+                   <div className="text-2xl font-bold">{formatPesos(ot.costo_estimado)}</div>
+                 </CardContent>
+             </Card>
+
+             <Card>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                   <CardTitle className="text-sm font-medium">Costo Real</CardTitle>
+                   <Wallet className="w-4 h-4 text-primary" />
+                 </CardHeader>
+                 <CardContent>
+                   <div className="text-2xl font-bold">{ot.costo_real != null ? formatPesos(ot.costo_real) : '-'}</div>
+                 </CardContent>
+             </Card>
+
+             <Card className={cn(desvio > 0 ? "border-destructive dark:border-destructive/50" : "border-emerald-500/20")}>
+                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                   <CardTitle className="text-sm font-medium">Desviación</CardTitle>
+                   <TrendingUp className={cn("w-4 h-4", desvio > 0 ? "text-destructive" : "text-emerald-500")} />
+                 </CardHeader>
+                 <CardContent>
+                   <div className="flex items-center gap-2">
+                     <span className={cn("text-2xl font-bold", desvio > 0 ? "text-destructive" : "text-emerald-500")}>
+                         {desvio > 0 ? '+' : ''}{desvioPercent.toFixed(1)}%
+                     </span>
+                     {desvio > 0 && <AlertTriangle className="w-4 h-4 text-destructive animate-pulse" />}
+                   </div>
+                 </CardContent>
+             </Card>
           </div>
 
-          {/* Bento Costs Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[32px] border border-apple-gray-100 dark:border-white/[0.05] shadow-apple group hover:-translate-y-2 transition-transform">
-              <div className="w-10 h-10 rounded-xl bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center mb-6">
-                <DollarSign className="w-5 h-5 text-apple-gray-400" />
-              </div>
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Costo Estimado</p>
-              <p className="text-3xl font-black text-foreground tracking-tighter">{formatPesos(ot.costo_estimado)}</p>
-            </div>
+          <div className="space-y-6 pt-4">
+             <div className="flex items-center justify-between border-b pb-2">
+                <h3 className="text-lg font-semibold tracking-tight">Fórmula e Insumos</h3>
+             </div>
+             <OTInsumosEstimados insumos={insumosEstimados} cantidad={ot.cantidad} />
 
-            <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[32px] border border-apple-gray-100 dark:border-white/[0.05] shadow-apple group hover:-translate-y-2 transition-transform">
-              <div className="w-10 h-10 rounded-xl bg-apple-blue/10 flex items-center justify-center mb-6">
-                <Wallet className="w-5 h-5 text-apple-blue" />
-              </div>
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Costo Real</p>
-              <p className="text-3xl font-black text-foreground tracking-tighter">{ot.costo_real != null ? formatPesos(ot.costo_real) : '-'}</p>
-            </div>
+             {(ot.estado === 'en_ejecucion' || ot.estado === 'cerrada') && (
+               <>
+                 <div className="flex items-center justify-between border-b pb-2 pt-6">
+                    <h3 className="text-lg font-semibold tracking-tight">Ejecución y Registro</h3>
+                 </div>
 
-            <div className={cn(
-              "p-8 rounded-[32px] border shadow-apple group hover:-translate-y-2 transition-transform",
-              desvio > 0
-                ? "bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-500/20"
-                : "bg-white dark:bg-apple-gray-50 border-apple-gray-100 dark:border-white/[0.05]"
-            )}>
-              <div className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center mb-6",
-                desvio > 0 ? "bg-red-100 dark:bg-red-500/20" : "bg-apple-gray-50 dark:bg-white/5"
-              )}>
-                <TrendingUp className={cn("w-5 h-5", desvio > 0 ? "text-red-600" : "text-emerald-500")} />
-              </div>
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest mb-1">Desviación</p>
-              <div className="flex items-baseline gap-2">
-                <p className={cn("text-3xl font-black tracking-tighter", desvio > 0 ? "text-red-600" : "text-emerald-500")}>
-                  {desvio > 0 ? '+' : ''}{desvioPercent.toFixed(1)}%
-                </p>
-                {desvio > 0 && <AlertTriangle className="w-4 h-4 text-red-500 animate-pulse-soft" />}
-              </div>
-            </div>
-          </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <Card className="flex flex-col h-full">
+                     <CardHeader className="pb-3 border-b">
+                         <div className="flex items-center justify-between">
+                            <CardTitle className="text-base flex items-center gap-2">
+                              <ClipboardList className="w-4 h-4 text-primary" />
+                               Progreso de Tareas
+                            </CardTitle>
+                            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-full">{tareasCompletadas}/{totalTareas} OK</span>
+                         </div>
+                     </CardHeader>
+                     <CardContent className="p-0 flex-1">
+                        <OTTareas
+                          otId={otId}
+                          obraId={obraId}
+                          tareas={ot.tareas || []}
+                          canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
+                          rubroUnidad={ot.rubros?.unidad}
+                        />
+                     </CardContent>
+                   </Card>
 
-          {/* Detailed Sections - Premium Stack */}
-          <div className="space-y-8">
-            <div className="flex items-center gap-4 px-4">
-              <h2 className="text-2xl font-black text-foreground tracking-tight">Fórmula e Insumos</h2>
-              <div className="h-px flex-1 bg-apple-gray-100 dark:bg-white/5" />
-            </div>
-            <OTInsumosEstimados insumos={insumosEstimados} cantidad={ot.cantidad} />
+                   <Card className="flex flex-col h-full">
+                     <CardHeader className="pb-3 border-b">
+                        <div className="flex items-center justify-between">
+                           <CardTitle className="text-base flex items-center gap-2">
+                               <Camera className="w-4 h-4 text-muted-foreground" />
+                               Registro Fotográfico
+                           </CardTitle>
+                           <TooltipProvider>
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <Button variant="ghost" size="icon" className="w-6 h-6 opacity-50 cursor-not-allowed">
+                                   <Plus className="w-3 h-3" />
+                                 </Button>
+                               </TooltipTrigger>
+                               <TooltipContent>Próximamente</TooltipContent>
+                             </Tooltip>
+                           </TooltipProvider>
+                        </div>
+                     </CardHeader>
+                     <CardContent className="p-0 flex-1">
+                        <OTFotos
+                          otId={otId}
+                          obraId={obraId}
+                          fotos={fotos}
+                          canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
+                        />
+                     </CardContent>
+                   </Card>
+                 </div>
 
-            {(ot.estado === 'en_ejecucion' || ot.estado === 'cerrada') && (
-              <>
-                <div className="flex items-center gap-4 px-4 pt-10">
-                  <h2 className="text-2xl font-black text-foreground tracking-tight">Ejecución y Registro</h2>
-                  <div className="h-px flex-1 bg-apple-gray-100 dark:bg-white/5" />
-                </div>
+                 <div className="flex items-center justify-between border-b pb-2 pt-6">
+                    <h3 className="text-lg font-semibold tracking-tight">Materiales y Logística</h3>
+                 </div>
+                 
+                 <div className="space-y-6">
+                   <OTConsumos
+                     otId={otId}
+                     obraId={obraId}
+                     consumos={consumos}
+                     canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
+                   />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <Card className="rounded-[32px] border-none shadow-apple overflow-hidden">
-                    <div className="p-8 pb-0 flex items-center justify-between">
-                      <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
-                        <ClipboardList className="w-5 h-5 text-apple-blue" />
-                        Progreso de Tareas
-                      </h3>
-                      <span className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">{tareasCompletadas}/{totalTareas} OK</span>
-                    </div>
-                    <OTTareas
-                      otId={otId}
-                      obraId={obraId}
-                      tareas={ot.tareas || []}
-                      canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
-                      rubroUnidad={ot.rubros?.unidad}
-                    />
-                  </Card>
-
-                  <Card className="rounded-[32px] border-none shadow-apple overflow-hidden">
-                    <div className="p-8 pb-0 flex items-center justify-between">
-                      <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
-                        <Camera className="w-5 h-5 text-apple-gray-400" />
-                        Registro Fotográfico
-                      </h3>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span tabIndex={0}>
-                              <button disabled className="w-8 h-8 rounded-full bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center transition-all opacity-50 cursor-not-allowed">
-                                <Plus className="w-4 h-4" />
-                              </button>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-black text-white border-white/10 text-xs font-bold px-3 py-1.5 rounded-xl">Próximamente</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <OTFotos
-                      otId={otId}
-                      obraId={obraId}
-                      fotos={fotos}
-                      canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
-                    />
-                  </Card>
-                </div>
-
-                <div className="space-y-8 pt-10">
-                  <div className="flex items-center gap-4 px-4">
-                    <h2 className="text-2xl font-black text-foreground tracking-tight">Materiales y Logística</h2>
-                    <div className="h-px flex-1 bg-apple-gray-100 dark:bg-white/5" />
-                  </div>
-
-                  <OTConsumos
-                    otId={otId}
-                    obraId={obraId}
-                    consumos={consumos}
-                    canEdit={ot.estado === 'en_ejecucion' && canExecute || false}
-                  />
-
-                  <OTOrdenesCompra
-                    otId={otId}
-                    obraId={obraId}
-                    ordenesCompra={ordenesCompraData}
-                    insumos={insumosObra}
-                    canCreate={ot.estado === 'en_ejecucion' && canExecute || false}
-                  />
-                </div>
-              </>
-            )}
+                   <OTOrdenesCompra
+                     otId={otId}
+                     obraId={obraId}
+                     ordenesCompra={ordenesCompraData}
+                     insumos={insumosObra}
+                     canCreate={ot.estado === 'en_ejecucion' && canExecute || false}
+                   />
+                 </div>
+               </>
+             )}
           </div>
         </div>
 
-        {/* Sidebar - Context & History */}
-        <div className="space-y-8 animate-apple-fade-in" style={{ animationDelay: '0.2s' }}>
-
-          {/* Info Tile */}
-          <div className="p-8 bg-white dark:bg-apple-gray-50 rounded-[32px] border border-apple-gray-100 dark:border-white/[0.05] shadow-apple">
-            <h3 className="text-sm font-black text-apple-gray-300 uppercase tracking-[0.2em] mb-6">Detalles de Gestión</h3>
-
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-400">
-                  <LayoutGrid className="w-5 h-5" />
+        {/* Sidebar */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Detalles de Gestión</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded border bg-muted/50 flex items-center justify-center">
+                  <LayoutGrid className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Rubro</p>
-                  <p className="text-sm font-bold text-foreground">{ot.rubros?.nombre}</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Rubro</p>
+                  <p className="text-sm font-medium">{ot.rubros?.nombre}</p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-400">
-                  <Users className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded border bg-muted/50 flex items-center justify-center">
+                  <Users className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Responsable</p>
-                  <p className="text-sm font-bold text-foreground">{ot.usuarios?.nombre}</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Responsable</p>
+                  <p className="text-sm font-medium">{ot.usuarios?.nombre}</p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center text-apple-gray-400">
-                  <Calendar className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded border bg-muted/50 flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Creación</p>
-                  <p className="text-sm font-bold text-foreground">
-                    {new Date(ot.created_at || '').toLocaleDateString('es-UY', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Creación</p>
+                  <p className="text-sm font-medium">
+                    {new Date(ot.created_at || '').toLocaleDateString('es-UY', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Metrics Progress - Tiny Widgets */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-6 bg-apple-blue/5 dark:bg-apple-blue/10 rounded-[28px] border border-apple-blue/10 flex flex-col items-center justify-center text-center">
-              <Package className="w-5 h-5 text-apple-blue mb-2" />
-              <span className="text-lg font-black text-apple-blue tracking-tighter">{ot.cantidad}</span>
-              <span className="text-[8px] font-black text-apple-blue/60 uppercase tracking-widest">{ot.rubros?.unidad} Estimado</span>
-            </div>
-            <div className="p-6 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-[28px] border border-emerald-500/10 flex flex-col items-center justify-center text-center">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 mb-2" />
-              <span className="text-lg font-black text-emerald-500 tracking-tighter">{tareasCompletadas}</span>
-              <span className="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest">Listas</span>
-            </div>
+             <Card className="bg-primary/5 border-primary/10">
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                   <Package className="w-4 h-4 text-primary mb-2" />
+                   <span className="text-lg font-bold text-primary">{ot.cantidad}</span>
+                   <span className="text-[10px] font-semibold text-primary/70 uppercase tracking-widest mt-1">{ot.rubros?.unidad} Estimado</span>
+                </CardContent>
+             </Card>
+             <Card className="bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20">
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                   <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-500 mb-2" />
+                   <span className="text-lg font-bold text-emerald-600 dark:text-emerald-500">{tareasCompletadas}</span>
+                   <span className="text-[10px] font-semibold text-emerald-600/70 dark:text-emerald-500/70 uppercase tracking-widest mt-1">Listas</span>
+                </CardContent>
+             </Card>
           </div>
 
-          {/* History Timeline */}
-          <OTHistoryTimeline historial={historial || []} />
+          <Card>
+            <CardHeader>
+               <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Historial Cronológico</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <OTHistoryTimeline historial={historial || []} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
