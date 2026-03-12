@@ -17,6 +17,12 @@ import { OTFotos } from '@/components/edo/ot/ot-fotos'
 import { OTConsumos } from '@/components/edo/ot/ot-consumos'
 import { OTOrdenesCompra } from '@/components/edo/ot/ot-ordenes-compra'
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -332,9 +338,18 @@ export default async function OTDetailPage({ params }: Props) {
                         <Camera className="w-5 h-5 text-apple-gray-400" />
                         Registro Fotográfico
                       </h3>
-                      <Link href="#" className="w-8 h-8 rounded-full bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center hover:scale-110 transition-all">
-                        <Plus className="w-4 h-4" />
-                      </Link>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span tabIndex={0}>
+                              <button disabled className="w-8 h-8 rounded-full bg-apple-gray-50 dark:bg-white/5 flex items-center justify-center transition-all opacity-50 cursor-not-allowed">
+                                <Plus className="w-4 h-4" />
+                              </button>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-black text-white border-white/10 text-xs font-bold px-3 py-1.5 rounded-xl">Próximamente</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                     <OTFotos
                       otId={otId}

@@ -8,11 +8,24 @@ import type { OTStatus } from '@/types/database'
 import {
   CheckCircle2, PlayCircle, Archive, Trash2,
   X, AlertCircle, Loader2, Info, TrendingDown,
-  ChevronRight, Sparkles, Building2, Edit3
+  ChevronRight, Sparkles, Building2, Edit3, MoreHorizontal, FileText, Mail, Ban
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   Dialog,
   DialogContent,
@@ -138,6 +151,58 @@ export function OTActions({
             <Trash2 className="w-5 h-5" />
           </button>
         )}
+
+        {/* Quick Actions Dropdown */}
+        <TooltipProvider>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="w-12 h-12 flex items-center justify-center text-apple-gray-400 hover:text-foreground bg-white dark:bg-white/5 border border-apple-gray-100 dark:border-white/10 rounded-full transition-all active:scale-95 shadow-sm"
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={0}>
+                    <DropdownMenuItem disabled className="gap-2 cursor-not-allowed text-apple-gray-400 font-medium">
+                      <FileText className="w-4 h-4" />
+                      Descargar PDF
+                    </DropdownMenuItem>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-black text-white border-white/10 text-xs font-bold px-3 py-1.5 rounded-xl">Próximamente</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={0}>
+                    <DropdownMenuItem disabled className="gap-2 cursor-not-allowed text-apple-gray-400 font-medium">
+                      <Mail className="w-4 h-4" />
+                      Enviar por Email
+                    </DropdownMenuItem>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-black text-white border-white/10 text-xs font-bold px-3 py-1.5 rounded-xl">Próximamente</TooltipContent>
+              </Tooltip>
+
+              <DropdownMenuSeparator className="my-2 opacity-50" />
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={0}>
+                    <DropdownMenuItem disabled className="gap-2 cursor-not-allowed text-apple-gray-400 font-medium">
+                      <Ban className="w-4 h-4" />
+                      Anular Orden
+                    </DropdownMenuItem>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="bg-black text-white border-white/10 text-xs font-bold px-3 py-1.5 rounded-xl">Próximamente</TooltipContent>
+              </Tooltip>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TooltipProvider>
       </div>
 
       {/* Premium Confirmation Modals */}

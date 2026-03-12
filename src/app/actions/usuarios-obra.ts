@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { Usuario } from '@/types/database'
+import type { Usuario, UserRole } from '@/types/database'
 
 export type ActionResult<T = void> =
   | { success: true; data: T; error?: never }
@@ -105,6 +105,52 @@ export async function assignUsuarioToObra(
   if (error) {
     console.error('Error assigning usuario:', error)
     return { success: false, error: 'Error al asignar usuario' }
+  }
+
+  revalidatePath(`/obras/${obraId}`)
+  revalidatePath(`/obras/${obraId}/usuarios`)
+
+  return { success: true, data: data as Usuario }
+}
+
+/**
+ * Assign a user to an obra and optionally update their role
+ * Only admin can assign users
+ */
+export async function assignUsuarioToObraWithRole(
+  usuarioId: string,
+  obraId: string,
+  rol: UserRole
+): Promise<ActionResult<Usuario>> {
+  const supabase = await createClient()
+
+  // Check user role
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { success: false, error: 'No autenticado' }
+  }
+
+  const { data: profile } = await supabase
+    .from('usuarios')
+    .select('rol')
+    .eq('auth_user_id', user.id)
+    .single()
+
+  if (!profile || profile.rol !== 'admin') {
+    return { success: false, error: 'Solo administradores pueden asignar usuarios' }
+  }
+
+  // Update the user's obra_id and rol
+  const { data, error } = await supabase
+    .from('usuarios')
+    .update({ obra_id: obraId, rol })
+    .eq('id', usuarioId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error assigning usuario:', error)
+    return { success: false, error: 'Error al asignar usuario y actualizar rol' }
   }
 
   revalidatePath(`/obras/${obraId}`)

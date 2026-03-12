@@ -31,6 +31,7 @@ const navItems: NavItem[] = [
       </svg>
     ),
   },
+  /* POST-MVP:
   {
     href: '/camara',
     label: 'Foto',
@@ -42,6 +43,7 @@ const navItems: NavItem[] = [
     ),
     roles: ['jefe_obra'], // Only for JO
   },
+  */
   {
     href: '/perfil',
     label: 'Perfil',
