@@ -63,17 +63,17 @@ export function ROICalculator() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-white/[0.03] rounded-[2.5rem] p-8 md:p-12 border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden group"
+            className="bg-white dark:bg-white/[0.03] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-12 border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden group w-full"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/20 rounded-full blur-[80px] -z-10 group-hover:bg-blue-400/30 transition-colors duration-500" />
             
-            <div className="space-y-10">
-              <div className="space-y-4">
-                <div className="flex justify-between items-end mb-2">
-                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+            <div className="space-y-8 sm:space-y-10">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1 sm:gap-0 mb-2">
+                  <label className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
                     Obras activas por año
                   </label>
-                  <span className="text-2xl font-extrabold text-slate-900 dark:text-white">{obras}</span>
+                  <span className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">{obras}</span>
                 </div>
                 <input
                   type="range"
@@ -85,12 +85,12 @@ export function ROICalculator() {
                 />
               </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-end mb-2">
-                  <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1 sm:gap-0 mb-2">
+                  <label className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
                     Presupuesto medio por obra
                   </label>
-                  <span className="text-2xl font-extrabold text-slate-900 dark:text-white">{formatCurrency(presupuesto)}</span>
+                  <span className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">{formatCurrency(presupuesto)}</span>
                 </div>
                 <input
                   type="range"
@@ -104,18 +104,18 @@ export function ROICalculator() {
               </div>
 
               <div className="pt-8 border-t border-slate-200 dark:border-white/10">
-                <div className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
+                <div className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2 break-words">
                   Pérdida anual estimada (8%)
                 </div>
-                <div className="text-3xl md:text-4xl font-extrabold text-red-500 mb-6 drop-shadow-sm">
+                <div className="text-3xl sm:text-3xl md:text-4xl font-extrabold text-red-500 mb-6 drop-shadow-sm break-words">
                   -{formatCurrency(perdidaAnual)}
                 </div>
 
-                <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl p-6 border border-emerald-100 dark:border-emerald-500/20">
-                  <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-1">
+                <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-emerald-100 dark:border-emerald-500/20 w-full overflow-hidden">
+                  <div className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-1 break-words">
                     Retorno con EDO (Ahorro 75%)
                   </div>
-                  <div className="text-4xl md:text-5xl font-black text-emerald-500 dark:text-emerald-400">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-500 dark:text-emerald-400 tracking-tighter sm:tracking-normal break-words">
                     +{formatCurrency(ahorroPotencial)}
                   </div>
                 </div>

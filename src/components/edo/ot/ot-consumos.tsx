@@ -15,13 +15,15 @@ import {
   Plus,
   AlertTriangle,
   CheckCircle2,
-  Calculator,
   Trash2,
   Edit3,
-  X,
   Container
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 interface Consumo {
   id: string
@@ -131,218 +133,210 @@ export function OTConsumos({ otId, obraId, consumos: initialConsumos, canEdit }:
   const desvioPercent = totalEstimado > 0 ? (desvioTotal / totalEstimado) * 100 : 0
 
   const getStatusColor = (percent: number | null) => {
-    if (percent === null) return "text-apple-gray-400 bg-apple-gray-100"
-    if (percent > 10) return "text-red-600 bg-red-50 dark:bg-red-500/10"
+    if (percent === null) return "text-muted-foreground bg-muted"
+    if (percent > 10) return "text-destructive bg-destructive/10"
     if (percent > 0) return "text-orange-600 bg-orange-50 dark:bg-orange-500/10"
     return "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10"
   }
 
   if (isLoading) {
-    return <div className="p-10 space-y-4 animate-pulse"><div className="h-20 bg-apple-gray-100 rounded-3xl" /><div className="h-40 bg-apple-gray-50 rounded-3xl" /></div>
+    return <div className="p-6 space-y-4 animate-pulse"><div className="h-16 bg-muted rounded-xl" /><div className="h-32 bg-muted/50 rounded-xl" /></div>
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-8 space-y-8">
-        {/* Header Stats Bento Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-6 bg-apple-gray-50/50 dark:bg-white/[0.02] rounded-[32px] border border-apple-gray-100 dark:border-white/[0.05] flex items-center justify-between">
+    <div className="flex flex-col h-full bg-background space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest mb-1">Insumos Registrados</p>
-              <p className="text-2xl font-black text-foreground">{consumos.length} <span className="text-apple-gray-300 font-medium">/ {insumosEstimados.length}</span></p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Insumos Registrados</p>
+              <p className="text-2xl font-bold tracking-tight text-foreground">{consumos.length} <span className="text-muted-foreground">/ {insumosEstimados.length}</span></p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-apple-blue/10 flex items-center justify-center text-apple-blue">
-              <Container className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground">
+              <Container className="w-5 h-5" />
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className={cn(
-            "p-6 rounded-[32px] border flex items-center justify-between transition-all duration-500",
-            desvioPercent > 0 ? "bg-red-500/5 border-red-500/10" : "bg-emerald-500/5 border-emerald-500/10"
-          )}>
+        <Card className={cn(
+          "transition-colors",
+          desvioPercent > 0 ? "bg-red-500/5 border-red-500/20" : "bg-emerald-500/5 border-emerald-500/20"
+        )}>
+          <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black text-apple-gray-400 uppercase tracking-widest mb-1">Desvío de Materiales</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Desvío de Materiales</p>
               <div className="flex items-center gap-2">
-                <p className={cn("text-2xl font-black", desvioPercent > 0 ? "text-red-500" : "text-emerald-500")}>
+                <p className={cn("text-2xl font-bold tracking-tight", desvioPercent > 0 ? "text-red-500" : "text-emerald-500")}>
                   {desvioTotal >= 0 ? '+' : ''}{formatPesos(desvioTotal)}
                 </p>
-                <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-black", desvioPercent > 0 ? "bg-red-500 text-white" : "bg-emerald-500 text-white")}>
+                <div className={cn("text-[10px] px-2 py-0.5 rounded-md font-bold", desvioPercent > 0 ? "bg-red-500 text-white" : "bg-emerald-500 text-white")}>
                   {desvioPercent.toFixed(1)}%
-                </span>
+                </div>
               </div>
             </div>
-            <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", desvioPercent > 0 ? "bg-red-500/20 text-red-500" : "bg-emerald-500/20 text-emerald-500")}>
-              {desvioPercent > 0 ? <TrendingUp className="w-6 h-6" /> : <TrendingDown className="w-6 h-6" />}
+            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", desvioPercent > 0 ? "bg-red-500/10 text-red-500" : "bg-emerald-500/10 text-emerald-500")}>
+              {desvioPercent > 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
             </div>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {error && (
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm font-semibold">
+          {error}
         </div>
+      )}
 
-        {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-2xl text-red-600 dark:text-red-400 text-sm font-medium">
-            {error}
-          </div>
-        )}
+      <div className="space-y-3">
+        {insumosEstimados.map((insumo) => {
+          const consumo = consumos.find((c) => c.insumo_id === insumo.insumo_id)
+          const isEditing = editingInsumo === insumo.insumo_id
 
-        {/* List of supplies */}
-        <div className="space-y-4">
-          {insumosEstimados.map((insumo) => {
-            const consumo = consumos.find((c) => c.insumo_id === insumo.insumo_id)
-            const isEditing = editingInsumo === insumo.insumo_id
-
-            return (
-              <div
-                key={insumo.insumo_id}
-                className={cn(
-                  "p-6 rounded-[32px] border transition-all duration-500",
-                  isEditing ? "bg-white dark:bg-white/5 border-apple-blue shadow-apple-lg ring-4 ring-apple-blue/5" : "bg-apple-gray-50/30 dark:bg-white/[0.01] border-apple-gray-100 dark:border-white/[0.05]"
-                )}
-              >
+          return (
+            <Card
+              key={insumo.insumo_id}
+              className={cn(
+                "transition-all overflow-hidden",
+                isEditing ? "border-primary ring-1 ring-primary/20" : "hover:border-primary/20"
+              )}
+            >
+              <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex items-center gap-4">
                     <div className={cn(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center",
-                      consumo ? "bg-emerald-500/10 text-emerald-500" : "bg-apple-gray-100 dark:bg-white/5 text-apple-gray-400"
+                      "w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
+                      consumo ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"
                     )}>
                       {consumo ? <CheckCircle2 className="w-6 h-6" /> : <Package className="w-6 h-6" />}
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-foreground">{insumo.nombre}</h3>
-                      <p className="text-xs text-apple-gray-400 font-medium">Planificado: {insumo.cantidad_estimada.toFixed(2)} {insumo.unidad}</p>
+                      <h3 className="text-sm font-bold text-foreground">{insumo.nombre}</h3>
+                      <p className="text-xs text-muted-foreground font-semibold">Planificado: {insumo.cantidad_estimada.toFixed(2)} {insumo.unidad}</p>
                     </div>
                   </div>
 
                   {consumo && !isEditing ? (
                     <div className="flex items-center gap-6">
                       <div className="text-right">
-                        <p className="text-xs font-black text-apple-gray-300 uppercase tracking-widest">Real Consumido</p>
-                        <p className="text-lg font-black text-foreground">{consumo.cantidad_consumida.toFixed(2)} {insumo.unidad}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Real Consumido</p>
+                        <p className="text-base font-bold text-foreground tracking-tight">{consumo.cantidad_consumida.toFixed(2)} {insumo.unidad}</p>
                       </div>
-                      <div className={cn("px-4 py-2 rounded-2xl flex flex-col items-end", getStatusColor(consumo.porcentaje_diferencia))}>
-                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Delta</p>
-                        <p className="text-sm font-black">{consumo.diferencia >= 0 ? '+' : ''}{consumo.diferencia.toFixed(2)}</p>
+                      <div className={cn("px-3 py-1.5 rounded-lg flex flex-col items-end", getStatusColor(consumo.porcentaje_diferencia))}>
+                        <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Delta</p>
+                        <p className="text-xs font-bold">{consumo.diferencia >= 0 ? '+' : ''}{consumo.diferencia.toFixed(2)}</p>
                       </div>
                       {canEdit && (
                         <div className="flex gap-2">
-                          <button onClick={() => handleStartEdit(insumo)} className="w-10 h-10 rounded-xl bg-apple-gray-50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 flex items-center justify-center transition-all border border-apple-gray-100 dark:border-white/10 text-apple-gray-400 hover:text-apple-blue">
+                          <Button variant="outline" size="icon" onClick={() => handleStartEdit(insumo)}>
                             <Edit3 className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => handleDeleteConsumo(consumo.id)} className="w-10 h-10 rounded-xl bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-all border border-red-500/10">
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteConsumo(consumo.id)} className="text-destructive hover:bg-destructive/10 hover:text-destructive">
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         </div>
                       )}
                     </div>
                   ) : canEdit && !isEditing ? (
-                    <button
+                    <Button
+                      variant="secondary"
                       onClick={() => handleStartEdit(insumo)}
-                      className="h-12 px-6 rounded-2xl bg-apple-blue/10 text-apple-blue flex items-center justify-center gap-2 text-sm font-bold hover:bg-apple-blue hover:text-white transition-all active:scale-95"
+                      className="text-xs uppercase font-bold tracking-wider"
                     >
-                      <Plus className="w-4 h-4" /> Registrar Consumo
-                    </button>
+                      <Plus className="w-4 h-4 mr-2" /> Registrar Consumo
+                    </Button>
                   ) : null}
                 </div>
 
                 {isEditing && (
-                  <div className="mt-8 p-8 bg-apple-gray-50 dark:bg-black/40 rounded-[40px] border border-apple-blue/20 dark:border-apple-blue/10 animate-apple-slide-up shadow-inner relative overflow-hidden group/form">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover/form:opacity-10 transition-opacity">
-                      <Calculator className="w-32 h-32" />
-                    </div>
-
-                    <div className="relative z-10 space-y-10">
-                      <div className="flex flex-col md:flex-row gap-10">
-                        <div className="flex-[2] space-y-4">
-                          <div className="flex items-center justify-between px-2">
-                            <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Cantidad Utilizada</label>
-                            <span className="text-[10px] font-black text-apple-blue uppercase tracking-widest">{insumo.unidad} actual</span>
-                          </div>
-                          <div className="relative group/input">
-                            <input
-                              type="number"
-                              value={cantidadInput}
-                              onChange={(e) => setCantidadInput(e.target.value)}
-                              autoFocus
-                              placeholder={`0.00`}
-                              className="w-full bg-white dark:bg-apple-gray-50 border border-apple-gray-200 dark:border-white/10 rounded-[28px] px-8 py-10 text-5xl font-black text-foreground outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all placeholder:text-apple-gray-100"
-                            />
-                            <div className="absolute right-8 top-1/2 -translate-y-1/2">
-                              <span className="text-xl font-black text-apple-gray-200 group-focus-within/input:text-apple-blue transition-colors">{insumo.unidad}</span>
-                            </div>
-                          </div>
+                  <div className="mt-6 pt-6 border-t space-y-6 animate-in fade-in slide-in-from-top-4">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <div className="flex-1 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Cantidad Utilizada</label>
+                          <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{insumo.unidad} actual</span>
                         </div>
-
-                        <div className="flex-[3] space-y-4">
-                          <div className="px-2">
-                            <label className="text-[10px] font-black text-apple-gray-400 uppercase tracking-[0.2em]">Notas / Observaciones de Campo</label>
-                          </div>
-                          <textarea
-                            value={notasInput}
-                            onChange={(e) => setNotasInput(e.target.value)}
-                            placeholder="Ej: Desperdicio por rotura de bolsa, excedente en cimentación..."
-                            className="w-full h-[124px] bg-white dark:bg-apple-gray-50 border border-apple-gray-200 dark:border-white/10 rounded-[28px] px-8 py-6 text-base font-medium outline-none focus:ring-8 focus:ring-apple-blue/10 focus:border-apple-blue transition-all resize-none"
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            value={cantidadInput}
+                            onChange={(e) => setCantidadInput(e.target.value)}
+                            autoFocus
+                            placeholder="0.00"
+                            className="h-16 text-2xl font-bold pl-6 pr-16 bg-background"
                           />
+                          <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                            <span className="text-sm font-bold text-muted-foreground">{insumo.unidad}</span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4 border-t border-apple-gray-200/50 dark:border-white/5">
-                        <div className="flex items-center gap-4 text-[10px] font-bold text-apple-gray-300 uppercase tracking-widest">
-                          <AlertTriangle className="w-4 h-4 text-amber-500" />
-                          El registro afectará el costo real de la obra inmediatamente.
-                        </div>
-                        <div className="flex items-center gap-4 w-full md:w-auto">
-                          <button
-                            onClick={handleCancelEdit}
-                            className="flex-1 md:flex-none px-10 h-16 rounded-full text-xs font-black uppercase tracking-widest text-apple-gray-400 hover:text-foreground hover:bg-apple-gray-100 dark:hover:bg-white/5 transition-all"
-                          >
-                            Descartar
-                          </button>
-                          <button
-                            onClick={() => handleSaveConsumo(insumo)}
-                            disabled={isSaving}
-                            className="flex-[2] md:flex-none px-12 h-16 rounded-full bg-apple-blue text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-apple-blue-dark active:scale-95 transition-all shadow-apple-float disabled:opacity-50 flex items-center justify-center gap-3"
-                          >
-                            {isSaving ? (
-                              <>
-                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                Procesando...
-                              </>
-                            ) : (
-                              <>
-                                <CheckCircle2 className="w-5 h-5" />
-                                Registrar Consumo
-                              </>
-                            )}
-                          </button>
-                        </div>
+                      <div className="flex-1 space-y-4">
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Notas / Observaciones de Campo</label>
+                        <Textarea
+                          value={notasInput}
+                          onChange={(e) => setNotasInput(e.target.value)}
+                          placeholder="Ej: Desperdicio por rotura de bolsa, excedente..."
+                          className="h-16 resize-none bg-background"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t">
+                      <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                        <AlertTriangle className="w-4 h-4 text-amber-500" />
+                        Afectará el costo real directamente
+                      </div>
+                      <div className="flex items-center gap-3 w-full md:w-auto">
+                        <Button
+                          variant="ghost"
+                          onClick={handleCancelEdit}
+                          className="flex-1 md:flex-none text-xs uppercase font-bold tracking-wider"
+                        >
+                          Descartar
+                        </Button>
+                        <Button
+                          onClick={() => handleSaveConsumo(insumo)}
+                          disabled={isSaving}
+                          className="flex-1 md:flex-none text-xs uppercase font-bold tracking-wider"
+                        >
+                          {isSaving ? (
+                            <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin mr-2" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                          )}
+                          Registrar Consumo
+                        </Button>
                       </div>
                     </div>
                   </div>
                 )}
-              </div>
-            )
-          })}
-        </div>
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
 
-      {/* Summary Footer Bento */}
       {consumos.length > 0 && (
-        <div className="p-8 bg-apple-gray-50/50 dark:bg-white/[0.02] border-t border-apple-gray-100 dark:border-white/[0.05]">
-          <div className="grid grid-cols-3 gap-8">
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Inversión Planificada</p>
-              <p className="text-xl font-bold">{formatPesos(totalEstimado)}</p>
+        <Card className="bg-muted/30">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Inversión Planificada</p>
+                <p className="text-lg font-bold tracking-tight text-foreground">{formatPesos(totalEstimado)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Inversión Real</p>
+                <p className="text-lg font-bold tracking-tight text-foreground">{formatPesos(totalReal)}</p>
+              </div>
+              <div className="space-y-1 text-right col-span-2 md:col-span-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Eficiencia</p>
+                <p className={cn("text-lg font-bold tracking-tight", desvioPercent > 0 ? "text-red-500" : "text-emerald-500")}>
+                  {desvioPercent >= 0 ? '+' : ''}{desvioPercent.toFixed(1)}%
+                </p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Inversión Real</p>
-              <p className="text-xl font-bold">{formatPesos(totalReal)}</p>
-            </div>
-            <div className="space-y-1 text-right">
-              <p className="text-[10px] font-black text-apple-gray-300 uppercase tracking-widest">Eficiencia</p>
-              <p className={cn("text-xl font-black", desvioPercent > 0 ? "text-red-500" : "text-emerald-500")}>
-                {desvioPercent >= 0 ? '+' : ''}{desvioPercent.toFixed(1)}%
-              </p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

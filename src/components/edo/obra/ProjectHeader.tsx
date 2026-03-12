@@ -85,22 +85,24 @@ export function ProjectHeader({ projectId, userRole, userName }: ProjectHeaderPr
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center space-x-2 border-b border-border pb-px overflow-x-auto custom-scrollbar-hide">
-                {tabs.map((tab) => (
-                    <Link
-                        key={tab.name}
-                        href={tab.href}
-                        className={cn(
-                            "flex items-center gap-2 py-2 px-4 border-b-2 text-sm font-medium transition-colors whitespace-nowrap",
-                            tab.active
-                                ? "border-primary text-foreground"
-                                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
-                        )}
-                    >
-                        <tab.icon className="w-4 h-4" />
-                        {tab.name}
-                    </Link>
-                ))}
+            <div className="w-full overflow-x-auto custom-scrollbar-hide pb-2">
+                <div className="inline-flex w-max items-center justify-start rounded-xl bg-muted p-1.5 text-muted-foreground gap-1">
+                    {tabs.map((tab) => (
+                        <Link
+                            key={tab.name}
+                            href={tab.href}
+                            className={cn(
+                                "inline-flex items-center gap-2 justify-center whitespace-nowrap rounded-lg px-5 py-2.5 text-xs font-bold uppercase tracking-wide transition-all",
+                                tab.active
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "hover:text-foreground hover:bg-muted-foreground/10"
+                            )}
+                        >
+                            <tab.icon className="w-4 h-4" />
+                            {tab.name}
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     )

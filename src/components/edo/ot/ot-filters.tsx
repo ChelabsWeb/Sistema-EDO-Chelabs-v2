@@ -3,10 +3,10 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { AppleSelector } from '@/components/ui/apple-selector'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { OTStatusBadge } from './ot-status-badge'
 
 interface OTFiltersProps {
   currentEstado?: string
@@ -76,14 +76,27 @@ export function OTFilters({ currentEstado, currentSearch }: OTFiltersProps) {
       </div>
 
       <div className="w-full sm:w-[240px]">
-        <AppleSelector
-          options={ESTADOS_OT}
+        <Select
           value={currentEstado || 'todos'}
-          onSelect={(val) => updateFilters('estado', val)}
-          size="sm"
-          placeholder="Estado de la Orden"
-          searchPlaceholder="Filtrar estados..."
-        />
+          onValueChange={(val) => updateFilters('estado', val)}
+        >
+          <SelectTrigger className="w-full bg-background font-medium">
+            <SelectValue placeholder="Estado de la Orden" />
+          </SelectTrigger>
+          <SelectContent>
+            {ESTADOS_OT.map((estado) => (
+              <SelectItem key={estado.id} value={estado.id} className="cursor-pointer">
+                {estado.id === 'todos' ? (
+                  estado.nombre
+                ) : (
+                  <div className="flex items-center">
+                    <OTStatusBadge estado={estado.id} size="sm" />
+                  </div>
+                )}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <Button

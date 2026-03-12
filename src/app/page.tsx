@@ -11,7 +11,8 @@ import {
   Building2, ArrowRight, Zap, ChevronRight,
   CheckCircle2, Smartphone, Lock, Construction,
   Package, LayoutGrid, PlayCircle, BarChart3,
-  Sun, Moon, Plus, Share2, AtSign, Twitter, Instagram
+  Sun, Moon, Plus, Share2, AtSign, Twitter, Instagram,
+  Menu, X
 } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { cn } from '@/lib/utils'
@@ -35,6 +36,7 @@ export default function Home() {
   const { theme, setTheme } = useTheme()
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -68,12 +70,13 @@ export default function Home() {
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-white/[0.02] backdrop-blur-md border-b border-slate-200/50 dark:border-white/5">
-        <div className="max-w-screen-2xl mx-auto px-6 sm:px-10 h-20 flex justify-between items-center relative">
-          <div className="flex items-center gap-4 group cursor-pointer relative z-10">
-            <Logo size={40} className="group-hover:scale-110 transition-transform duration-500" />
-            <span className="text-xl font-extrabold tracking-tight text-slate-800 dark:text-white transition-colors">Sistema EDO</span>
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 h-16 sm:h-20 flex justify-between items-center relative">
+          <div className="flex items-center gap-3 sm:gap-4 group cursor-pointer relative z-40">
+            <Logo size={32} className="sm:w-[40px] sm:h-[40px] group-hover:scale-110 transition-transform duration-500" />
+            <span className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-800 dark:text-white transition-colors">Sistema EDO</span>
           </div>
 
+          {/* Desktop Menu */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-10">
             {['Funciones', 'Precios', 'Beneficios'].map((item) => (
               <a
@@ -86,18 +89,59 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 relative z-10">
-            <LandingButton href="/auth/login" intent="ghost" size="sm" className="hidden sm:block">
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex items-center gap-4 relative z-10">
+            <LandingButton href="/auth/login" intent="ghost" size="sm">
               Login
             </LandingButton>
-            <LandingButton href="/auth/register" intent="outline" size="sm" className="hidden sm:block">
+            <LandingButton href="/auth/register" intent="outline" size="sm">
               Regístrate
             </LandingButton>
-            <LandingButton href="/auth/register" intent="primary" size="sm">
-              Agendar Demo
+            <LandingButton href="/auth/login" intent="primary" size="sm">
+              Comenzar ahora
             </LandingButton>
           </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden relative z-40 p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-full left-0 w-full bg-white/95 dark:bg-[#0b0f1a]/95 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 lg:hidden z-30 shadow-xl overflow-y-auto" style={{ maxHeight: 'calc(100vh - 4rem)' }}>
+            <div className="flex flex-col px-4 py-6 gap-6">
+              <div className="flex flex-col gap-4">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-2">Navegación</span>
+                {['Funciones', 'Precios', 'Beneficios'].map((item) => (
+                  <a
+                    key={item}
+                    href={`#${item.toLowerCase().replace('ó', 'o')}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-lg font-bold text-slate-800 dark:text-white hover:text-primary dark:hover:text-primary transition-colors px-2"
+                  >
+                    {item}
+                  </a>
+                ))}
+              </div>
+              
+              <div className="h-px bg-slate-200 dark:bg-white/10 w-full" />
+              
+              <div className="flex flex-col gap-3">
+                 <LandingButton href="/auth/login" intent="outline" size="full" className="justify-center">
+                  Login
+                </LandingButton>
+                <LandingButton href="/auth/login" intent="primary" size="full" className="justify-center">
+                  Comenzar ahora
+                </LandingButton>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="relative z-10">
@@ -150,8 +194,8 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-5 w-full sm:w-auto"
               >
-                <LandingButton href="/auth/register" intent="primary" size="md" className="w-full sm:w-auto group">
-                  Agendar Demo Ejecutiva
+                <LandingButton href="/auth/login" intent="primary" size="md" className="w-full sm:w-auto group">
+                  Comenzar ahora
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1 hidden sm:block" />
                 </LandingButton>
                 <LandingButton intent="outline" size="md" className="w-full sm:w-auto">
@@ -363,41 +407,41 @@ export default function Home() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-transparent to-purple-600/10 dark:from-blue-600/20 dark:to-purple-600/20 rounded-[3rem] blur-3xl opacity-50" />
-              <div className="relative p-1 bg-white dark:bg-white/[0.03] backdrop-blur-3xl rounded-[3rem] border border-slate-200 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
-                <div className="bg-white dark:bg-[#0b0f1a] rounded-[2.8rem] overflow-hidden border border-slate-100 dark:border-white/5">
-                  <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5">
-                    <div className="flex gap-1.5 sm:gap-2">
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-transparent to-purple-600/10 dark:from-blue-600/20 dark:to-purple-600/20 rounded-[2rem] sm:rounded-[3rem] blur-3xl opacity-50" />
+              <div className="relative p-1 bg-white dark:bg-white/[0.03] backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] border border-slate-200 dark:border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] w-full overflow-hidden">
+                <div className="bg-white dark:bg-[#0b0f1a] rounded-[1.8rem] sm:rounded-[2.8rem] overflow-hidden border border-slate-100 dark:border-white/5 w-full">
+                  <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5 gap-2 sm:gap-4 overflow-hidden w-full">
+                    <div className="flex gap-1.5 sm:gap-2 shrink-0">
                       <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-400" />
                       <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-400" />
                       <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-400" />
                     </div>
-                    <div className="text-[8px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-3 sm:px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5">Dashboard de Control</div>
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    <div className="text-[8px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-2 sm:px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 truncate max-w-[120px] sm:max-w-none">Dashboard de Control</div>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0" />
                   </div>
-                  <div className="p-6 sm:p-10 space-y-8 sm:space-y-10 text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="p-5 sm:p-10 space-y-6 sm:space-y-10 text-left w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                       <div>
                         <div className="text-[10px] font-bold text-primary uppercase mb-1 tracking-widest">Proyecto Activo</div>
-                        <div className="text-xl sm:text-2xl font-extrabold text-slate-800 dark:text-white">Torre Residencial "Altos"</div>
+                        <div className="text-lg sm:text-2xl font-extrabold text-slate-800 dark:text-white leading-tight break-words">Torre Residencial "Altos"</div>
                       </div>
-                      <div className="self-start sm:self-auto px-4 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold rounded-full border border-emerald-500/20">EN FECHA</div>
+                      <div className="self-start sm:self-auto px-3 sm:px-4 py-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[9px] sm:text-[10px] font-bold rounded-full border border-emerald-500/20 whitespace-nowrap">EN FECHA</div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 w-full">
                       <div className="p-5 sm:p-6 rounded-[1.5rem] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner">
-                        <div className="text-[10px] font-bold text-slate-400 mb-4 tracking-widest uppercase text-center">PROGRESO</div>
-                        <div className="relative h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mb-3">
+                        <div className="text-[10px] font-bold text-slate-400 mb-3 sm:mb-4 tracking-widest uppercase text-center">PROGRESO</div>
+                        <div className="relative h-2 w-full bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden mb-2 sm:mb-3">
                           <div className="absolute top-0 left-0 h-full w-[72%] bg-primary shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
                         </div>
-                        <div className="text-3xl font-extrabold text-slate-800 dark:text-white text-center">72%</div>
+                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-white text-center">72%</div>
                       </div>
-                      <div className="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner">
-                        <div className="text-[10px] font-bold text-slate-400 mb-4 tracking-widest uppercase text-center">DESVÍO COSTOS</div>
-                        <div className="text-3xl font-extrabold text-red-500 text-center">-2.4%</div>
-                        <div className="text-[9px] text-slate-400 font-bold uppercase mt-1 text-center">Presupuestado</div>
+                      <div className="p-5 sm:p-6 rounded-[1.5rem] bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-inner w-full flex flex-col justify-center">
+                        <div className="text-[10px] font-bold text-slate-400 mb-3 sm:mb-4 tracking-widest uppercase text-center">DESVÍO COSTOS</div>
+                        <div className="text-2xl sm:text-3xl font-extrabold text-red-500 text-center">-2.4%</div>
+                        <div className="text-[9px] text-slate-400 font-bold uppercase mt-1 text-center truncate">Presupuestado</div>
                       </div>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4 w-full">
                       {[1, 2].map((i) => (
                         <div key={i} className="flex items-center gap-5 p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/5 shadow-sm">
                           <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center border", i === 1 ? "bg-blue-50 text-blue-600 border-blue-100 dark:bg-white/5 dark:text-blue-500 dark:border-white/10" : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-white/5 dark:text-emerald-500 dark:border-white/10")}>
