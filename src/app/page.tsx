@@ -178,7 +178,7 @@ export default function Home() {
                   <div className="absolute inset-0 border border-black/5 dark:border-white/5 rounded-[1.75rem] md:rounded-[2.75rem] z-20 pointer-events-none" />
                   
                   <Image
-                    src="/hero-bg.png"
+                    src="/hero-bg.jpg"
                     alt="Sistema EDO Hero Dashboard 3D"
                     fill
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
@@ -416,8 +416,6 @@ export default function Home() {
               </div>
             </motion.div>
           </section>
-
-          <ROICalculator />
 
         </div>
       </main>
